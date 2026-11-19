@@ -121,7 +121,7 @@ input.invalid,select.invalid{border-color:var(--bad)!important;box-shadow:0 0 0 
         <button class="btn" id="fieldBtn" type="button">Vidni sklopi in polja…</button>
         <div class="fieldmenu" id="fieldMenu">
           <div class="fm-title">Sklopi</div>
-          <label><input type="checkbox" data-fg="photo" checked> Fotografija</label>
+          <label><input type="checkbox" data-fg="photo"> Fotografija</label>
           <label><input type="checkbox" data-fg="cal"> Umeritev</label>
           <label><input type="checkbox" data-fg="detect"> Zaznavanje lamel</label>
           <label><input type="checkbox" data-fg="system" checked> WoodCore sistem</label>
@@ -171,7 +171,7 @@ input.invalid,select.invalid{border-color:var(--bad)!important;box-shadow:0 0 0 
     </div>
   </div>
   <div class="spacer"></div>
-  <span id="fieldCount" style="font-size:11px;color:var(--mut);margin-right:6px">5/10</span>
+  <span id="fieldCount" style="font-size:11px;color:var(--mut);margin-right:6px">4/10</span>
   <button class="primarybar" type="button" data-call="gen">Generiraj risbo</button>
 </div>
 
@@ -1129,7 +1129,7 @@ var FIELD_ITEMS={
   zones:["#zoneTop","#zoneMid","#zoneBot","#zoneBase","#innerD"],
   advanced:["#wall","#prof","#topP","#botP","#np","#postP","#bolt","#nbolt","#matSel","#rho"]
 };
-var FIELD_FALLBACK={photo:true,cal:false,detect:false,sheet:false,plan:false,export:true,system:true,main:true,zones:true,advanced:false};
+var FIELD_FALLBACK={photo:false,cal:false,detect:false,sheet:false,plan:false,export:true,system:true,main:true,zones:true,advanced:false};
 function fieldBoxes(){return [].slice.call(document.querySelectorAll("[data-fg]"))}
 function saveFieldState(){
   try{
