@@ -6,14 +6,36 @@
 <title>Tehnična risba PRO – fotografija do končnega lista</title>
 <link rel="icon" href="data:,">
 <style>
-:root{--bg:#141413;--panel:#1d1d1b;--p2:#262622;--line:#3b3b36;--tx:#e9e7dd;--mut:#a6a396;--ac:#d97757;--ok:#8aa86a;--wa:#e0a44c;--bad:#d06b5b}
+:root{--bg:#141413;--panel:#1d1d1b;--p2:#262622;--line:#3b3b36;--tx:#e9e7dd;--mut:#a6a396;--ac:#d97757;--ok:#8aa86a;--wa:#e0a44c;--bad:#d06b5b;--bar:#181816}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
-header{padding:15px 22px;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:baseline}
-h1{font-size:18px;font-weight:500;margin:0}.sub{color:var(--mut);font-size:12px;max-width:82ch}
-.grid{display:grid;grid-template-columns:420px minmax(0,1fr);min-height:calc(100dvh - 60px)}
-aside{background:var(--panel);border-right:1px solid var(--line);padding:15px;overflow:auto;max-height:calc(100dvh - 60px)}
-main{padding:18px;overflow:auto;background:#0d0d0d}
-section{margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--line)}section:last-child{border-bottom:0}
+/* Menu bar */
+.menubar{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:4px;padding:0 10px;height:40px;background:var(--bar);border-bottom:1px solid var(--line)}
+.brand{font-size:13px;font-weight:600;color:var(--tx);margin-right:8px;white-space:nowrap}
+.brand small{color:var(--mut);font-weight:400;margin-left:6px}
+.menu{position:relative}
+.menu>button{background:transparent;color:var(--tx);border:1px solid transparent;border-radius:6px;padding:5px 9px;font:inherit;font-size:12.5px;cursor:pointer}
+.menu>button:hover,.menu.open>button{background:var(--p2);border-color:var(--line)}
+.menu .drop{display:none;position:absolute;top:calc(100% + 4px);left:0;min-width:250px;background:#1f1f1d;border:1px solid var(--line);border-radius:8px;padding:6px;box-shadow:0 12px 30px #000a;max-height:70vh;overflow:auto}
+.menu.open .drop{display:block}
+.menu.right .drop{left:auto;right:0}
+.drop .mi{display:flex;align-items:center;justify-content:space-between;gap:16px;width:100%;text-align:left;background:transparent;color:var(--tx);border:none;border-radius:6px;padding:7px 8px;font:inherit;font-size:12.5px;cursor:pointer}
+.drop .mi:hover{background:var(--p2)}
+.drop .mi .k{color:var(--mut);font-size:11px}
+.drop .sep{height:1px;background:var(--line);margin:5px 2px}
+.drop .label{font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:.5px;padding:4px 8px 2px}
+.drop .checkrow{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:6px;font-size:12.5px;cursor:pointer}
+.drop .checkrow:hover{background:var(--p2)}
+.drop .checkrow input{accent-color:var(--ac);margin:0}
+.spacer{flex:1}
+.primarybar{background:var(--ac);color:#1a120e;border:1px solid var(--ac);border-radius:6px;padding:6px 12px;font:inherit;font-size:12.5px;font-weight:600;cursor:pointer}
+.primarybar:hover{filter:brightness(1.05)}
+.hooks{display:none}
+.kbd{font:11px ui-monospace,monospace;color:var(--mut);background:#101010;border:1px solid var(--line);border-radius:4px;padding:1px 5px}
+/* layout */
+.grid{display:grid;grid-template-columns:400px minmax(0,1fr);min-height:calc(100dvh - 40px)}
+aside{background:var(--panel);border-right:1px solid var(--line);padding:14px 15px 18px;overflow:auto;max-height:calc(100dvh - 40px)}
+main{padding:16px 18px;overflow:auto;background:#0d0d0d}
+section{margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--line)}section:last-child{border-bottom:0}
 h2{font-size:12px;letter-spacing:.5px;text-transform:uppercase;color:var(--ac);font-weight:500;margin:0 0 9px}
 h2 i{font-style:normal;color:var(--mut);margin-right:6px}
 label{display:block;font-size:11px;color:var(--mut);margin-bottom:3px}
@@ -21,7 +43,7 @@ input,select,textarea{width:100%;background:var(--p2);color:var(--tx);border:1px
 input:focus,select:focus,textarea:focus{border-color:var(--ac)}textarea{min-height:52px;resize:vertical}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:8px}.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
 .btn{background:var(--p2);color:var(--tx);border:1px solid var(--line);border-radius:6px;padding:7px 9px;font:inherit;font-size:12px;cursor:pointer}
-.btn:hover{border-color:var(--ac)}.btn.on{border-color:var(--ac);color:var(--ac)}.btn.go{background:var(--ac);border-color:var(--ac);color:#1a120e;font-weight:500}
+.btn:hover{border-color:var(--ac)}.btn.on{border-color:var(--ac);color:var(--ac)}.btn.go{background:var(--ac);border-color:var(--ac);color:#1a120e;font-weight:600}
 .btns{display:flex;flex-wrap:wrap;gap:7px}
 .hint{font-size:11px;color:var(--mut);margin:6px 0 0}
 .status{font-size:12px;color:var(--ok);min-height:17px;margin-top:6px}.status.warn{color:var(--wa)}.status.bad{color:var(--bad)}
@@ -32,12 +54,10 @@ input:focus,select:focus,textarea:focus{border-color:var(--ac)}textarea{min-heig
 .warnbox{margin-top:8px;padding:8px;border:1px solid #7a5a22;background:#2a2113;border-radius:6px;font-size:11px;color:var(--wa);display:none}
 .warnbox.on{display:block}
 .range{width:100%;accent-color:var(--ac)}
-.steps{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:14px}
+.steps{display:flex;gap:5px;flex-wrap:wrap;margin:2px 0 12px}
 .steps span{font-size:10.5px;color:var(--mut);border:1px solid var(--line);border-radius:999px;padding:3px 8px;white-space:nowrap}
 .steps span.done{color:var(--ok);border-color:#4c613c}
 .steps span.cur{color:var(--ac);border-color:var(--ac);background:#2a1c16}
-.quickbar{position:sticky;bottom:-15px;display:flex;gap:7px;padding:10px 0 0;background:var(--panel);border-top:1px solid var(--line);z-index:3}
-.quickbar .btn{flex:1}
 .pbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:10px}
 .ptitle{font-size:12px;color:var(--mut);letter-spacing:.4px;text-transform:uppercase}
 .pctrls{display:flex;gap:6px;align-items:center}.pctrls .btn{padding:5px 9px}
@@ -47,56 +67,123 @@ main.drop{outline:2px dashed var(--ac);outline-offset:-10px}
 .sysbox .st{font-size:10px;letter-spacing:.5px;text-transform:uppercase;color:var(--ac);margin-bottom:7px}
 .sysbox select{font-size:12px;padding:6px}
 .sysbox .status{margin-top:7px;font-size:11px}
-.fieldpick{position:relative;margin-bottom:8px}
-.fieldpick>.btn{width:100%;text-align:left;font-size:11px;padding:5px 8px}
-.fieldmenu{display:none;position:absolute;z-index:30;left:0;right:0;top:calc(100% + 4px);background:var(--p2);border:1px solid var(--line);border-radius:6px;padding:8px;box-shadow:0 8px 24px #0009}
-.fieldmenu.open{display:block}
-.fm-title{font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
-.fieldmenu label{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--tx);margin:3px 0;cursor:pointer}
-.fieldmenu input[type=checkbox]{width:auto;accent-color:var(--ac);margin:0}
-.fieldmenu .btn{width:100%;margin-top:7px;font-size:10.5px;padding:4px}
+/* keep fieldpick functional inside menu */
+.menubar .fieldpick{position:relative;margin:0}
+.menubar .fieldpick>.btn{width:100%;text-align:left;font-size:12.5px;padding:7px 8px;background:transparent;color:var(--tx);border:none;border-radius:6px;cursor:pointer}
+.menubar .fieldpick>.btn:hover{background:var(--p2)}
+.menubar .fieldmenu{display:none;position:static;background:transparent;border:none;border-radius:0;padding:2px 0 4px 10px;box-shadow:none;margin-top:2px}
+.menubar .fieldmenu.open{display:block}
+.menubar .fm-title{display:none}
+.menubar .fieldmenu label{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--tx);margin:0;padding:4px 6px;border-radius:4px;cursor:pointer}
+.menubar .fieldmenu label:hover{background:var(--p2)}
+.menubar .fieldmenu input[type=checkbox]{width:auto;accent-color:var(--ac);margin:0}
+.menubar .fieldmenu .btn{width:auto;margin-top:6px;font-size:11px;padding:4px 8px}
 .fg-hide{display:none!important}
-.modebar{display:flex;gap:6px;margin-bottom:10px}.modebar .btn{flex:1;font-size:11px;padding:5px}
-.preset-btns{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}.preset-btns .btn{font-size:10.5px;padding:4px 6px}
+.quickbar,.modebar{display:none !important}
+.preset-btns{display:none !important}
 section h2{cursor:pointer;user-select:none}section h2::after{content:"−";float:right;color:var(--mut)}section.collapsed h2::after{content:"+"}
 section.collapsed>*:not(h2){display:none}
 .guided .advanced{display:none!important}
 input.invalid,select.invalid{border-color:var(--bad)!important;box-shadow:0 0 0 1px var(--bad)}
-#globalStatus{font-size:11px;color:var(--mut);padding:6px 0 0;border-top:1px solid var(--line);margin-top:6px}
-@media(max-width:950px){.grid{grid-template-columns:1fr}aside{max-height:none;border-right:0;border-bottom:1px solid var(--line)}.quickbar{position:static}}
+#globalStatus{font-size:11px;color:var(--mut);padding:8px 0 0;border-top:1px solid var(--line);margin-top:10px}
+@media(max-width:950px){.grid{grid-template-columns:1fr}aside{max-height:none;border-right:0;border-bottom:1px solid var(--line)}.brand small{display:none}.menubar{flex-wrap:wrap;height:auto;padding:6px 8px}}
 </style>
 </head>
 <body>
-<header>
-<h1>Tehnična risba PRO</h1>
-<div class="sub">Slika → umeritev (2 točki ali 4 točke s popravkom perspektive) → samodejno štetje lamel → parametri → A3 list s pogledi, prerezom, detajli, kosovnico, maso in naslovnim blokom. Izvoz SVG, DXF, PDF, CSV.</div>
-</header>
+<div class="menubar" id="menubar">
+  <div class="brand">Tehnična risba PRO <small>slika → risba → izvoz</small></div>
+  <div class="menu" data-menu>
+    <button type="button">Datoteka</button>
+    <div class="drop">
+      <button class="mi" data-call="showExample">Naloži primer risbe</button>
+      <div class="sep"></div>
+      <button class="mi" data-call="loadBtn">Odpri projekt…</button>
+      <button class="mi" data-call="save">Shrani projekt… <span class="k">Ctrl+S</span></button>
+      <div class="sep"></div>
+      <div class="label">Izvoz</div>
+      <button class="mi" data-call="prt">PDF / tisk</button>
+      <button class="mi" data-call="dlSvg">Izvozi SVG</button>
+      <button class="mi" data-call="dlDxf">Izvozi DXF</button>
+      <button class="mi" data-call="dlStep">Izvozi STEP</button>
+      <button class="mi" data-call="dlCsv">Izvozi kosovnico (CSV)</button>
+      <button class="mi" data-call="dlPlan">Izvozi montažni načrt (CSV)</button>
+    </div>
+  </div>
+  <div class="menu" data-menu>
+    <button type="button">Pogled</button>
+    <div class="drop">
+      <div class="label">Način dela</div>
+      <button class="mi" data-mode="guided">Vodeni način <span class="k" id="tickGuided">●</span></button>
+      <button class="mi" data-mode="expert">Strokovni način <span class="k" id="tickExpert"></span></button>
+      <div class="sep"></div>
+      <div class="label">Vidnost vmesnika</div>
+      <div class="fieldpick">
+        <button class="btn" id="fieldBtn" type="button">Vidni sklopi in polja…</button>
+        <div class="fieldmenu" id="fieldMenu">
+          <div class="fm-title">Sklopi</div>
+          <label><input type="checkbox" data-fg="photo" checked> Fotografija</label>
+          <label><input type="checkbox" data-fg="cal"> Umeritev</label>
+          <label><input type="checkbox" data-fg="detect"> Zaznavanje lamel</label>
+          <label><input type="checkbox" data-fg="system" checked> WoodCore sistem</label>
+          <label><input type="checkbox" data-fg="main" checked> Osnovne mere</label>
+          <label><input type="checkbox" data-fg="zones" checked> Cone in globina</label>
+          <label><input type="checkbox" data-fg="advanced"> Napredna polja</label>
+          <label><input type="checkbox" data-fg="sheet"> List in opombe</label>
+          <label><input type="checkbox" data-fg="plan"> Montaža in količine</label>
+          <label><input type="checkbox" data-fg="export" checked> Izdelava in izvoz</label>
+          <button class="btn" id="fieldReset" type="button">Ponastavi na osnovno</button>
+        </div>
+      </div>
+      <div class="sep"></div>
+      <div class="label">Predogled</div>
+      <button class="mi" data-call="zoomIn">Povečaj <span class="k">+</span></button>
+      <button class="mi" data-call="zoomOut">Pomanjšaj <span class="k">−</span></button>
+      <button class="mi" data-call="zoomFit">Prileži</button>
+    </div>
+  </div>
+  <div class="menu" data-menu>
+    <button type="button">Orodja</button>
+    <div class="drop">
+      <button class="mi" data-call="gen">Generiraj risbo <span class="k">Ctrl+G</span></button>
+      <button class="mi" data-call="detect">Zaznaj lamele s slike</button>
+      <button class="mi" data-call="makePlan">Pripravi montažni načrt</button>
+      <div class="sep"></div>
+      <div class="label">Prednastavitve sistema</div>
+      <button class="mi" data-preset="romb">ROMB vodoravno</button>
+      <button class="mi" data-preset="polna">POLNA pokončno</button>
+      <button class="mi" data-preset="kubo">KUBO fasada</button>
+      <div class="sep"></div>
+      <label class="checkrow"><input type="checkbox" id="refModeMenu"> <span>Referenčni način lista</span></label>
+    </div>
+  </div>
+  <div class="menu right" data-menu>
+    <button type="button">Pomoč</button>
+    <div class="drop">
+      <div class="label">Bližnjice</div>
+      <div style="padding:6px 8px;font-size:12px;color:var(--mut);line-height:1.7">
+        <div><span class="kbd">Ctrl+G</span> generiraj risbo</div>
+        <div><span class="kbd">Ctrl+S</span> shrani projekt</div>
+        <div><span class="kbd">+</span> / <span class="kbd">−</span> povečava predogleda</div>
+        <div><span class="kbd">Ctrl+V</span> prilepi sliko</div>
+      </div>
+      <div class="sep"></div>
+      <div style="padding:6px 8px;font-size:11.5px;color:var(--mut)">Vse funkcije so dostopne iz opravilne vrstice, brez izgube možnosti.</div>
+    </div>
+  </div>
+  <div class="spacer"></div>
+  <span id="fieldCount" style="font-size:11px;color:var(--mut);margin-right:6px">5/10</span>
+  <button class="primarybar" type="button" data-call="gen">Generiraj risbo</button>
+</div>
+
 <div class="grid">
 <aside>
 <div class="steps" id="steps"><span data-step="1">1 Slika</span><span data-step="2">2 Umeritev</span><span data-step="3">3 Mere</span><span data-step="4">4 Risba</span></div>
-<div class="modebar"><button class="btn on" id="modeGuided">Vodeni način</button><button class="btn" id="modeExpert">Strokovni — vsa polja</button></div>
-<div class="fieldpick">
-<button class="btn" id="fieldBtn">Prikaži polja · <span id="fieldCount">5/10</span> ▾</button>
-<div class="fieldmenu" id="fieldMenu">
-<div class="fm-title">Označite, kar potrebujete</div>
-<label><input type="checkbox" data-fg="photo" checked> Fotografija</label>
-<label><input type="checkbox" data-fg="cal"> Umeritev</label>
-<label><input type="checkbox" data-fg="detect"> Zaznavanje lamel</label>
-<label><input type="checkbox" data-fg="system" checked> WoodCore sistem</label>
-<label><input type="checkbox" data-fg="main" checked> Osnovne mere</label>
-<label><input type="checkbox" data-fg="zones" checked> Cone in globina</label>
-<label><input type="checkbox" data-fg="advanced"> Napredna polja</label>
-<label><input type="checkbox" data-fg="sheet"> List in opombe</label>
-<label><input type="checkbox" data-fg="plan"> Montaža in količine</label>
-<label><input type="checkbox" data-fg="export" checked> Izdelava in izvoz</label>
-<button class="btn" id="fieldReset">Ponastavi na osnovno</button>
-</div>
-</div>
+
 <section>
 <h2><i>1</i>Slika</h2>
 <input type="file" id="file" accept="image/*">
 <div class="photo" id="photoBox"><img id="img" alt="foto"><svg id="ov" xmlns="http://www.w3.org/2000/svg"></svg></div>
-<p class="hint">Prilepite z Ctrl+V, povlecite ali izberite datoteko. Za merjenje naj bo v kadru merilo ali znan predmet.</p>
+<p class="hint">Prilepite z <span class="kbd">Ctrl+V</span>, povlecite ali izberite datoteko. Za merjenje naj bo v kadru merilo ali znan predmet.</p>
 </section>
 
 <section>
@@ -109,7 +196,7 @@ input.invalid,select.invalid{border-color:var(--bad)!important;box-shadow:0 0 0 
 </div>
 <button class="btn" id="applyCal" style="margin-top:8px;width:100%">Uporabi umeritev</button>
 <div class="status" id="calStatus">Ni umerjeno.</div>
-<p class="hint">Pri 4 točkah kliknite zaporedno: levo zgoraj, desno zgoraj, desno spodaj, levo spodaj. Uporabite pravokotnik znane velikosti.</p>
+<p class="hint">Pri 4 točkah kliknite: levo zgoraj, desno zgoraj, desno spodaj, levo spodaj.</p>
 </section>
 
 <section>
@@ -120,14 +207,13 @@ input.invalid,select.invalid{border-color:var(--bad)!important;box-shadow:0 0 0 
 <div><label>Najmanjši razmik (px)</label><input type="number" id="minsep" value="8" min="2"></div>
 </div>
 <div class="status" id="detStatus"></div>
-<p class="hint">Zaznava vodoravne robove v sredinskem pasu slike. Rezultat so orientacijske vrednosti — vedno jih preverite in po potrebi popravite ročno.</p>
+<p class="hint">Zaznava vodoravne robove v sredinskem pasu slike. Rezultat je orientacijski — preverite ročno.</p>
 </section>
 
 <section>
 <h2><i>4</i>Mere in parametri</h2>
 <div class="sysbox">
 <div class="st">WoodCore sistem (Roksal)</div>
-<div class="preset-btns"><button class="btn" data-preset="romb">ROMB vodoravno</button><button class="btn" data-preset="polna">POLNA pokončno</button><button class="btn" data-preset="kubo">KUBO fasada</button></div>
 <div class="row">
 <div><label>Uporaba</label><select id="sysUse"><option value="precna">Prečna ograja</option><option value="pokoncna">Pokončna ograja</option><option value="fasada">Fasada</option><option value="terasa">Terasa</option><option value="stopniscna">Stopniščna ograja</option></select></div>
 <div><label>Profil deske</label><select id="sysProfile"><option value="romb67">ROMB DESKA-67</option><option value="polna128">POLNA DESKA-128</option><option value="deska150">DESKA-150</option><option value="polna57">POLNA DESKA-57/32</option><option value="polna100">POLNA DESKA-100</option><option value="kubo80">KUBO-80/42</option></select></div>
@@ -135,7 +221,7 @@ input.invalid,select.invalid{border-color:var(--bad)!important;box-shadow:0 0 0 
 <div><label>Površina</label><select id="sysSurface"><option>Klasik</option><option>Rustik</option></select></div>
 </div>
 <div class="status" id="sysStatus"></div>
-<p class="hint" id="sysHint">Izberite profil — program nastavi širino, debelino, število nosilcev in opombe po Roksal navodilih.</p>
+<p class="hint" id="sysHint">Izberite profil — program nastavi širino, debelino, število nosilcev in opombe. Hitre prednastavitve: meni <b>Orodja</b>.</p>
 </div>
 <div class="row3">
 <div><label>Dolžina L (mm)</label><input type="number" id="L" value="3800"></div>
@@ -210,32 +296,21 @@ Konstrukcija odporna na vremenske vplive.</textarea>
 
 <section>
 <h2><i>6</i>Montaža in količine</h2>
-<div class="btns"><button class="btn" id="makePlan">Pripravi montažni načrt</button><button class="btn" id="dlPlan">Prenesi CSV</button></div>
-<div id="planOut" class="hint" style="margin-top:8px">Izmerite: L, H, D, štir cone (zgornje/srednje/spodnje/podnožje), notranjo globino in število nosilcev. Nato pripravite načrt.</div>
+<div class="btns"><button class="btn" id="makePlan">Pripravi montažni načrt</button></div>
+<div id="planOut" class="hint" style="margin-top:8px">Izmerite: L, H, D, cone, notranjo globino in št. nosilcev. Nato pripravite načrt (izvoz: Datoteka → Izvozi montažni načrt).</div>
 </section>
 
 <section>
-<h2><i>7</i>Izdelava in izvoz</h2>
-<label class="check" style="display:flex;gap:8px;align-items:center;margin-bottom:10px;font-size:12px;color:var(--mut)"><input type="checkbox" id="refMode" style="width:auto;accent-color:var(--ac)"><span>Referenčni način — list po vzorcu (senčene lamele, okvirji pogledov, okrogla detajla, 5 vrstic kosovnice)</span></label>
-<div class="btns">
-<button class="btn go" id="gen">Generiraj risbo</button>
-<button class="btn" id="dlSvg">SVG</button>
-<button class="btn" id="dlDxf">DXF</button>
-<button class="btn" id="dlStep">STEP</button>
-<button class="btn" id="dlCsv">CSV</button>
-<button class="btn" id="prt">PDF / tisk</button>
-<button class="btn" id="save">Shrani projekt</button>
-<button class="btn" id="loadBtn">Naloži projekt</button>
-<input type="file" id="loadFile" accept="application/json" style="display:none">
+<h2><i>7</i>Izdelava</h2>
+<p class="hint" style="margin-top:0">Vsi izvozi, shranjevanje, prednastavitve in napredne možnosti so v zgornji <b>opravilni vrstici</b>, zato delovni prostor ostane pregleden. Vsa funkcionalnost je ohranjena.</p>
+<div class="btns" style="margin-top:10px">
+  <button class="btn go" id="gen">Generiraj risbo</button>
+  <button class="btn" type="button" data-call="prt">PDF / tisk</button>
 </div>
-<p class="hint">DXF je urejljiv (črte, krogi, besedilo). PDF nastane iz vektorskega SVG-ja prek tiskanja.</p>
+<p class="hint"><span class="kbd">Ctrl+G</span> generiraj · <span class="kbd">Ctrl+S</span> shrani · Referenčni način: <b>Orodja</b></p>
 </section>
+
 <div id="globalStatus">Pripravljeno.</div>
-<div class="quickbar">
-<button class="btn go" id="genQuick">Generiraj risbo</button>
-<button class="btn" id="dlSvgQuick" title="Prenesi SVG">SVG</button>
-<button class="btn" id="prtQuick" title="PDF / tisk">PDF</button>
-</div>
 </aside>
 <main>
 <div class="pbar"><div class="ptitle">Predogled lista</div><div class="pctrls">
@@ -248,7 +323,27 @@ Konstrukcija odporna na vremenske vplive.</textarea>
 <div class="sheet"><div id="prev" class="empty"><b>Pripravljen</b>Prilepite sliko, izmerite ali vpišite mere in pritisnite Generiraj.<br><button class="btn" id="emptyExample" style="margin-top:12px">Prikaži primer risbe</button></div></div>
 </main>
 </div>
+
+<div class="hooks" aria-hidden="true">
+  <button id="modeGuided" type="button"></button>
+  <button id="modeExpert" type="button"></button>
+  <input type="checkbox" id="refMode">
+  <button id="dlSvg" type="button"></button>
+  <button id="dlDxf" type="button"></button>
+  <button id="dlStep" type="button"></button>
+  <button id="dlCsv" type="button"></button>
+  <button id="prt" type="button"></button>
+  <button id="save" type="button"></button>
+  <button id="loadBtn" type="button"></button>
+  <input type="file" id="loadFile" accept="application/json">
+  <button id="dlPlan" type="button"></button>
+  <button id="genQuick" type="button"></button>
+  <button id="dlSvgQuick" type="button"></button>
+  <button id="prtQuick" type="button"></button>
+</div>
+
 <script>
+
 (function(){
 "use strict";
 var $=function(id){return document.getElementById(id)};
@@ -450,7 +545,7 @@ function checks(){
 }
 ["L","H","D","n","sw","gap","st","wall"].forEach(function(id){$(id).addEventListener("input",checks)});
 ["zoneTop","zoneMid","zoneBot","zoneBase"].forEach(function(id){$(id).addEventListener("input",checks)});
-$("refMode").addEventListener("change",checks);
+$("refMode").addEventListener("change",function(){var m=$("refModeMenu");if(m)m.checked=$("refMode").checked;checks()});
 
 /* ---------- SVG sheet ---------- */
 function ln(x1,y1,x2,y2,w,extra){return '<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="#111" stroke-width="'+(w||0.25)+'" '+(extra||"")+'/>'}
@@ -1165,8 +1260,52 @@ var mn=document.querySelector("main");
 ["dragenter","dragover"].forEach(function(t){mn.addEventListener(t,function(e){e.preventDefault();mn.classList.add("drop")})});
 ["dragleave","drop"].forEach(function(t){mn.addEventListener(t,function(e){e.preventDefault();mn.classList.remove("drop")})});
 mn.addEventListener("drop",function(e){if(e.dataTransfer.files[0])loadPhoto(e.dataTransfer.files[0])});
-restoreState();restoreFieldState();setMode(false);applyFieldVisibility();checks();
+
+/* ---------- toolbar menus ---------- */
+(function(){
+  var menus=[].slice.call(document.querySelectorAll('[data-menu]'));
+  function closeMenus(ex){menus.forEach(function(m){if(m!==ex)m.classList.remove('open')});}
+  menus.forEach(function(m){
+    var btn=m.querySelector(':scope > button');
+    if(btn)btn.addEventListener('click',function(e){e.stopPropagation();var open=m.classList.contains('open');closeMenus();if(!open)m.classList.add('open');});
+    var drop=m.querySelector('.drop');
+    if(drop)drop.addEventListener('click',function(e){e.stopPropagation();});
+  });
+  document.addEventListener('click',function(){closeMenus();});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeMenus();});
+
+  function call(id){
+    var el=$(id); if(!el) return;
+    if(id==='zoomIn'){setZoom(zoom+10);return;}
+    if(id==='zoomOut'){setZoom(zoom-10);return;}
+    if(id==='zoomFit'){setZoom(100);return;}
+    if(typeof el.click==='function') el.click();
+  }
+  [].slice.call(document.querySelectorAll('[data-call]')).forEach(function(b){
+    b.addEventListener('click',function(e){e.preventDefault();call(b.getAttribute('data-call'));closeMenus();});
+  });
+  [].slice.call(document.querySelectorAll('[data-mode]')).forEach(function(b){
+    b.addEventListener('click',function(e){e.preventDefault();var m=b.getAttribute('data-mode'); setMode(m==='expert'); if(typeof updateModeTicks==='function') updateModeTicks(); closeMenus();});
+  });
+  [].slice.call(document.querySelectorAll('[data-preset]')).forEach(function(b){
+    b.addEventListener('click',function(e){e.preventDefault();applyPreset(b.getAttribute('data-preset')); closeMenus();});
+  });
+  var rm=$('refModeMenu'); if(rm){ rm.addEventListener('change',function(){$('refMode').checked=rm.checked; checks();}); }
+
+  var _setMode=setMode;
+  window.updateModeTicks=function(){
+    var g=$('tickGuided'),e=$('tickExpert'); if(!g||!e) return;
+    var ex=document.querySelector('aside') && document.querySelector('aside').className.indexOf('guided')===-1;
+    g.textContent=ex?'':'●'; e.textContent=ex?'●':'';
+  };
+  setMode=function(expert){_setMode(expert); if(typeof updateModeTicks==='function') updateModeTicks();};
 })();
+
+restoreState();restoreFieldState();setMode(false);applyFieldVisibility();checks();
+var _rm=$("refModeMenu"); if(_rm) _rm.checked=!!$("refMode").checked;
+if(typeof updateModeTicks==="function") updateModeTicks();
+})();
+
 </script>
 </body>
 </html>
