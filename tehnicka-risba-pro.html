@@ -34,7 +34,12 @@
 /* layout */
 .grid{display:grid;grid-template-columns:400px minmax(0,1fr);min-height:calc(100dvh - 40px)}
 aside{background:var(--panel);border-right:1px solid var(--line);padding:14px 15px 18px;overflow:auto;max-height:calc(100dvh - 40px)}
-main{padding:16px 18px;overflow:auto;background:#0d0d0d}
+main{padding:16px 18px;overflow:auto;background:#0d0d0d;position:relative}
+body.aside-hidden .grid{grid-template-columns:1fr}
+body.aside-hidden aside{display:none}
+.show-aside-handle{display:none;position:fixed;left:10px;bottom:18px;z-index:55;background:var(--bar);color:var(--tx);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font:inherit;font-size:12px;cursor:pointer;box-shadow:0 6px 18px #0008}
+.show-aside-handle:hover{border-color:var(--ac);color:var(--ac)}
+body.aside-hidden .show-aside-handle{display:inline-flex;align-items:center;gap:6px}
 section{margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--line)}section:last-child{border-bottom:0}
 h2{font-size:12px;letter-spacing:.5px;text-transform:uppercase;color:var(--ac);font-weight:500;margin:0 0 9px}
 h2 i{font-style:normal;color:var(--mut);margin-right:6px}
@@ -117,6 +122,8 @@ input.invalid,select.invalid{border-color:var(--bad)!important;box-shadow:0 0 0 
       <button class="mi" data-mode="expert">Strokovni način <span class="k" id="tickExpert"></span></button>
       <div class="sep"></div>
       <div class="label">Vidnost vmesnika</div>
+      <button class="mi" id="toggleAside" type="button">Skrij stransko ploščo <span class="k" id="asideTick">●</span></button>
+      <div class="sep"></div>
       <div class="fieldpick">
         <button class="btn" id="fieldBtn" type="button">Vidni sklopi in polja…</button>
         <div class="fieldmenu" id="fieldMenu">
@@ -324,6 +331,7 @@ Konstrukcija odporna na vremenske vplive.</textarea>
 </main>
 </div>
 
+<button id="showAside" class="show-aside-handle" type="button" title="Prikaži stransko ploščo">☰ Plošča</button>
 <div class="hooks" aria-hidden="true">
   <button id="modeGuided" type="button"></button>
   <button id="modeExpert" type="button"></button>
@@ -1299,6 +1307,19 @@ mn.addEventListener("drop",function(e){if(e.dataTransfer.files[0])loadPhoto(e.da
     g.textContent=ex?'':'●'; e.textContent=ex?'●':'';
   };
   setMode=function(expert){_setMode(expert); if(typeof updateModeTicks==='function') updateModeTicks();};
+
+  /* aside show/hide */
+  function setAsideVisible(visible){
+    document.body.classList.toggle('aside-hidden', !visible);
+    var b=$('toggleAside'), t=$('asideTick');
+    if(b) b.childNodes[0].nodeValue = visible ? 'Skrij stransko ploščo ' : 'Pokaži stransko ploščo ';
+    if(t) t.textContent = visible ? '●' : '';
+    try{ localStorage.setItem('tehnicka-risba-pro-aside', visible ? 'visible' : 'hidden'); }catch(e){}
+  }
+  window.setAsideVisible = setAsideVisible;
+  var tgl=$('toggleAside'); if(tgl) tgl.addEventListener('click', function(e){ e.preventDefault(); setAsideVisible(document.body.classList.contains('aside-hidden')); closeMenus(); });
+  var sh=$('showAside'); if(sh) sh.addEventListener('click', function(){ setAsideVisible(true); });
+  try{ var as=localStorage.getItem('tehnicka-risba-pro-aside'); if(as==='hidden') setAsideVisible(false); else setAsideVisible(true); }catch(e){ setAsideVisible(true); }
 })();
 
 restoreState();restoreFieldState();setMode(false);applyFieldVisibility();checks();
