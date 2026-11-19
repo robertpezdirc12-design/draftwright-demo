@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Možnosti izvoza – profesionalni predlog</title>
+<style>
+  :root {
+    --background: #0f1115;
+    --foreground: #e8eaf0;
+    --muted: #1a1d24;
+    --muted-foreground: #9aa3b2;
+    --card: #151922;
+    --card-foreground: #e8eaf0;
+    --border: #262b36;
+    --input: #262b36;
+    --ring: #5b8cff;
+    --primary: #5b8cff;
+    --primary-foreground: #ffffff;
+    --secondary: #1e2330;
+    --secondary-foreground: #e8eaf0;
+    --accent-surface: #172033;
+    --accent-foreground: #8fb3ff;
+    --success: #34c759;
+    --radius: 10px;
+    --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: var(--font-sans);
+    background: var(--background);
+    color: var(--foreground);
+    line-height: 1.45;
+    font-size: 14px;
+  }
+  .page {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 28px 20px 40px;
+  }
+  .dialog {
+    background: var(--card);
+    color: var(--card-foreground);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: 0 20px 50px rgba(0,0,0,.35);
+    overflow: hidden;
+  }
+  .dialog-header {
+    padding: 18px 20px 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .dialog-header h1 {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 4px;
+    letter-spacing: -0.01em;
+  }
+  .subtitle { color: var(--muted-foreground); font-size: 13px; margin: 0; }
+  .icon-btn {
+    background: transparent; border: none; color: var(--muted-foreground);
+    width: 32px; height: 32px; border-radius: 8px; cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center; font-size: 18px;
+  }
+  .icon-btn:hover { background: var(--secondary); color: var(--foreground); }
+  .dialog-body { padding: 16px 20px 8px; }
+
+  .row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .label { font-size: 13px; color: var(--muted-foreground); margin-bottom: 8px; font-weight: 500; }
+  .presets { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+  .chip {
+    border: 1px solid var(--border); background: var(--secondary); color: var(--secondary-foreground);
+    padding: 7px 12px; border-radius: 999px; font-size: 13px; cursor: pointer; font-weight: 500;
+  }
+  .chip:hover { border-color: #3a4252; }
+  .chip.active { background: var(--accent-surface); color: var(--accent-foreground); border-color: #2f4a7a; }
+
+  .format-row { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+  .segmented { display: inline-flex; background: var(--muted); border: 1px solid var(--border); border-radius: 9px; padding: 3px; gap: 2px; }
+  .seg { border: none; background: transparent; color: var(--muted-foreground); padding: 6px 12px; border-radius: 7px; font-size: 13px; cursor: pointer; font-weight: 500; }
+  .seg.active { background: var(--card); color: var(--foreground); box-shadow: 0 1px 2px rgba(0,0,0,.2); }
+
+  .section { border: 1px solid var(--border); border-radius: 12px; margin-bottom: 12px; background: rgba(255,255,255,0.01); }
+  .section-header {
+    width: 100%; display: flex; align-items: center; gap: 10px; padding: 12px 14px;
+    background: transparent; border: none; color: inherit; cursor: pointer; text-align: left;
+  }
+  .section-header:hover { background: rgba(255,255,255,0.02); }
+  .chev { color: var(--muted-foreground); transition: transform .15s ease; font-size: 12px; width: 16px; text-align: center; }
+  .section.open .chev { transform: rotate(90deg); }
+  .section-title-wrap { flex: 1; min-width: 0; }
+  .section-title { font-weight: 600; font-size: 14px; }
+  .section-summary { font-size: 12px; color: var(--muted-foreground); margin-top: 2px; }
+  .header-actions { display: flex; align-items: center; gap: 8px; }
+  .link-btn {
+    background: transparent; border: none; color: var(--accent-foreground); font-size: 12px;
+    font-weight: 500; cursor: pointer; padding: 4px 6px; border-radius: 6px;
+  }
+  .link-btn:hover { background: var(--accent-surface); }
+  .section-body { padding: 2px 14px 14px 40px; display: none; }
+  .section.open .section-body { display: block; }
+
+  .item-row {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 9px 0; border-top: 1px solid rgba(255,255,255,0.04);
+  }
+  .item-row:first-child { border-top: none; }
+  .item-main { display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .item-label { font-size: 14px; }
+  .info {
+    color: var(--muted-foreground); font-size: 12px; border: 1px solid var(--border);
+    width: 18px; height: 18px; border-radius: 50%; display: inline-flex; align-items: center;
+    justify-content: center; cursor: help; flex: 0 0 auto;
+  }
+  .info:hover { color: var(--foreground); border-color: #3a4252; }
+
+  .switch { position: relative; width: 38px; height: 22px; flex: 0 0 auto; }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .slider {
+    position: absolute; inset: 0; cursor: pointer; background: #343b49; border-radius: 999px; transition: .15s;
+  }
+  .slider:before {
+    content: ""; position: absolute; height: 16px; width: 16px; left: 3px; top: 3px;
+    background: white; border-radius: 50%; transition: .15s;
+  }
+  .switch input:checked + .slider { background: var(--primary); }
+  .switch input:checked + .slider:before { transform: translateX(16px); }
+
+  .subtle-box {
+    margin-top: 10px; padding: 10px 12px; background: var(--muted); border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+  .chapter-toolbar { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; flex-wrap: wrap; }
+  .search {
+    flex: 1; min-width: 160px; background: var(--card); border: 1px solid var(--border); color: var(--foreground);
+    padding: 7px 10px; border-radius: 8px; font: inherit; font-size: 13px;
+  }
+  .search::placeholder { color: var(--muted-foreground); }
+  .chapters-list { max-height: 220px; overflow: auto; padding-right: 4px; }
+  .chap-item { display: flex; align-items: center; gap: 10px; padding: 7px 2px; font-size: 13px; }
+  .chap-item input[type="checkbox"] { accent-color: var(--primary); width: 15px; height: 15px; }
+  .muted { color: var(--muted-foreground); font-size: 13px; }
+
+  .field { margin-top: 10px; }
+  .field label { display: block; font-size: 13px; color: var(--muted-foreground); margin-bottom: 6px; }
+  select, input[type="text"] {
+    width: 100%; background: var(--muted); color: var(--foreground); border: 1px solid var(--border);
+    padding: 8px 10px; border-radius: 8px; font: inherit; font-size: 13px;
+  }
+
+  .dialog-footer {
+    padding: 14px 20px 18px; border-top: 1px solid var(--border); margin-top: 8px;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  }
+  .footer-note { color: var(--muted-foreground); font-size: 12px; }
+  .actions { display: flex; gap: 8px; }
+  .btn {
+    border: 1px solid var(--border); background: var(--secondary); color: var(--foreground);
+    padding: 9px 14px; border-radius: 9px; font-size: 13px; font-weight: 600; cursor: pointer;
+  }
+  .btn:hover { background: #252b38; }
+  .btn.primary { background: var(--primary); color: var(--primary-foreground); border-color: var(--primary); }
+  .btn.primary:hover { filter: brightness(1.05); }
+  .note-card {
+    margin-top: 18px; padding: 14px 16px; border: 1px dashed #334055; border-radius: 12px;
+    color: var(--muted-foreground); font-size: 13px; background: rgba(91,140,255,0.05);
+  }
+  .note-card strong { color: var(--foreground); }
+  code { font-family: var(--font-mono); font-size: 12px; }
+  @media (max-width: 640px) {
+    .page { padding: 12px 10px 24px; }
+    .dialog-header, .dialog-body, .dialog-footer { padding-left: 14px; padding-right: 14px; }
+    .section-body { padding-left: 14px; }
+  }
+</style>
+</head>
+<body>
+  <div class="page">
+    <div class="dialog" role="dialog" aria-label="Možnosti izvoza">
+      <div class="dialog-header">
+        <div>
+          <h1>Možnosti izvoza</h1>
+          <p class="subtitle">Privzeto pripravljeno za večino primerov – prilagodite le, če potrebujete.</p>
+        </div>
+        <button class="icon-btn" aria-label="Zapri" title="Zapri">×</button>
+      </div>
+
+      <div class="dialog-body">
+        <div class="label">Prednastavitev</div>
+        <div class="presets" id="presets">
+          <button class="chip active" data-preset="full">Celoten dokument</button>
+          <button class="chip" data-preset="review">Za pregled</button>
+          <button class="chip" data-preset="print">Za tisk</button>
+          <button class="chip" data-preset="minimal">Minimalno</button>
+        </div>
+
+        <div class="format-row">
+          <span class="muted">Format:</span>
+          <div class="segmented" role="tablist" aria-label="Format">
+            <button class="seg active" data-format="PDF">PDF</button>
+            <button class="seg" data-format="DOCX">DOCX</button>
+            <button class="seg" data-format="HTML">HTML</button>
+          </div>
+        </div>
+
+        <!-- Vsebina -->
+        <div class="section open" data-section="vsebina">
+          <button class="section-header" type="button">
+            <span class="chev">▶</span>
+            <div class="section-title-wrap">
+              <div class="section-title">Vsebina</div>
+              <div class="section-summary" data-summary="vsebina">Vključeno 8/8 elementov</div>
+            </div>
+            <div class="header-actions">
+              <button class="link-btn" type="button" data-action="toggle-all" data-target="vsebina">Vse</button>
+            </div>
+          </button>
+          <div class="section-body">
+            <div id="vsebina-items"></div>
+          </div>
+        </div>
+
+        <!-- Poglavja -->
+        <div class="section" data-section="poglavja">
+          <button class="section-header" type="button">
+            <span class="chev">▶</span>
+            <div class="section-title-wrap">
+              <div class="section-title">Poglavja</div>
+              <div class="section-summary" data-summary="poglavja">Vsa poglavja (6)</div>
+            </div>
+            <div class="header-actions">
+              <button class="link-btn" type="button" data-action="customize-chapters">Prilagodi</button>
+            </div>
+          </button>
+          <div class="section-body">
+            <div class="item-row" style="border-top:none; padding-top:2px;">
+              <div class="item-main">
+                <span class="item-label">Vključi vsa poglavja</span>
+                <span class="info" title="Ko je vklopljeno, se v izvoz samodejno vključijo vsa obstoječa in nova poglavja.">i</span>
+              </div>
+              <label class="switch"><input type="checkbox" id="all-chapters" checked><span class="slider"></span></label>
+            </div>
+            <div id="chapters-custom" class="subtle-box" style="display:none;">
+              <div class="chapter-toolbar">
+                <input class="search" id="chapter-search" type="text" placeholder="Išči poglavje …" aria-label="Išči poglavje">
+                <button class="link-btn" type="button" id="chapters-select-all">Izberi vse</button>
+                <button class="link-btn" type="button" id="chapters-clear">Počisti</button>
+              </div>
+              <div class="chapters-list" id="chapters-list"></div>
+            </div>
+            <p class="muted" id="chapters-hint" style="margin:10px 0 0;">Seznam posameznih poglavij odprete z »Prilagodi« ali z izklopom zgornjega stikala.</p>
+          </div>
+        </div>
+
+        <!-- Napredno -->
+        <div class="section" data-section="napredno">
+          <button class="section-header" type="button">
+            <span class="chev">▶</span>
+            <div class="section-title-wrap">
+              <div class="section-title">Napredno</div>
+              <div class="section-summary" data-summary="napredno">Privzete nastavitve</div>
+            </div>
+          </button>
+          <div class="section-body">
+            <div id="napredno-items"></div>
+            <div class="field">
+              <label for="quality">Kakovost slik</label>
+              <select id="quality">
+                <option value="visoka">Visoka (večja datoteka)</option>
+                <option value="srednja" selected>Srednja (priporočeno)</option>
+                <option value="nizka">Nizka (manjša datoteka)</option>
+              </select>
+            </div>
+            <div class="field" id="watermark-field" style="display:none;">
+              <label for="watermark-text">Besedilo vodnega žiga</label>
+              <input type="text" id="watermark-text" value="OSNUTEK" placeholder="Npr. OSNUTEK ali ZAUPNO">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dialog-footer">
+        <div class="footer-note" id="footer-note">PDF · Celoten dokument · ~12 strani</div>
+        <div class="actions">
+          <button class="btn" type="button">Prekliči</button>
+          <button class="btn primary" type="button" id="export-btn">Izvozi PDF</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="note-card">
+      <strong>Zakaj je to bolj profesionalno:</strong> na vrhu so prednastavitve za hiter izvoz, osnovne izbire so zgoščene v vrstice (brez dolgih opisov pod vsako), napredne nastavitve so privzeto skrite, poglavja imajo glavno možnost »vsa poglavja« + prilagoditev po potrebi, glave sekcij pa vedno kažejo povzetek stanja.
+    </div>
+  </div>
+
+<script>
+  const vsebinaData = [
+    { id: 'naslovna', label: 'Naslovna stran', tip: 'Prva stran z naslovom dokumenta, avtorjem in datumom.', on: true },
+    { id: 'kazalo', label: 'Kazalo vsebine', tip: 'Samodejno generirano kazalo z oštevilčenimi poglavji.', on: true },
+    { id: 'povzetek', label: 'Povzetek', tip: 'Uvodni povzetek ali izvleček dokumenta.', on: true },
+    { id: 'slike', label: 'Seznam slik', tip: 'Kazalo vseh slik z zaporednimi številkami.', on: true },
+    { id: 'tabele', label: 'Seznam tabel', tip: 'Kazalo vseh tabel v dokumentu.', on: true },
+    { id: 'priloge', label: 'Priloge', tip: 'Vključi priloge in dodatna gradiva na koncu.', on: true },
+    { id: 'glavanoga', label: 'Glava in noga', tip: 'Tekuča glava/noga z naslovom in številko strani.', on: true },
+    { id: 'stevilke', label: 'Številke strani', tip: 'Oštevilčenje strani v nogi dokumenta.', on: true }
+  ];
+  const chaptersData = [
+    { id: 'ch1', label: '1. Uvod', on: true },
+    { id: 'ch2', label: '2. Metodologija', on: true },
+    { id: 'ch3', label: '3. Analiza', on: true },
+    { id: 'ch4', label: '4. Rezultati', on: true },
+    { id: 'ch5', label: '5. Razprava', on: true },
+    { id: 'ch6', label: '6. Zaključek', on: true }
+  ];
+  const naprednoData = [
+    { id: 'meta', label: 'Vključi metapodatke', tip: 'Avtor, naslov, ključne besede in lastnosti datoteke.', on: true },
+    { id: 'opt', label: 'Optimiziraj za tisk', tip: 'Priprava za tisk (robovi, barvni profil).', on: false },
+    { id: 'zaznamki', label: 'Vključi zaznamke (PDF)', tip: 'Navigacijski zaznamki po poglavjih v bralniku.', on: true },
+    { id: 'watermark', label: 'Dodaj vodni žig', tip: 'Prekrij strani z oznako, npr. OSNUTEK ali ZAUPNO.', on: false }
+  ];
+
+  const state = { format: 'PDF', preset: 'full' };
+
+  function renderSwitchItems(containerId, data, group) {
+    const c = document.getElementById(containerId);
+    c.innerHTML = data.map(item => `
+      <div class="item-row">
+        <div class="item-main">
+          <span class="item-label">${item.label}</span>
+          ${item.tip ? `<span class="info" title="${item.tip}">i</span>` : ''}
+        </div>
+        <label class="switch"><input type="checkbox" data-group="${group}" data-id="${item.id}" ${item.on ? 'checked' : ''}><span class="slider"></span></label>
+      </div>`).join('');
+  }
+
+  function renderChapters(filter='') {
+    const list = document.getElementById('chapters-list');
+    const q = filter.trim().toLowerCase();
+    const filtered = chaptersData.filter(ch => ch.label.toLowerCase().includes(q));
+    if (!filtered.length) {
+      list.innerHTML = '<div class="muted" style="padding:6px 2px;">Ni zadetkov.</div>';
+      return;
+    }
+    list.innerHTML = filtered.map(ch => `
+      <label class="chap-item"><input type="checkbox" data-group="poglavja" data-id="${ch.id}" ${ch.on ? 'checked' : ''}><span>${ch.label}</span></label>`).join('');
+  }
+
+  function getData(group) {
+    if (group === 'vsebina') return vsebinaData;
+    if (group === 'poglavja') return chaptersData;
+    if (group === 'napredno') return naprednoData;
+    return [];
+  }
+
+  function updateSummaries() {
+    const vOn = vsebinaData.filter(i=>i.on).length;
+    document.querySelector('[data-summary="vsebina"]').textContent = `Vključeno ${vOn}/${vsebinaData.length} elementov`;
+
+    const allCh = document.getElementById('all-chapters').checked;
+    const chOn = chaptersData.filter(i=>i.on).length;
+    const chSummary = allCh ? `Vsa poglavja (${chaptersData.length})` : `Izbranih ${chOn}/${chaptersData.length} poglavij`;
+    document.querySelector('[data-summary="poglavja"]').textContent = chSummary;
+    document.querySelector('[data-action="customize-chapters"]').textContent = allCh ? 'Prilagodi' : 'Uredi izbor';
+
+    const nOn = naprednoData.filter(i=>i.on).length;
+    const wm = naprednoData.find(i=>i.id==='watermark')?.on;
+    let nText = 'Privzete nastavitve';
+    if (nOn === 0) nText = 'Brez dodatnih nastavitev';
+    else nText = `${nOn} prilagoditev${nOn === 1 ? 'a' : nOn === 2 ? 'i' : ''}` + (wm ? ' · vodni žig' : '');
+    document.querySelector('[data-summary="napredno"]').textContent = nText;
+
+    document.getElementById('watermark-field').style.display = wm ? 'block' : 'none';
+
+    const presetNames = {full:'Celoten dokument', review:'Za pregled', print:'Za tisk', minimal:'Minimalno'};
+    const pages = state.preset === 'minimal' ? '~4 strani' : state.preset === 'review' ? '~7 strani' : '~12 strani';
+    document.getElementById('footer-note').textContent = `${state.format} · ${presetNames[state.preset]} · ${pages}`;
+    document.getElementById('export-btn').textContent = `Izvozi ${state.format}`;
+  }
+
+  function syncUIFromState() {
+    document.querySelectorAll('input[type="checkbox"][data-group="vsebina"]').forEach(el => {
+      const item = vsebinaData.find(i=>i.id===el.dataset.id); if (item) el.checked = item.on;
+    });
+    document.querySelectorAll('input[type="checkbox"][data-group="napredno"]').forEach(el => {
+      const item = naprednoData.find(i=>i.id===el.dataset.id); if (item) el.checked = item.on;
+    });
+    renderChapters(document.getElementById('chapter-search').value);
+    const custom = !document.getElementById('all-chapters').checked;
+    document.getElementById('chapters-custom').style.display = custom ? 'block' : 'none';
+    document.getElementById('chapters-hint').style.display = custom ? 'none' : 'block';
+    updateSummaries();
+  }
+
+  function setPreset(name) {
+    state.preset = name;
+    document.querySelectorAll('.chip').forEach(c => c.classList.toggle('active', c.dataset.preset === name));
+    const setGroup = (group, idsOrAll) => {
+      getData(group).forEach(i => { i.on = idsOrAll === 'all' ? true : idsOrAll === 'none' ? false : idsOrAll.includes(i.id); });
+    };
+    if (name === 'full') {
+      setGroup('vsebina','all'); setGroup('napredno',['meta','zaznamki']); chaptersData.forEach(i=>i.on=true); document.getElementById('all-chapters').checked = true;
+    } else if (name === 'review') {
+      setGroup('vsebina',['kazalo','povzetek','glavanoga','stevilke']); setGroup('napredno',['meta','zaznamki']); chaptersData.forEach(i=>i.on=true); document.getElementById('all-chapters').checked = true;
+    } else if (name === 'print') {
+      setGroup('vsebina','all'); setGroup('napredno',['meta','opt','zaznamki']); chaptersData.forEach(i=>i.on=true); document.getElementById('all-chapters').checked = true;
+    } else if (name === 'minimal') {
+      setGroup('vsebina',['naslovna','povzetek','stevilke']); setGroup('napredno',['meta']); chaptersData.forEach((i,idx)=>i.on = idx < 3); document.getElementById('all-chapters').checked = false;
+    }
+    syncUIFromState();
+  }
+
+  renderSwitchItems('vsebina-items', vsebinaData, 'vsebina');
+  renderSwitchItems('napredno-items', naprednoData, 'napredno');
+  renderChapters();
+  updateSummaries();
+
+  document.addEventListener('click', (e) => {
+    const header = e.target.closest('.section-header');
+    if (header && !e.target.closest('.header-actions')) {
+      header.parentElement.classList.toggle('open');
+    }
+    const toggleAll = e.target.closest('[data-action="toggle-all"]');
+    if (toggleAll) {
+      e.stopPropagation();
+      const group = toggleAll.dataset.target;
+      const data = getData(group);
+      const allOn = data.every(i=>i.on);
+      data.forEach(i=>i.on = !allOn);
+      syncUIFromState();
+    }
+    const cust = e.target.closest('[data-action="customize-chapters"]');
+    if (cust) {
+      e.stopPropagation();
+      const sec = cust.closest('.section');
+      sec.classList.add('open');
+      document.getElementById('all-chapters').checked = false;
+      document.getElementById('chapters-custom').style.display = 'block';
+      document.getElementById('chapters-hint').style.display = 'none';
+      updateSummaries();
+    }
+    const chip = e.target.closest('.chip');
+    if (chip) setPreset(chip.dataset.preset);
+    const seg = e.target.closest('.seg');
+    if (seg) {
+      state.format = seg.dataset.format;
+      document.querySelectorAll('.seg').forEach(s=>s.classList.toggle('active', s===seg));
+      updateSummaries();
+    }
+  });
+
+  document.addEventListener('change', (e) => {
+    const cb = e.target;
+    if (cb.matches('input[type="checkbox"][data-group]')) {
+      const item = getData(cb.dataset.group).find(i=>i.id===cb.dataset.id);
+      if (item) item.on = cb.checked;
+      if (cb.dataset.group === 'poglavja') document.getElementById('all-chapters').checked = false;
+      syncUIFromState();
+    }
+    if (cb.id === 'all-chapters') {
+      if (cb.checked) chaptersData.forEach(i=>i.on = true);
+      document.getElementById('chapters-custom').style.display = cb.checked ? 'none' : 'block';
+      document.getElementById('chapters-hint').style.display = cb.checked ? 'block' : 'none';
+      syncUIFromState();
+    }
+  });
+
+  document.getElementById('chapter-search').addEventListener('input', (e)=> renderChapters(e.target.value));
+  document.getElementById('chapters-select-all').addEventListener('click', ()=>{ chaptersData.forEach(i=>i.on=true); document.getElementById('all-chapters').checked = false; syncUIFromState(); });
+  document.getElementById('chapters-clear').addEventListener('click', ()=>{ chaptersData.forEach(i=>i.on=false); document.getElementById('all-chapters').checked = false; syncUIFromState(); });
+</script>
+</body>
+</html>

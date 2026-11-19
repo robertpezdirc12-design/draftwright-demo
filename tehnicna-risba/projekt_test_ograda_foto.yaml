@@ -1,0 +1,25 @@
+predloga: ograda
+ime: OGRAJA TEST S FOTO
+risba_st: TST-OG-001
+izdelal: Test
+datum: "2026-04-10"
+merilo: auto
+format: A3
+izhod: TST-OG-001.pdf
+foto: "../test_ograja_web.jpg"
+material: ALUMINIJ
+material_lamel: LES
+barva: "temno siva"
+dolzina_deske: 5800
+dolzina_palice: 6000
+kerf: 3
+mere:
+  sirina: 3000
+  visina: 1200
+  odcep: 40
+  profil_v: 60
+  lamela_v: 80
+  stena: 40
+  steber_v: 40
+  razmak_stebrov: 1500
+  lamele: 10

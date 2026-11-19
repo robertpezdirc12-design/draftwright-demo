@@ -1,0 +1,35 @@
+predloga: pokončna
+ime: POKONČNA OGRAJA - TEST
+risba_st: TST-WEB-001
+izdelal: Test
+stranka: "Test stranka"
+objekt: "Balkon - test"
+podjetje: "Test d.o.o."
+datum: "2026-04-10"
+merilo: auto
+format: A3
+izhod: TST-WEB-001.pdf
+
+foto: "../test_ograja_web.jpg"
+
+material: Aluminij (prašno barvano)
+material_lamel: WPC lesni kompozit
+barva: "Antracit"
+profil: POLNA DESKA 100
+
+dolzina_deske: 5800
+dolzina_palice: 6000
+kerf: 3
+
+mere:
+  sirina: 3000
+  visina: 1200
+  odcep: 60
+  rocaj_v: 40
+  deska_sirina: 100
+  deska_debelina: 20
+  vrzel: 20
+  lamele: 20
+  razmak_stebrov: 1500
+  steber_sirina: 60
+  steber_debelina: 40
