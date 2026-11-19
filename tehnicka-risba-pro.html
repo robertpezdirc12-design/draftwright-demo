@@ -256,7 +256,7 @@ input.invalid,select.invalid{border-color:var(--bad)!important;box-shadow:0 0 0 
 <div><label>Višina ograje nad stopnico (mm)</label><input type="number" id="stH" value="1000"></div>
 </div>
 </div>
-<label style="margin-top:8px">Material in gostota</label>
+<label id="matDensityLabel" style="margin-top:8px">Material in gostota</label>
 <div class="row">
 <div><select id="matSel"><option value="2700">Aluminij (2700 kg/m³)</option><option value="7850">Jeklo (7850 kg/m³)</option><option value="1300">WPC (1300 kg/m³)</option><option value="0">Po lastni izbiri</option></select></div>
 <div><input type="number" id="rho" value="2700" step="10"></div>
@@ -1176,12 +1176,12 @@ document.addEventListener("click",function(e){
 });
 
 /* ---------- UI/UX additions: guided/expert, accordion, presets, shortcuts, autosave ---------- */
-var advancedIds=["rho","tol","fin","aut","chk","ral","bracket","anchor","weld","rev","projType","innerD","matSel","sens","minsep","nbolt","emb","sub","stN","stRise","stGoing","stW","stPosts","stH"];
-advancedIds.forEach(function(id){var e=$(id);if(e){var d=e.closest("div");if(d)d.classList.add("advanced")}});
+var advancedIds=["rho","tol","fin","aut","chk","ral","bracket","anchor","weld","rev","projType","innerD","matSel","sens","minsep","nbolt","emb","sub","stN","stRise","stGoing","stW","stPosts","stH","np","matDensityLabel"];
+advancedIds.forEach(function(id){var e=$(id);if(!e)return; if(e.tagName==="LABEL"){e.classList.add("advanced");return;} var d=e.closest("div"); if(d)d.classList.add("advanced");});
 function setMode(expert){
   document.querySelector("aside").className=expert?"":"guided";
-  $("modeGuided").className="btn"+(expert?"":" on");
-  $("modeExpert").className="btn"+(expert?" on":"");
+  if($("modeGuided")) $("modeGuided").className="btn"+(expert?"":" on");
+  if($("modeExpert")) $("modeExpert").className="btn"+(expert?" on":"");
 }
 $("modeGuided").onclick=function(){setMode(false)};
 $("modeExpert").onclick=function(){setMode(true)};
