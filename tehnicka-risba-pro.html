@@ -204,12 +204,14 @@ input.invalid,select.invalid{border-color:var(--bad)!important;box-shadow:0 0 0 
       <button class="mi" data-call="dlStep">Izvozi STEP</button>
       <button class="mi" data-call="dlCsv">Izvozi kosovnico (CSV)</button>
       <button class="mi" data-call="dlPlan">Izvozi montažni načrt (CSV)</button>
+      <button class="mi" id="menuDlTech">Izvozi tehnični list materiala (TXT)</button>
       <div class="sep"></div>
       <div class="label">Rezalnica in poslovanje</div>
       <button class="mi" id="menuBuildCut" data-call="buildCut">Izračunaj rezalni načrt (kerf)</button>
       <button class="mi" id="menuDlCut" data-call="dlCut">Izvozi rezalni načrt (CSV)</button>
       <button class="mi" id="menuDlOrder" data-call="dlOrder">Izvozi naročilnik (TXT)</button>
       <button class="mi" id="menuDlQuote" data-call="dlQuote">Izvozi predračun (CSV)</button>
+      <button class="mi" id="menuDlEnquiry">Izvozi povpraševanje Roksal (TXT)</button>
       <button class="mi" id="menuBuildChecklist" data-call="buildChecklist">Pripravi montažni checklist</button>
       <button class="mi" id="menuDlChecklist" data-call="dlChecklist">Izvozi montažni checklist (TXT)</button>
       <div class="sep"></div>
@@ -404,6 +406,20 @@ Konstrukcija odporna na vremenske vplive.</textarea>
 <div><label>Varjeni deli na obstoječih stebrih</label><select id="weldedParts"><option value="ne">Ni jih</option><option value="da">Da — odstraniti pred montažo</option><option value="neznano">Ni preverjeno</option></select></div>
 <div><label>Izvajalec montaže</label><input id="installer" type="text" value=""></div>
 <div><label>Datum prevzema / zaključka</label><input id="handoverDate" type="text" value=""></div>
+</div>
+<div class="sysbox" style="margin-top:9px">
+<div class="st">Povpraševanje Roksal — kontakt stranke</div>
+<div class="row3">
+<div><label>Naslovljeno na</label><select id="strankaTip"><option>Fizična oseba</option><option>Podjetje</option></select></div>
+<div><label>Davčna številka (podjetje)</label><input id="strankaDav" type="text" value=""></div>
+<div><label>Način dobave/montaže</label><select id="dobavaMode"><option>Osebni prevzem</option><option>Dostava</option><option>Dostava in montaža</option></select></div>
+</div>
+<div class="row3" style="margin-top:8px">
+<div><label>E-pošta</label><input id="strankaEmail" type="text" value=""></div>
+<div><label>Telefon</label><input id="strankaTel" type="text" value=""></div>
+<div><label>Naslov stranke</label><input id="strankaNaslov" type="text" value=""></div>
+</div>
+<p class="hint" style="margin-top:6px">Izvoz: meni <b>Datoteka → Izvozi povpraševanje Roksal (TXT)</b> — pošljite na <b>info@roksal.com</b> ali oddajte na roksal.com/wpc-povprasevanje (fotografije/skice ≤ 25 MB).</p>
 </div>
 <div id="cutOut" class="hint" style="margin-top:8px"></div>
 <div id="quoteOut" class="hint" style="margin-top:8px"></div>
@@ -1293,7 +1309,7 @@ function kosovnicaCsv(){
 $("dlCsv").onclick=function(){saveBlob(V("drw")+"-kosovnica.csv",kosovnicaCsv(),"text/csv;charset=utf-8")};
 
 /* ---------- project ---------- */
-var fields=["L","H","D","n","sw","st","gap","wall","prof","topP","botP","np","postP","bolt","nbolt","zoneTop","zoneMid","zoneBot","zoneBase","innerD","sysUse","sysProfile","sysColor","sysSurface","matSel","rho","paper","scale","projType","rev","proj","drw","mat","tol","fin","aut","date","chk","ral","bracket","anchor","weld","notes","emb","sub","stN","stRise","stGoing","stW","stPosts","stH","stockLen","kerf","priceBoard","pricePost","priceScrew","priceWork","workHours","installTemp","slopeMM","mountType","weldedParts","installer","handoverDate","subType","dobavitelj","stranka","objekt"];
+var fields=["L","H","D","n","sw","st","gap","wall","prof","topP","botP","np","postP","bolt","nbolt","zoneTop","zoneMid","zoneBot","zoneBase","innerD","sysUse","sysProfile","sysColor","sysSurface","matSel","rho","paper","scale","projType","rev","proj","drw","mat","tol","fin","aut","date","chk","ral","bracket","anchor","weld","notes","emb","sub","stN","stRise","stGoing","stW","stPosts","stH","stockLen","kerf","priceBoard","pricePost","priceScrew","priceWork","workHours","installTemp","slopeMM","mountType","weldedParts","installer","handoverDate","subType","strankaTip","strankaDav","strankaNaslov","strankaEmail","strankaTel","dobavaMode","dobavitelj","stranka","objekt"];
 function projectJson(){var d={};fields.forEach(function(id){d[id]=V(id)});d.photo=S.photoData;d.cal=S.cal;d.calMode=S.calMode;d.calibrated=S.calibrated;d.lines=S.lines;return JSON.stringify(d,null,2)}
 $("save").onclick=function(){saveBlob(V("drw")+"-project.json",projectJson(),"application/json")};
 $("loadBtn").onclick=function(){$("loadFile").click()};
@@ -1573,10 +1589,99 @@ function buildOrder(){
     "- Nosilci: "+np+" kos ("+lim.label+" ≤ "+lim.v+" mm)",
     "- Vijaki RF: "+(2*cutData.count+2*np)+" kos; pritrdilni ("+V("bolt")+"): "+(np*Math.max(0,n("nbolt")))+" kos",
     "- Sidra: "+(2*np)+" kos, globina "+V("emb")+" mm, podlaga "+V("sub"),"",
+    "",
+    "PRODAJNI POGOJI (Roksal d.o.o., splošni pogoji v5.0):",
+    "- Ponudba velja 1 dan od izdaje; potrditev z avansom = pogodba.",
+    "- Komercialna garancija ob poravnavi računa v 30 dneh; ugovor računu pisno v 8 dneh.",
+    "- B2B: vidne napake ob prevzemu, skrite v 8 dneh od odkritja; B2C odstop v 14 dni — razrezano po meri izključeno.",
+    "- Vračilo zaloge v 30 dni, originalno stanje, nerazrezano (manipulativni stroški do 20 %).",
+    "- Prevzem materiala v 8 dneh po pozivu; skladiščnina 10/20 EUR + DDV na dan.",
+    "- Barvni odtenek med serijami variira; posvetlitev 5–10 % ni reklamacija; na eni površini material iste serije.",
+    "",
+    "DOSTAVA IN PREVOZ:",
+    "- Dolgi profili 4,0/5,8 m: Roksal dostava ali osebni prevzem (kurirji samo do cca 1,5–2 m).",
+    "- Razklada: min. 1 oseba kupca pomaga; 1 m² terase ≈ 25 kg; paket 2×4 m ≈ 20 kg.",
+    "- Prevoz: podpora po celotni dolžini in širini, opozorilna tabla, trakovi; poškodbe zaradi neustreznega prevoza niso reklamacija.",
+    "",
+    "KONTAKT — ROKSAL D.O.O.: terase/prevzem 064 123 020 · ograje 064 123 030 · fasade 064 120 969 · info@roksal.com",
+    "Salon: Savska Loka 21, 4000 Kranj (pon–čet 7:00–15:30, pet 7:00–14:00) · Sedež: Zgornje Bitnje 186, 4209 Žabnica",
+    "",
     "Risba NI statični izračun — nosilnost in sidranje preveri strokovnjak."];
   orderText=lines.join("\n");
   return orderText;
 }
+/* ---------- Tehnični list materiala (vir: Garancija in tehnična dokumentacija WOODCORE, PDF roksal.com) ---------- */
+function techListTxt(){
+  var rows=[
+    ["Vsebnost vlage","≤ 2 %","0,6 %"],
+    ["Trdota (HRR)","≥ 58","61"],
+    ["Sila upogibanja","≥ 20 MPa","23,8 MPa"],
+    ["Elastični modul upogibanja","≥ 1800 MPa","2360 MPa"],
+    ["Sprememba debeline po absorpciji vode","≤ 1 %","0,6 %"],
+    ["Vpliv udarca uteži pri nizki temperaturi","≤ 1 poškodba","0"],
+    ["Sprememba dimenzije pri cikličnem ohlajanju/segrevanju","± 0,2 %","0,08 %"],
+    ["Dimenzionalna stabilnost po segrevanju","± 2,5 %","0,11 %"],
+    ["Sila pritrjenega vijaka","≥ 1000 N","1840 N"]
+  ];
+  var L=["TEHNIČNI LIST — WOODCORE WPC DESKE (ROKSAL D.O.O.)",
+    "Datum: "+V("date")+" · Risba št.: "+V("drw")+" · Projekt: "+V("proj"),
+    "",
+    "SPLOŠNO",
+    "- Sestava: 60 % bambusovih vlaken + 30 % polietilena + 10 % aditivov (spletna stran); PDF garancije navaja 60 % bambus + 40 % HDPE.",
+    "- Življenjska doba: > 35 let · Garancija: 15 let material (pogoji v garancijskem PDF) · 2 leti na izvedena dela.",
+    "- Protizdrsno tudi mokro · ne gnije, ne posivi · barva prvo leto posvetli 5–10 %, nato ostane enaka.",
+    "- Čiščenje: z vodo, visokotlačno do 60 barov (curek ne v odprte prekate/zgornje robove); pranje 1–2× letno.",
+    "- Montaža ni primerna pod +5 °C · voda ne sme zastajati v deskah (zmrzal → pokanje, brez garancije).",
+    "",
+    "TEHNIČNI PODATKI (zahteva / izmerjeno):"];
+  rows.forEach(function(r){L.push("- "+r[0]+": "+r[1]+" / "+r[2])});
+  L.push("");
+  L.push("VIRI:");
+  L.push("- Navodila za montažo: https://roksal.com/wp-content/uploads/WOODCORE_navodila_za_montazo-sl.pdf");
+  L.push("- Garancija in tehnična dokumentacija: https://roksal.com/wp-content/uploads/Garancija%20in%20tehni%C4%8Dna%20dokumentacija%20WOODCORE.pdf");
+  L.push("- Kontakt: terase/prevzem 064 123 020 · ograje 064 123 030 · fasade 064 120 969 · info@roksal.com");
+  return L.join("\n");
+}
+/* ---------- Povpraševanje Roksal (struktura obrazcev roksal.com/wpc-povprasevanje) ---------- */
+function povprasevanjeTxt(){
+  var use=V("sysUse"),p=WC[$("sysProfile").value]||WC.romb67,lim=roksalLimit(p,use,n("H"));
+  var np=Math.max(1,Math.round(n("np"))),span=np>1?n("L")/(np-1):n("L");
+  var L=[
+    "POVPRAŠEVANJE — WOODCORE WPC DESKE",
+    "Datum: "+V("date")+" · Risba št.: "+V("drw")+" · Rev: "+V("rev"),
+    "",
+    "KONTAKT",
+    "Naslovljeno na: "+V("strankaTip"),
+    "Ime in priimek / naziv: "+(V("stranka")||"—"),
+    "Davčna številka: "+(V("strankaDav")||"—")+" (če podjetje)",
+    "Naslov: "+(V("strankaNaslov")||"—"),
+    "E-pošta: "+(V("strankaEmail")||"—")+" · Telefon: "+(V("strankaTel")||"—"),
+    "Način dobave/montaže: "+V("dobavaMode"),
+    "",
+    "PROJEKT",
+    "Vrsta: "+(USE_NAMES[use]||use),
+    "Profil: "+p.n+" — "+f(p.w)+"×"+f(p.t)+"×"+p.len+" mm",
+    "Barva: "+V("sysColor")+" ("+V("sysSurface")+")",
+    "Dimenzije: dolžina "+f(n("L"))+" mm × višina "+f(n("H"))+" mm × globina "+f(n("D"))+" mm",
+    "Št. lamel/desk: "+Math.max(1,Math.round(n("n")))+" · razmak med deskami "+f(n("gap"))+" mm",
+    lim.label+": izračun "+Math.round(span)+" mm (omejitev ≤ "+lim.v+" mm)",
+    "Št. stebrov/nosilcev: "+np,
+    "Podlaga: "+V("subType")+" — "+(V("sub")||"—"),
+    "Pritrjenje: "+V("mountType")+" · vijaki "+V("bolt")+" · sidra "+V("anchor")+" ("+V("emb")+" mm)",
+    "Montaža pri: "+V("installTemp")+" °C · padec podlage "+V("slopeMM")+" mm/m",
+    "",
+    "DODATNO",
+    "Objekt: "+(V("objekt")||"—")+" · Izvajalec: "+(V("installer")||"—")+" · Datum prevzema: "+(V("handoverDate")||"—"),
+    "Opombe: "+(V("notes").split("\n").filter(Boolean).slice(0,3).join(" / ")||"—"),
+    "",
+    "PRILOGE",
+    "Fotografije/skice (skupaj ≤ 25 MB) pošljite na info@roksal.com ali priložite pri oddaji na roksal.com/wpc-povprasevanje.",
+    "Tehnična risba "+V("drw")+" — priložite izvoz PDF/SVG iz aplikacije Tehnična risba PRO."
+  ];
+  return L.join("\n");
+}
+$("menuDlTech").onclick=function(){saveBlob(V("drw")+"-tehnicni-list.txt",techListTxt(),"text/plain;charset=utf-8")};
+$("menuDlEnquiry").onclick=function(){saveBlob(V("drw")+"-povprasevanje.txt",povprasevanjeTxt(),"text/plain;charset=utf-8")};
 function buildChecklist(){
   var p=WC[$("sysProfile").value]||WC.romb67,use=V("sysUse"),H=n("H"),lim=roksalLimit(p,use,H),rail=roksalRailLimit(p),rowsN=Math.max(2,Math.ceil(H/rail)+1);
   var L=[];
@@ -1597,6 +1702,7 @@ function buildChecklist(){
   L.push("B. PRED MONTAŽO");
   L.push("[ ] Jutranja temperatura ≥ +5 °C; dilatacijske reže določene po Roksal temperaturni tabeli.");
   L.push("[ ] Nosilnost podlage, steber, zidov in sidranje preverjeni; risba ni statični izračun.");
+  L.push("[ ] Orodje: baterijski vrtalnik (ročni izvijač ni primeren), Widia/HM rezila, brusni papir granulacija 40 (praske), grezilo; RF vijaki odporni na rjo in korozijo.");
   L.push("[ ] Obstoječi varjeni deli na stebrih odstranjeni: "+(V("weldedParts")==="da"?"DA — odstraniti":V("weldedParts")==="ne"?"NI DELOV":"NI PREVERJENO"));
   L.push("[ ] Stebri v ravnini; način pritrditve: "+V("mountType")+".");
   if(use==="terasa")L.push("[ ] Podlaga: beton ≥ 60 mm ali estrih z hidroizolacijo, padec ≥ 10 mm/m, odtok prost.");
@@ -1662,6 +1768,9 @@ function buildChecklist(){
   L.push("[ ] 6. Zaključki in drugi tehnično pomembni detajli.");
   L.push("[ ] Račun/dokazilo o nakupu in opis napake priložena.");
   L.push("");
+  L.push("KONTAKT — ROKSAL D.O.O.: terase/prevzem 064 123 020 · ograje 064 123 030 · fasade 064 120 969 · info@roksal.com");
+  L.push("Salon: Savska Loka 21, 4000 Kranj (pon–čet 7:00–15:30, pet 7:00–14:00) · Sedež: Zgornje Bitnje 186, 4209 Žabnica");
+  L.push("");
   L.push("Izvajalec: ______________________   Datum: ______________   Podpis: ______________________");
   L.push("Prevzel/a: _____________________   Datum: ______________   Podpis: ______________________");
   checklistText=L.join("\n");
@@ -1718,13 +1827,14 @@ function buildPlan(){
     rows.push(["Turbo vijaki za beton","6,7×80 mm — pritrditev letev","po podlazi"]);
     rows.push(["Zaključna letev L","45×55 mm — vijaki 30 cm, vsaka 2. deska","ob robu (ocena)"]);
     rows.push(["Dilatacija","priporočen razmak pri "+f(n("installTemp"))+" °C za deske "+f(Math.max(1,Math.min(5,L/1000)))+" m",f(dilatacija(Math.max(1,Math.min(5,L/1000)),n("installTemp")))+" mm"]);
+    rows.push(["Teža pošiljke (ocena)","1 m² terase ≈ 25 kg (FAQ Roksal)",f((L*n("D")/1e6)*25)+" kg"]);
   }
   if(use==="pokoncna"){
     var rail=roksalRailLimit(p),rowsN=Math.max(2,Math.ceil(H/rail)+1);
     rows.splice(4,0,["Vodoravne cevi","razmak ≤ "+rail+" mm",rowsN+" kosov"]);
   }
   planData=rows;
-  $("planOut").innerHTML='<table style="width:100%;font-size:11px;border-collapse:collapse">'+rows.map(function(r){return '<tr><td style="padding:2px 4px;border-bottom:1px solid var(--line)">'+E(r[0])+'</td><td style="padding:2px 4px;border-bottom:1px solid var(--line)">'+E(r[1])+'</td><td style="padding:2px 4px;border-bottom:1px solid var(--line);text-align:right;color:var(--tx)">'+E(r[2])+'</td></tr>'}).join('')+'</table><p style="margin-top:6px">Barva: '+E(V("sysColor"))+' · površina: '+E(V("sysSurface"))+' · montaža nad +5 °C. Količine so orientacijske — preverite jih pri naročilu.</p>';
+  $("planOut").innerHTML='<table style="width:100%;font-size:11px;border-collapse:collapse">'+rows.map(function(r){return '<tr><td style="padding:2px 4px;border-bottom:1px solid var(--line)">'+E(r[0])+'</td><td style="padding:2px 4px;border-bottom:1px solid var(--line)">'+E(r[1])+'</td><td style="padding:2px 4px;border-bottom:1px solid var(--line);text-align:right;color:var(--tx)">'+E(r[2])+'</td></tr>'}).join('')+'</table><p style="margin-top:6px">Barva: '+E(V("sysColor"))+' · površina: '+E(V("sysSurface"))+' · montaža nad +5 °C. Količine so orientacijske — preverite jih pri naročilu. Orodje: baterijski vrtalnik (ročni izvijač ni primeren), Widia/HM rezila, brusni papir granulacija 40, grezilo; aksesoarji po profilu — distančniki + začetni distančnik in zaključna letev 45×55 (terasa), čepi levi/desni (romb), fasadni klipi (romb fasada), WEPOS WPC impregnacija (pohištvo).</p>';
 }
 $("makePlan").onclick=buildPlan;
 function planCsv(){
@@ -1746,7 +1856,9 @@ $("dlPlan").onclick=function(){
     {id:"quote",label:"Predračun",tag:"CSV",tip:"Orientacijski predračun brez DDV: deske, nosilci, vijaki RF in pritrdilni, dela. Ni ponudba.",on:true},
     {id:"order",label:"Naročilnik",tag:"TXT",tip:"Pripravljeno naročilo materiala za dobavitelja: deske po rezalnem načrtu, profili, pritrdila, sidra.",on:true},
     {id:"checklist",label:"Montažni checklist",tag:"TXT",tip:"Prevzemna kontrola po sklopih A–E: dostava, pred montažo, geometrija, zaključek, reklamacijska dokumentacija.",on:true},
-    {id:"project",label:"Projekt (celotno stanje)",tag:"JSON",tip:"Vsa polja, umeritev in slika — za poznejše odpiranje projekta v aplikaciji.",on:true}
+    {id:"project",label:"Projekt (celotno stanje)",tag:"JSON",tip:"Vsa polja, umeritev in slika — za poznejše odpiranje projekta v aplikaciji.",on:true},
+    {id:"tehlist",label:"Tehnični list materiala",tag:"TXT",tip:"Tehnični podatki WoodCore iz garancijskega PDF (vlaga, trdota HRR, modul upogibanja, sila vijaka …) — zahteva in izmerjeno.",on:true},
+    {id:"povpras",label:"Povpraševanje Roksal",tag:"TXT",tip:"Pripravljeno povpraševanje v strukturi Roksal obrazca: kontakt, način dobave, mere, profil, barva, podlaga. Fotografije/skice (≤ 25 MB) na info@roksal.com.",on:true}
   ];
   var EXP_ADV=[
     {id:"wm",label:"Vodni žig na risbi",tip:"Prosojno diagonalno besedilo prek risbe. Velja za PDF in SVG; na DXF se ne izvaža (namen CNC).",on:false},
@@ -1755,10 +1867,10 @@ $("dlPlan").onclick=function(){
     {id:"meta",label:"Metapodatki v SVG",tip:"V SVG doda <title> in <desc> iz naslovnega bloka (projekt, merilo, format, datum, profil).",on:false}
   ];
   var EXP_PRESETS={
-    full:{risba:1,kosovnica:1,cut:1,plan:1,quote:1,order:1,checklist:1,project:1},
-    delavnica:{risba:1,kosovnica:1,cut:1,plan:1,quote:0,order:0,checklist:0,project:0},
-    narocilo:{risba:0,kosovnica:0,cut:1,plan:0,quote:1,order:1,checklist:0,project:0},
-    minimalno:{risba:1,kosovnica:0,cut:0,plan:0,quote:0,order:0,checklist:0,project:0}
+    full:{risba:1,kosovnica:1,cut:1,plan:1,quote:1,order:1,checklist:1,project:1,tehlist:1,povpras:1},
+    delavnica:{risba:1,kosovnica:1,cut:1,plan:1,quote:0,order:0,checklist:0,project:0,tehlist:0,povpras:0},
+    narocilo:{risba:0,kosovnica:0,cut:1,plan:0,quote:1,order:1,checklist:0,project:0,tehlist:0,povpras:1},
+    minimalno:{risba:1,kosovnica:0,cut:0,plan:0,quote:0,order:0,checklist:0,project:0,tehlist:0,povpras:0}
   };
   function item(id){for(var i=0;i<EXP_ITEMS.length;i++)if(EXP_ITEMS[i].id===id)return EXP_ITEMS[i];return null}
   function adv(id){for(var i=0;i<EXP_ADV.length;i++)if(EXP_ADV[i].id===id)return EXP_ADV[i];return null}
@@ -1894,6 +2006,8 @@ $("dlPlan").onclick=function(){
     if(item("order").on)jobs.push({n:"naročilnik (TXT)",f:function(){saveBlob(base+"-narocilo.txt",buildOrder(),"text/plain;charset=utf-8")}});
     if(item("checklist").on)jobs.push({n:"montažni checklist (TXT)",f:function(){saveBlob(base+"-montazni-checklist.txt",buildChecklist(),"text/plain;charset=utf-8")}});
     if(item("project").on)jobs.push({n:"projekt (JSON)",f:function(){saveBlob(base+"-project.json",projectJson(),"application/json")}});
+    if(item("tehlist").on)jobs.push({n:"tehnični list (TXT)",f:function(){saveBlob(base+"-tehnicni-list.txt",techListTxt(),"text/plain;charset=utf-8")}});
+    if(item("povpras").on)jobs.push({n:"povpraševanje Roksal (TXT)",f:function(){saveBlob(base+"-povprasevanje.txt",povprasevanjeTxt(),"text/plain;charset=utf-8")}});
     if(!jobs.length){closeExport();return}
     var wmApplied=!!wm&&risba&&(EXP.format==="PDF"||EXP.format==="SVG");
     var idx=0,failed=[];

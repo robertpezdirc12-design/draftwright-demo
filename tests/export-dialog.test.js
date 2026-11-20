@@ -61,7 +61,7 @@ const advCb = (id) => document.querySelector(`#expAdv [data-exp-adv="${id}"]`);
 async function runExportAndWait() {
   downloads.length = 0; printWindows = [];
   $("expGo").click();
-  await sleep(400 * 9); // sekvenčni izvoz: 400 ms med datotekami
+  await sleep(400 * 11); // sekvenčni izvoz: 400 ms med datotekami; čakanje preseže tudi končni status callback
   return downloads;
 }
 
@@ -70,10 +70,10 @@ async function runExportAndWait() {
 
   // 1) odpiranje prek menijskega data-call (hook gumb exportDialog)
   openDlg();
-  check("odpiranje dialoga (menu)", overlayOn() && document.querySelectorAll("#expItems [data-exp-item]").length === 8,
+  check("odpiranje dialoga (menu)", overlayOn() && document.querySelectorAll("#expItems [data-exp-item]").length === 10,
     document.querySelectorAll("#expItems [data-exp-item]").length + " vsebin");
-  check("privzeti povzetek vsebine", $("expSumVsebina").textContent === "Vključeno 8/8", $("expSumVsebina").textContent);
-  check("privzeti footer", /PDF \/ tisk · risba \+ 7 prilog/.test($("expNote").textContent), $("expNote").textContent);
+  check("privzeti povzetek vsebine", $("expSumVsebina").textContent === "Vključeno 10/10", $("expSumVsebina").textContent);
+  check("privzeti footer", /PDF \/ tisk · risba \+ 9 prilog/.test($("expNote").textContent), $("expNote").textContent);
   check("format lista usklajen s poljem", $("expPaper").value === $("paper").value);
 
   // 2) Esc zapre
@@ -89,7 +89,7 @@ async function runExportAndWait() {
   check("prednastavitev »Za naročilo«: risba izključena", !itemCb("risba").checked && itemCb("order").checked && itemCb("quote").checked && itemCb("cut").checked);
   check("format onemogočen brez risbe", $("expSegs").querySelector(".exp-seg").disabled && $("expFmtOff").style.display === "inline");
   document.querySelector('[data-exp-preset="minimalno"]').click();
-  check("prednastavitev »Samo risba«", itemCb("risba").checked && !itemCb("kosovnica").checked && $("expSumVsebina").textContent === "Vključeno 1/8");
+  check("prednastavitev »Samo risba«", itemCb("risba").checked && !itemCb("kosovnica").checked && $("expSumVsebina").textContent === "Vključeno 1/10");
 
   // 5) ročna sprememba počisti aktivnost prednastavitve
   itemCb("kosovnica").checked = true; fire(itemCb("kosovnica"), "change");
@@ -188,11 +188,11 @@ async function runExportAndWait() {
   // 12) vse 7 prilog skupaj (brez risbe) — samodejni buildCut/buildQuote/buildPlan/buildOrder/buildChecklist
   openDlg();
   document.querySelector('[data-exp-all="nic"]').click();
-  ["kosovnica", "cut", "plan", "quote", "order", "checklist", "project"].forEach((id) => { itemCb(id).checked = true; fire(itemCb(id), "change"); });
-  check("footer: samo priloge", /Samo priloge: 7 prilog/.test($("expNote").textContent), $("expNote").textContent);
+  ["kosovnica", "cut", "plan", "quote", "order", "checklist", "project", "tehlist", "povpras"].forEach((id) => { itemCb(id).checked = true; fire(itemCb(id), "change"); });
+  check("footer: samo priloge", /Samo priloge: 9 prilog/.test($("expNote").textContent), $("expNote").textContent);
   check("footer: brez formata lista, ko risba ni izbrana", !/· A4/.test($("expNote").textContent), $("expNote").textContent);
   dl = await runExportAndWait();
-  check("priloge: 7 prenosov", dl.length === 7, dl.map(d => d.name).join(", "));
+  check("priloge: 9 prenosov", dl.length === 9, dl.map(d => d.name).join(", "));
   const texts = {};
   for (const d of dl) texts[d.name] = d.text ? await d.text : null;
   const kos = Object.keys(texts).find(n => n.includes("kosovnica"));

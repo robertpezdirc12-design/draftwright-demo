@@ -17,6 +17,7 @@
 - **dilatacijski kalkulator za teraso** — priporočen razmak med deskami glede na dolžino deske (1–5 m) in temperaturo montaže (−25…+35 °C), po uradni tabeli iz [PDF navodil WoodCore](https://roksal.com/wp-content/uploads/WOODCORE_navodila_za_montazo-sl.pdf)
 - **barvne palete po profilu** (lestvice roksal.com): White samo pri POLNA-100, KUBO/57/32 delita paletо itd.; izbira površine Klasik/Rustik samodejno uskladi odtenek
 - **podlaga (8 opcij po Roksal povpraševanju)**: validacije za pesek/prodec (nepripravljivo), tlakovce (alu cevi obvezne), ploščice, hidroizolacijo (guma/filc), prane plošče, obstoječo kovinsko konstrukcijo (okrogle cevi prepovedane, garancija na izvedbo ne priznana)
+- **kontakt stranke za povpraševanje**: naslovljeno na (fizična/podjetje), davčna št., naslov, e-pošta, telefon, način dobave — vir za izvoz povpraševanja
 - **terasna podkonstrukcija po PDF navodilih**: točkovno podlaganje samo z alu cevmi max 60 cm, turbo vijaki 6,7×80 mm, beton ≥ 60 mm, višine 4,5/5,5/6,5 cm, rez spodnje stene 30°, kombinacija 4,0+2,2 m ni dovoljena
 - samodejne validacije: razmak stebrov/nosilcev, vodoravne cevi, padec podlage ≥ 10 mm/m, temperatura montaže ≥ +5 °C, varjeni deli na stebrih, cone, vsota lamel in rež, debelina stene profila
 - prednastavitve: ROMB vodoravno · POLNA pokončno · KUBO fasada
@@ -52,7 +53,9 @@ Risba se ob izvozu vedno znova generira iz trenutnih polj, tako da izvoz vedno o
 | Rezalni načrt | CSV — kerf optimizator (izkoristek, odpadek, neizrezljivi kosi) |
 | Predračun | CSV — orientacijski, brez DDV |
 | Naročilnik | TXT |
-| Montažni checklist | TXT — sklopi A–E (dostava, montaža, geometrija, garancija, reklamacijska dokumentacija) |
+| Montažni checklist | TXT — sklopi A–E (dostava, montaža, geometrija, garancija, reklamacijska dokumentacija) + kontakt Roksal |
+| Tehnični list materiala | TXT — tehnični podatki WoodCore iz garancijskega PDF (vlaga, trdota HRR, modul, sila vijaka …) |
+| Povpraševanje Roksal | TXT — pripravljeno povpraševanje v strukturi Roksal obrazca (kontakt, dobava, mere, profil, barva, podlaga); pošljite na info@roksal.com |
 | Projekt | JSON (shranjevanje / odpiranje celotnega stanja) |
 
 ### 6. Delovni načini
@@ -64,7 +67,7 @@ Risba se ob izvozu vedno znova generira iz trenutnih polj, tako da izvoz vedno o
 
 Meni **Datoteka → Samoprevera (90 kombinacij)** generira 6 profilov × 5 uporab × 3 različice mer in preveri, da nastane veljaven SVG brez JS napak.
 
-Za avtomatske teste je v repozitoriju še [tests/](tests/) (jsdom): `smoke.test.js` (generiranje listov, validacije, izvozi), `export-dialog.test.js` (izvozni dialog — vsi formati, napredne nastavitve in robni primeri) in `roksal-p1.test.js` (dilatacije, napušč, pregrade, palete barv, podlage). Požene jih CI ([.github/workflows/ci.yml](.github/workflows/ci.yml)):
+Za avtomatske teste je v repozitoriju še [tests/](tests/) (jsdom): `smoke.test.js` (generiranje listov, validacije, izvozi), `export-dialog.test.js` (izvozni dialog — vsi formati, napredne nastavitve in robni primeri), `roksal-p1.test.js` (dilatacije, napušč, pregrade, palete barv, podlage) in `roksal-p2.test.js` (tehnični list, povpraševanje, prodajni pogoji). Požene jih CI ([.github/workflows/ci.yml](.github/workflows/ci.yml)):
 
 ```bash
 npm install
