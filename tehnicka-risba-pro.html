@@ -21,6 +21,9 @@
 .drop .mi{display:flex;align-items:center;justify-content:space-between;gap:16px;width:100%;text-align:left;background:transparent;color:var(--tx);border:none;border-radius:6px;padding:7px 8px;font:inherit;font-size:12.5px;cursor:pointer}
 .drop .mi:hover{background:var(--p2)}
 .drop .mi .k{color:var(--mut);font-size:11px}
+.drop .mi.active{color:var(--ac);background:#2a1c16}
+.panelmenu .drop{min-width:280px}
+aside section.panel-active>h2{border-left:2px solid var(--ac);padding-left:6px}
 .drop .sep{height:1px;background:var(--line);margin:5px 2px}
 .drop .label{font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:.5px;padding:4px 8px 2px}
 .drop .checkrow{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:6px;font-size:12.5px;cursor:pointer}
@@ -97,6 +100,40 @@ input.invalid,select.invalid{border-color:var(--bad)!important;box-shadow:0 0 0 
 <body>
 <div class="menubar" id="menubar">
   <div class="brand">Tehnična risba PRO <small>slika → risba → izvoz</small></div>
+  <div class="menu panelmenu" data-menu>
+    <button type="button" id="panelBtn" title="Odpri izbiro stranske plošče (Alt+P)">Plošča ▾</button>
+    <div class="drop" id="panelDrop">
+      <div class="label">Odpri sklop</div>
+      <button class="mi" data-goto="photo">Slika <span class="k">1</span></button>
+      <button class="mi" data-goto="cal">Umeritev <span class="k">2</span></button>
+      <button class="mi" data-goto="detect">Zaznavanje lamel <span class="k">3</span></button>
+      <button class="mi" data-goto="dims">Mere in parametri <span class="k">4</span></button>
+      <button class="mi" data-goto="sheet">List in opombe <span class="k">5</span></button>
+      <button class="mi" data-goto="plan">Montaža in količine <span class="k">6</span></button>
+      <button class="mi" data-goto="export">Izdelava <span class="k">7</span></button>
+      <button class="mi" data-goto="all">Razgrni vse vidne <span class="k">*</span></button>
+      <div class="sep"></div>
+      <div class="label">Vidnost</div>
+      <div class="fieldpick">
+        <button class="btn" id="fieldBtn" type="button">Vidni sklopi in polja…</button>
+        <div class="fieldmenu" id="fieldMenu">
+          <div class="fm-title">Sklopi</div>
+          <label><input type="checkbox" data-fg="photo"> Fotografija</label>
+          <label><input type="checkbox" data-fg="cal"> Umeritev</label>
+          <label><input type="checkbox" data-fg="detect"> Zaznavanje lamel</label>
+          <label><input type="checkbox" data-fg="system" checked> WoodCore sistem</label>
+          <label><input type="checkbox" data-fg="main" checked> Osnovne mere</label>
+          <label><input type="checkbox" data-fg="zones" checked> Cone in globina</label>
+          <label><input type="checkbox" data-fg="advanced"> Napredna polja</label>
+          <label><input type="checkbox" data-fg="sheet"> List in opombe</label>
+          <label><input type="checkbox" data-fg="plan"> Montaža in količine</label>
+          <label><input type="checkbox" data-fg="export" checked> Izdelava in izvoz</label>
+          <button class="btn" id="fieldReset" type="button">Ponastavi na osnovno</button>
+        </div>
+      </div>
+      <button class="mi" id="toggleAside" type="button">Skrij stransko ploščo <span class="k" id="asideTick">●</span></button>
+    </div>
+  </div>
   <div class="menu" data-menu>
     <button type="button">Datoteka</button>
     <div class="drop">
@@ -128,27 +165,6 @@ input.invalid,select.invalid{border-color:var(--bad)!important;box-shadow:0 0 0 
       <div class="label">Način dela</div>
       <button class="mi" data-mode="guided">Vodeni način <span class="k" id="tickGuided">●</span></button>
       <button class="mi" data-mode="expert">Strokovni način <span class="k" id="tickExpert"></span></button>
-      <div class="sep"></div>
-      <div class="label">Vidnost vmesnika</div>
-      <button class="mi" id="toggleAside" type="button">Skrij stransko ploščo <span class="k" id="asideTick">●</span></button>
-      <div class="sep"></div>
-      <div class="fieldpick">
-        <button class="btn" id="fieldBtn" type="button">Vidni sklopi in polja…</button>
-        <div class="fieldmenu" id="fieldMenu">
-          <div class="fm-title">Sklopi</div>
-          <label><input type="checkbox" data-fg="photo"> Fotografija</label>
-          <label><input type="checkbox" data-fg="cal"> Umeritev</label>
-          <label><input type="checkbox" data-fg="detect"> Zaznavanje lamel</label>
-          <label><input type="checkbox" data-fg="system" checked> WoodCore sistem</label>
-          <label><input type="checkbox" data-fg="main" checked> Osnovne mere</label>
-          <label><input type="checkbox" data-fg="zones" checked> Cone in globina</label>
-          <label><input type="checkbox" data-fg="advanced"> Napredna polja</label>
-          <label><input type="checkbox" data-fg="sheet"> List in opombe</label>
-          <label><input type="checkbox" data-fg="plan"> Montaža in količine</label>
-          <label><input type="checkbox" data-fg="export" checked> Izdelava in izvoz</label>
-          <button class="btn" id="fieldReset" type="button">Ponastavi na osnovno</button>
-        </div>
-      </div>
       <div class="sep"></div>
       <div class="label">Predogled</div>
       <button class="mi" data-call="zoomIn">Povečaj <span class="k">+</span></button>
@@ -194,14 +210,14 @@ input.invalid,select.invalid{border-color:var(--bad)!important;box-shadow:0 0 0 
 <aside>
 <div class="steps" id="steps"><span data-step="1">1 Slika</span><span data-step="2">2 Umeritev</span><span data-step="3">3 Mere</span><span data-step="4">4 Risba</span></div>
 
-<section>
+<section data-panel="photo">
 <h2><i>1</i>Slika</h2>
 <input type="file" id="file" accept="image/*">
 <div class="photo" id="photoBox"><img id="img" alt="foto"><svg id="ov" xmlns="http://www.w3.org/2000/svg"></svg></div>
 <p class="hint">Prilepite z <span class="kbd">Ctrl+V</span>, povlecite ali izberite datoteko. Za merjenje naj bo v kadru merilo ali znan predmet.</p>
 </section>
 
-<section>
+<section data-panel="cal">
 <h2><i>2</i>Umeritev</h2>
 <div class="btns"><button class="btn on" id="mLinear">2 točki</button><button class="btn" id="mPlane">4 točke (perspektiva)</button></div>
 <div class="btns" style="margin-top:8px"><button class="btn" id="pickCal">Izberi referenčne točke</button><button class="btn" id="clearCal">Počisti</button></div>
@@ -214,7 +230,7 @@ input.invalid,select.invalid{border-color:var(--bad)!important;box-shadow:0 0 0 
 <p class="hint">Pri 4 točkah kliknite: levo zgoraj, desno zgoraj, desno spodaj, levo spodaj.</p>
 </section>
 
-<section>
+<section data-panel="detect">
 <h2><i>3</i>Samodejno zaznavanje lamel</h2>
 <div class="btns"><button class="btn" id="detect">Zaznaj lamele s slike</button></div>
 <div class="row" style="margin-top:8px">
@@ -225,7 +241,7 @@ input.invalid,select.invalid{border-color:var(--bad)!important;box-shadow:0 0 0 
 <p class="hint">Zaznava vodoravne robove v sredinskem pasu slike. Rezultat je orientacijski — preverite ročno.</p>
 </section>
 
-<section>
+<section data-panel="dims">
 <h2><i>4</i>Mere in parametri</h2>
 <div class="sysbox">
 <div class="st">WoodCore sistem (Roksal)</div>
@@ -283,7 +299,7 @@ input.invalid,select.invalid{border-color:var(--bad)!important;box-shadow:0 0 0 
 <div class="warnbox" id="checks"></div>
 </section>
 
-<section>
+<section data-panel="sheet">
 <h2><i>5</i>List in opombe</h2>
 <div class="row">
 <div><label>Format</label><select id="paper"><option value="A3">A3 420×297</option><option value="A4">A4 297×210</option><option value="A2">A2 594×420</option></select></div>
@@ -312,7 +328,7 @@ Mere preveriti na objektu pred izdelavo.
 Konstrukcija odporna na vremenske vplive.</textarea>
 </section>
 
-<section>
+<section data-panel="plan">
 <h2><i>6</i>Montaža in količine</h2>
 <div class="btns"><button class="btn" id="makePlan">Pripravi montažni načrt</button><button class="btn" id="buildCut">Rezalni načrt (kerf)</button><button class="btn" id="buildQuote">Predračun</button></div>
 <div class="row3" style="margin-top:8px">
@@ -329,14 +345,14 @@ Konstrukcija odporna na vremenske vplive.</textarea>
 <div id="planOut" class="hint" style="margin-top:8px">Izmerite: L, H, D, cone, notranjo globino in št. nosilcev. Nato pripravite načrt (izvoz: Datoteka → Izvozi montažni načrt).</div>
 </section>
 
-<section>
+<section data-panel="export">
 <h2><i>7</i>Izdelava</h2>
-<p class="hint" style="margin-top:0">Vsi izvozi, shranjevanje, prednastavitve in napredne možnosti so v zgornji <b>opravilni vrstici</b>, zato delovni prostor ostane pregleden. Vsa funkcionalnost je ohranjena.</p>
+<p class="hint" style="margin-top:0">Sklope odpirate iz zgornje vrstice <b>Plošča ▾</b> — kliknite samo tistega, ki ga potrebujete. Polja izbivate tam pod <b>Vidni sklopi in polja…</b>, izvozi in nastavitve so v meniju <b>Datoteka</b> in <b>Orodja</b>. Vsa funkcionalnost je ohranjena.</p>
 <div class="btns" style="margin-top:10px">
   <button class="btn go" id="gen">Generiraj risbo</button>
   <button class="btn" type="button" data-call="prt">PDF / tisk</button>
 </div>
-<p class="hint"><span class="kbd">Ctrl+G</span> generiraj · <span class="kbd">Ctrl+S</span> shrani · Referenčni način: <b>Orodja</b></p>
+<p class="hint"><span class="kbd">Ctrl+G</span> generiraj · <span class="kbd">Ctrl+S</span> shrani · <span class="kbd">Alt+P</span> izbira plošče · Referenčni način: <b>Orodja</b></p>
 </section>
 
 <div id="globalStatus">Pripravljeno.</div>
@@ -1476,6 +1492,59 @@ mn.addEventListener("drop",function(e){if(e.dataTransfer.files[0])loadPhoto(e.da
     try{ localStorage.setItem('tehnicka-risba-pro-aside', visible ? 'visible' : 'hidden'); }catch(e){}
   }
   window.setAsideVisible = setAsideVisible;
+
+  /* Panel chooser: open one section from the top toolbar (Figma-style tabs + VS Code view picker) */
+  var PANEL_GROUPS={
+    photo:["photo"], cal:["cal"], detect:["detect"],
+    dims:["system","main","zones","advanced"],
+    sheet:["sheet"], plan:["plan"], export:["export"]
+  };
+  var PANEL_LABELS={photo:"Slika",cal:"Umeritev",detect:"Zaznavanje lamel",dims:"Mere in parametri",sheet:"List in opombe",plan:"Montaža in količine",export:"Izdelava"};
+  function markPanelActive(key){
+    [].slice.call(document.querySelectorAll('[data-goto]')).forEach(function(b){
+      b.classList.toggle('active',b.getAttribute('data-goto')===key);
+    });
+    [].slice.call(document.querySelectorAll('aside section[data-panel]')).forEach(function(s){
+      s.classList.toggle('panel-active',s.getAttribute('data-panel')===key);
+    });
+  }
+  function openPanel(key){
+    setAsideVisible(true);
+    var secs=[].slice.call(document.querySelectorAll('aside section[data-panel]'));
+    if(key==='all'){
+      secs.forEach(function(s){s.classList.remove('collapsed')});
+      markPanelActive('all');
+      $("globalStatus").textContent="Prikazani vsi vidni sklopi.";
+      return;
+    }
+    var target=secs.filter(function(s){return s.getAttribute('data-panel')===key})[0];
+    if(!target)return;
+    (PANEL_GROUPS[key]||[]).forEach(function(g){
+      var box=document.querySelector('[data-fg="'+g+'"]');
+      if(box&&!box.checked)box.checked=true;
+    });
+    applyFieldVisibility();
+    secs.forEach(function(s){s.classList.toggle('collapsed',s!==target)});
+    target.classList.remove('collapsed');
+    markPanelActive(key);
+    $("globalStatus").textContent="Odprt sklop: "+(PANEL_LABELS[key]||key)+".";
+    try{ target.scrollIntoView({block:'start',behavior:'smooth'}); }catch(e){}
+  }
+  window.openPanel=openPanel;
+  [].slice.call(document.querySelectorAll('[data-goto]')).forEach(function(b){
+    b.addEventListener('click',function(e){
+      e.preventDefault();openPanel(b.getAttribute('data-goto'));closeMenus();
+    });
+  });
+  document.addEventListener('keydown',function(e){
+    if(!e.altKey||(e.key!=='p'&&e.key!=='P'))return;
+    var tag=(document.activeElement&&document.activeElement.tagName)||'';
+    if(tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT')return;
+    e.preventDefault();
+    var pm=document.querySelector('.panelmenu');if(!pm)return;
+    var open=pm.classList.contains('open');closeMenus();if(!open)pm.classList.add('open');
+  });
+
   var tgl=$('toggleAside'); if(tgl) tgl.addEventListener('click', function(e){ e.preventDefault(); setAsideVisible(document.body.classList.contains('aside-hidden')); closeMenus(); });
   var sh=$('showAside'); if(sh) sh.addEventListener('click', function(){ setAsideVisible(true); });
   try{ var as=localStorage.getItem('tehnicka-risba-pro-aside'); if(as==='hidden') setAsideVisible(false); else setAsideVisible(true); }catch(e){ setAsideVisible(true); }
