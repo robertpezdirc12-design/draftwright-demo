@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+<title id="title">Draftwright photo-to-fence replacement workflow</title>
+<desc id="desc">Conceptual four-stage workflow: source photographs, editable existing-fence reconstruction, parametric CAD and fabrication outputs, and a proposed replacement fence composited into the original site photograph.</desc>
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f5f8fc"/><stop offset="1" stop-color="#e8eef7"/></linearGradient>
+  <linearGradient id="panel" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff"/><stop offset="1" stop-color="#f8fafc"/></linearGradient>
+  <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#dcecf7"/><stop offset="1" stop-color="#f5f1e8"/></linearGradient>
+  <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#20334d" flood-opacity=".12"/></filter>
+  <style>
+    .h{font:700 36px Arial,sans-serif;fill:#17283f}.sub{font:18px Arial,sans-serif;fill:#5d6b7e}
+    .num{font:700 18px Arial,sans-serif;fill:#fff}.cardtitle{font:700 22px Arial,sans-serif;fill:#20324a}
+    .body{font:16px Arial,sans-serif;fill:#526174}.small{font:14px Arial,sans-serif;fill:#64748b}
+    .dim{font:13px Arial,sans-serif;fill:#2563eb}.arrow{stroke:#66809e;stroke-width:4;fill:none;stroke-linecap:round;stroke-linejoin:round}
+  </style>
+</defs>
+<rect width="1600" height="900" fill="url(#bg)"/>
+<text x="80" y="82" class="h">DRAFTWRIGHT · PHOTO-TO-REPLACEMENT WORKFLOW</text>
+<text x="80" y="119" class="sub">Conceptual product workflow — one authoritative model connects measurement, CAD, fabrication and customer visualization</text>
+<!-- cards -->
+<g filter="url(#shadow)">
+ <rect x="65" y="175" width="345" height="585" rx="22" fill="url(#panel)"/>
+ <rect x="445" y="175" width="345" height="585" rx="22" fill="url(#panel)"/>
+ <rect x="825" y="175" width="345" height="585" rx="22" fill="url(#panel)"/>
+ <rect x="1205" y="175" width="330" height="585" rx="22" fill="url(#panel)"/>
+</g>
+<!-- stage labels -->
+<g><circle cx="105" cy="220" r="22" fill="#2563eb"/><text x="105" y="227" text-anchor="middle" class="num">1</text><text x="140" y="228" class="cardtitle">Site photographs</text></g>
+<g><circle cx="485" cy="220" r="22" fill="#0f766e"/><text x="485" y="227" text-anchor="middle" class="num">2</text><text x="520" y="228" class="cardtitle">Existing fence</text></g>
+<g><circle cx="865" cy="220" r="22" fill="#7c3aed"/><text x="865" y="227" text-anchor="middle" class="num">3</text><text x="900" y="228" class="cardtitle">Parametric CAD</text></g>
+<g><circle cx="1245" cy="220" r="22" fill="#c2410c"/><text x="1245" y="227" text-anchor="middle" class="num">4</text><text x="1280" y="228" class="cardtitle">Customer preview</text></g>
+<!-- 1 photo illustration -->
+<g transform="translate(90 280)">
+ <rect width="295" height="265" rx="12" fill="url(#sky)" stroke="#d5dfeb"/>
+ <circle cx="245" cy="45" r="21" fill="#f5d58a"/>
+ <path d="M0 182 L295 164 L295 265 L0 265Z" fill="#9ab58b"/>
+ <path d="M0 210 Q75 180 145 205 T295 193 L295 265 L0 265Z" fill="#7c9c72"/>
+ <path d="M0 168 L295 148" stroke="#6d7d61" stroke-width="5"/>
+ <g stroke="#4c5964" stroke-width="11" fill="#687783">
+  <path d="M26 92 L26 228 M269 77 L269 215"/>
+  <path d="M26 116 L269 101 M26 142 L269 127 M26 168 L269 153 M26 194 L269 179"/>
+ </g>
+ <g stroke="#d9e0e5" stroke-width="2"><path d="M34 118 L260 103 M34 144 L260 129 M34 170 L260 155 M34 196 L260 181"/></g>
+ <text x="15" y="245" class="small">Original image · perspective · background</text>
+</g>
+<text x="92" y="585" class="body">• One or more installer photos</text>
+<text x="92" y="615" class="body">• Quality / blur / occlusion checks</text>
+<text x="92" y="645" class="body">• Optional known reference length</text>
+<text x="92" y="690" class="small">Input stays linked to source image coordinates</text>
+<!-- 2 sketch illustration -->
+<g transform="translate(470 280)">
+ <rect width="295" height="265" rx="12" fill="#f8fbfc" stroke="#d5dfeb"/>
+ <g stroke="#0f766e" stroke-width="4" fill="none">
+  <path d="M32 67 L32 225 M263 51 L263 209"/>
+  <path d="M32 91 L263 75 M32 119 L263 103 M32 147 L263 131 M32 175 L263 159 M32 203 L263 187"/>
+ </g>
+ <g stroke="#64748b" stroke-width="1.5" stroke-dasharray="5 5" fill="none"><path d="M32 35 L263 20 M15 67 L15 225 M280 51 L280 209"/></g>
+ <g stroke="#2563eb" stroke-width="2" fill="none"><path d="M32 238 L263 222 M32 232 L32 244 M263 216 L263 228"/></g>
+ <text x="145" y="257" text-anchor="middle" class="dim">relative width · uncalibrated</text>
+</g>
+<text x="472" y="585" class="body">• Posts, rails, slats, panels, gates</text>
+<text x="472" y="615" class="body">• Editable detected geometry</text>
+<text x="472" y="645" class="body">• Measured / estimated / unknown</text>
+<text x="472" y="690" class="small">User corrects only uncertain detections</text>
+<!-- 3 CAD illustration -->
+<g transform="translate(850 280)">
+ <rect width="295" height="265" rx="12" fill="#f8f9ff" stroke="#d5dfeb"/>
+ <g stroke="#51418c" stroke-width="2.5" fill="#c9c4e9">
+  <path d="M43 74 L65 61 L65 215 L43 228Z"/><path d="M65 61 L83 72 L83 226 L65 215Z"/>
+  <path d="M235 42 L257 29 L257 184 L235 197Z"/><path d="M257 29 L275 40 L275 195 L257 184Z"/>
+  <path d="M65 82 L235 60 L257 71 L83 94Z"/><path d="M65 111 L235 89 L257 100 L83 123Z"/>
+  <path d="M65 140 L235 118 L257 129 L83 152Z"/><path d="M65 169 L235 147 L257 158 L83 181Z"/>
+  <path d="M65 198 L235 176 L257 187 L83 210Z"/>
+ </g>
+ <g stroke="#4338ca" stroke-width="1.5" fill="none"><path d="M30 50 L30 235 M22 50 L38 50 M22 235 L38 235"/><path d="M43 245 L275 210 M43 239 L43 251 M275 204 L275 216"/></g>
+ <text x="145" y="257" text-anchor="middle" class="dim">shared parametric geometry</text>
+</g>
+<text x="852" y="585" class="body">• Actual component-level 3D model</text>
+<text x="852" y="615" class="body">• Drawings, sections and dimensions</text>
+<text x="852" y="645" class="body">• BOM, cut list and material totals</text>
+<text x="852" y="690" class="small">Same model revision drives all outputs</text>
+<!-- 4 photo mock composite -->
+<g transform="translate(1228 280)">
+ <rect width="284" height="265" rx="12" fill="url(#sky)" stroke="#d5dfeb"/>
+ <circle cx="238" cy="42" r="19" fill="#f5d58a"/>
+ <path d="M0 185 L284 166 L284 265 L0 265Z" fill="#9ab58b"/>
+ <path d="M0 212 Q90 180 160 204 T284 194 L284 265 L0 265Z" fill="#7c9c72"/>
+ <g stroke="#27384a" stroke-width="12" fill="#34495e"><path d="M24 83 L24 224 M260 66 L260 210"/></g>
+ <g fill="#34495e" stroke="#d2dce5" stroke-width="2">
+  <path d="M24 105 L260 88 L260 101 L24 118Z"/>
+  <path d="M24 132 L260 115 L260 128 L24 145Z"/>
+  <path d="M24 159 L260 142 L260 155 L24 172Z"/>
+  <path d="M24 186 L260 169 L260 182 L24 199Z"/>
+ </g>
+ <path d="M14 75 L270 58 L270 215" fill="none" stroke="#c2410c" stroke-width="2" stroke-dasharray="6 5"/>
+ <text x="142" y="245" text-anchor="middle" class="small">Proposed fence on original photo</text>
+</g>
+<text x="1228" y="585" class="body">• Choose new profile, colour, spacing</text>
+<text x="1228" y="615" class="body">• Perspective-aware photo composite</text>
+<text x="1228" y="645" class="body">• Before / after customer comparison</text>
+<text x="1228" y="690" class="small">Visual must match the approved CAD model</text>
+<!-- arrows -->
+<path d="M414 465 L438 465 M429 455 L439 465 L429 475" class="arrow"/>
+<path d="M794 465 L818 465 M809 455 L819 465 L809 475" class="arrow"/>
+<path d="M1174 465 L1198 465 M1189 455 L1199 465 L1189 475" class="arrow"/>
+<!-- truth footer -->
+<rect x="65" y="790" width="1470" height="65" rx="14" fill="#fff4df" stroke="#f0d39a"/>
+<text x="90" y="829" style="font:700 18px Arial,sans-serif;fill:#8a4b08">ENGINEERING RULE:</text>
+<text x="290" y="829" style="font:17px Arial,sans-serif;fill:#704d1c">No invented dimensions. A visual preview is not a measurement. Only validated, traceable geometry may drive fabrication outputs.</text>
+</svg>
