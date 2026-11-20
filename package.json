@@ -1,0 +1,12 @@
+{
+  "name": "draftwright-demo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Draftwright demo - Tehnicna risba PRO (slika -> risba -> izvoz)",
+  "scripts": {
+    "test": "node tests/smoke.test.js"
+  },
+  "devDependencies": {
+    "jsdom": "^31.0.1"
+  }
+}
