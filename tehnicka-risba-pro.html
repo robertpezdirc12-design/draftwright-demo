@@ -112,6 +112,14 @@ input.invalid,select.invalid{border-color:var(--bad)!important;box-shadow:0 0 0 
       <button class="mi" data-call="dlStep">Izvozi STEP</button>
       <button class="mi" data-call="dlCsv">Izvozi kosovnico (CSV)</button>
       <button class="mi" data-call="dlPlan">Izvozi montažni načrt (CSV)</button>
+      <div class="sep"></div>
+      <div class="label">Rezalnica in poslovanje</div>
+      <button class="mi" id="menuBuildCut" data-call="buildCut">Izračunaj rezalni načrt (kerf)</button>
+      <button class="mi" id="menuDlCut" data-call="dlCut">Izvozi rezalni načrt (CSV)</button>
+      <button class="mi" id="menuDlOrder" data-call="dlOrder">Izvozi naročilnik (TXT)</button>
+      <button class="mi" id="menuDlQuote" data-call="dlQuote">Izvozi predračun (CSV)</button>
+      <div class="sep"></div>
+      <button class="mi" id="menuSelfTest" data-call="selfTest">Samoprevera (90 kombinacij)</button>
     </div>
   </div>
   <div class="menu" data-menu>
@@ -284,6 +292,9 @@ input.invalid,select.invalid{border-color:var(--bad)!important;box-shadow:0 0 0 
 <div><label>Revizija</label><input type="text" id="rev" value="A"></div>
 <div><label>Projekt / naziv</label><input type="text" id="proj" value="BALKONSKA OGRADA"></div>
 <div><label>Številka risbe</label><input type="text" id="drw" value="BO-002"></div>
+<div><label>Stranka</label><input type="text" id="stranka" value=""></div>
+<div><label>Objekt</label><input type="text" id="objekt" value=""></div>
+<div><label>Dobavitelj</label><input type="text" id="dobavitelj" value="WoodCore"></div>
 <div><label>Material (opis)</label><input type="text" id="mat" value="Aluminijeva zlitina"></div>
 <div><label>Toleranca</label><input type="text" id="tol" value="± 1 mm"></div>
 <div><label>Površina</label><input type="text" id="fin" value="Prašno barvanje"></div>
@@ -303,7 +314,18 @@ Konstrukcija odporna na vremenske vplive.</textarea>
 
 <section>
 <h2><i>6</i>Montaža in količine</h2>
-<div class="btns"><button class="btn" id="makePlan">Pripravi montažni načrt</button></div>
+<div class="btns"><button class="btn" id="makePlan">Pripravi montažni načrt</button><button class="btn" id="buildCut">Rezalni načrt (kerf)</button><button class="btn" id="buildQuote">Predračun</button></div>
+<div class="row3" style="margin-top:8px">
+<div><label>Tovariške dolžine desk (mm, loči z ;)</label><input id="stockLen" value="5800; 4000; 2200"></div>
+<div><label>Širina rezila — kerf (mm)</label><input id="kerf" type="number" value="3" min="0" step="0.5"></div>
+<div><label>Cena deska (EUR/m)</label><input id="priceBoard" type="number" value="24.5" min="0" step="0.1"></div>
+<div><label>Cena nosilec (EUR/kos)</label><input id="pricePost" type="number" value="12" min="0" step="0.1"></div>
+<div><label>Cena vijak (EUR/kos)</label><input id="priceScrew" type="number" value="0.9" min="0" step="0.1"></div>
+<div><label>Cena delo (EUR/ura)</label><input id="priceWork" type="number" value="35" min="0" step="0.1"></div>
+<div><label>Ocena dela (ure)</label><input id="workHours" type="number" value="12" min="0" step="0.5"></div>
+</div>
+<div id="cutOut" class="hint" style="margin-top:8px"></div>
+<div id="quoteOut" class="hint" style="margin-top:8px"></div>
 <div id="planOut" class="hint" style="margin-top:8px">Izmerite: L, H, D, cone, notranjo globino in št. nosilcev. Nato pripravite načrt (izvoz: Datoteka → Izvozi montažni načrt).</div>
 </section>
 
@@ -1059,7 +1081,7 @@ $("dlCsv").onclick=function(){
 };
 
 /* ---------- project ---------- */
-var fields=["L","H","D","n","sw","st","gap","wall","prof","topP","botP","np","postP","bolt","nbolt","zoneTop","zoneMid","zoneBot","zoneBase","innerD","sysUse","sysProfile","sysColor","sysSurface","matSel","rho","paper","scale","projType","rev","proj","drw","mat","tol","fin","aut","date","chk","ral","bracket","anchor","weld","notes","emb","sub","stN","stRise","stGoing","stW","stPosts","stH"];
+var fields=["L","H","D","n","sw","st","gap","wall","prof","topP","botP","np","postP","bolt","nbolt","zoneTop","zoneMid","zoneBot","zoneBase","innerD","sysUse","sysProfile","sysColor","sysSurface","matSel","rho","paper","scale","projType","rev","proj","drw","mat","tol","fin","aut","date","chk","ral","bracket","anchor","weld","notes","emb","sub","stN","stRise","stGoing","stW","stPosts","stH","stockLen","kerf","priceBoard","pricePost","priceScrew","priceWork","workHours","dobavitelj","stranka","objekt"];
 $("save").onclick=function(){var d={};fields.forEach(function(id){d[id]=V(id)});d.photo=S.photoData;d.cal=S.cal;d.calMode=S.calMode;d.calibrated=S.calibrated;d.lines=S.lines;saveBlob(V("drw")+"-project.json",JSON.stringify(d,null,2),"application/json")};
 $("loadBtn").onclick=function(){$("loadFile").click()};
 $("loadFile").onchange=function(e){var file=e.target.files[0];if(!file)return;var r=new FileReader();r.onload=function(){
@@ -1106,6 +1128,143 @@ $("L").addEventListener("input",applySystem);
 
 /* ---------- cut list / installation plan ---------- */
 var planData=null;
+
+/* ---------- Manufacturing: kerf-aware cut optimizer, quote, order ---------- */
+var cutData=null, quoteData=null, orderText="";
+function parseLens(raw){
+  var out=[];
+  String(raw||"").split(/[;,]/).forEach(function(x){
+    x=parseFloat(String(x).trim().replace(",","."));
+    if(isFinite(x)&&x>0)out.push(Math.round(x));
+  });
+  return out.length?out:[5800];
+}
+function optimizeStock(piece,count,stocks,kerf){
+  // Greedy: each step choose the stock giving least waste per piece.
+  var traki=[],left=Math.max(0,Math.round(count)),guard=0;
+  var uniq=stocks.filter(function(v,i,a){return a.indexOf(v)===i}).sort(function(a,b){return a-b});
+  while(left>0&&guard++<500){
+    var best=null;
+    uniq.forEach(function(B){
+      if(B<piece)return;
+      var k=Math.min(left,Math.max(1,Math.floor((B+kerf)/(piece+kerf))));
+      if(k<1)return;
+      var waste=B-k*piece-k*kerf, eff=waste/k;
+      if(!best||eff<best.eff-1e-9||(Math.abs(eff-best.eff)<=1e-9&&B<best.B))best={eff:eff,B:B,k:k};
+    });
+    if(!best)break;
+    traki.push({B:best.B,k:best.k,waste:Math.max(0,best.B-best.k*piece-best.k*kerf)});
+    left-=best.k;
+  }
+  return {traki:traki,unfilled:left};
+}
+
+/* ---------- Built-in regression self-test ---------- */
+function selfTest(){
+  var profiles=Object.keys(WC),uses=["precna","pokoncna","fasada","terasa","stopniscna"];
+  var vals={L:[2000,4000,6000],H:[900,1200,1500],n:[6,16,40],gap:[10,27,50]};
+  var total=0,failed=[],errs=[];
+  function snap(){var d={};fields.forEach(function(id){d[id]=V(id)});d.ref=$("refMode").checked;return d}
+  function restore(d){fields.forEach(function(id){if(d[id]!=null)$(id).value=d[id]});$("refMode").checked=!!d.ref}
+  var orig=snap();
+  var oldErr=window.onerror;var captured=[];
+  window.onerror=function(m){captured.push(String(m));return true};
+  try{
+    profiles.forEach(function(pk){
+      uses.forEach(function(u){
+        for(var i=0;i<3;i++){
+          total++;
+          try{
+            $("sysProfile").value=pk;$("sysUse").value=u;
+            $("L").value=vals.L[i];$("H").value=vals.H[i];
+            $("n").value=vals.n[i];$("gap").value=vals.gap[i];
+            $("refMode").checked=(u==="pokoncna"||i%2===0);
+            $("sysUse").dispatchEvent(new Event("change",{bubbles:true}));
+            generate();
+            var svg=document.querySelector("#prev svg");
+            if(!svg||svg.querySelectorAll("text").length<10)failed.push(pk+"/"+u+"/"+i+": no svg");
+          }catch(e){failed.push(pk+"/"+u+"/"+i+": "+e.message)}
+        }
+      });
+    });
+  }finally{window.onerror=oldErr;restore(orig);checks();}
+  errs=captured;
+  var msg="Samoprevera: "+total+" kombinacij · "+failed.length+" napak · "+errs.length+" JS napak"+
+    (failed.length?" · "+failed.slice(0,3).join(" | "):"")+
+    (errs.length?" · JS: "+errs.slice(0,2).join(" | "):"");
+  $("globalStatus").textContent=msg;
+  $("globalStatus").style.color=failed.length||errs.length?"var(--bad)":"var(--ok)";
+  return {total:total,failed:failed,errors:errs};
+}
+$("menuSelfTest").onclick=selfTest;
+
+function buildCut(){
+  var p=WC[$("sysProfile").value],L=Math.max(1,n("L"));
+  var N=Math.max(1,Math.round(n("n"))),kerf=Math.max(0,n("kerf"));
+  var stocks=parseLens($("stockLen").value),piece=Math.round(L);
+  var r=optimizeStock(piece,N,stocks,kerf),pc=1,rows=[];
+  r.traki.forEach(function(t,i){
+    var p1=pc,p2=pc+t.k-1;pc+=t.k;
+    rows.push(["DESKA "+(i+1),t.B+" mm",t.k+" kos",p1+"–"+p2,t.waste+" mm"]);
+  });
+  var used=r.traki.reduce(function(a,t){return a+t.B},0);
+  var waste=r.traki.reduce(function(a,t){return a+t.waste},0);
+  var yieldPct=used>0?Math.round((1-waste/used)*100):0;
+  cutData={piece:piece,count:N,kerf:kerf,rows:rows,used:used,waste:waste,yield:yieldPct,unfilled:r.unfilled,profile:p.n};
+  $("cutOut").innerHTML='<b style="color:var(--tx)">Rezalni načrt (kerf '+f(kerf)+' mm):</b> '+N+' kos × '+piece+' mm · nabava '+r.traki.length+' desk · poraba '+(used/1000).toFixed(2)+' m · odpad '+(waste/1000).toFixed(2)+' m · izkoristek '+yieldPct+'%'+((r.unfilled>0)?' · <span style="color:var(--bad)">'+r.unfilled+' kosov ni mogoče izrezati!</span>':'')+
+    (rows.length?'<table style="width:100%;font-size:11px;border-collapse:collapse;margin-top:5px"><tr><th>Vir</th><th>Deska</th><th>Kosov</th><th>Št. kosov</th><th>Ostanek</th></tr>'+rows.map(function(x){return '<tr><td>'+E(x[0])+'</td><td>'+E(x[1])+'</td><td>'+E(x[2])+'</td><td>'+E(x[3])+'</td><td>'+E(x[4])+'</td></tr>'}).join('')+'</table>':'');
+  buildQuote();
+  buildOrder();
+  return cutData;
+}
+function buildQuote(){
+  if(!cutData)buildCut();
+  var p=WC[$("sysProfile").value],np=Math.max(1,Math.round(n("np")));
+  var boardM=cutData.used/1000, screws=2*cutData.count+2*np;
+  var pb=n("priceBoard"),pp=n("pricePost"),ps=n("priceScrew"),pw=n("priceWork"),wh=n("workHours");
+  var items=[["WPC deske "+p.n,boardM.toFixed(2)+" m",boardM*pb],
+             ["Nosilci",np+" kos",np*pp],["Vijaki",screws+" kos",screws*ps],
+             ["Montaža",wh+" ur",wh*pw]];
+  var total=items.reduce(function(a,x){return a+x[2]},0);
+  quoteData={items:items,total:total};
+  $("quoteOut").innerHTML='<b style="color:var(--tx)">Orientacijski predračun (brez DDV):</b> <b style="color:var(--ac)">'+total.toFixed(2)+' EUR</b> · <span style="color:var(--mut)">cene so nastavljive zgoraj; predračun ni ponudba.</span>';
+  return quoteData;
+}
+function buildOrder(){
+  if(!cutData)buildCut();
+  var p=WC[$("sysProfile").value],np=Math.max(1,Math.round(n("np")));
+  var lines=["NAROČILO — WPC material ("+(V("dobavitelj")||"WoodCore")+")",
+    "Naloga: "+V("drw")+" • Stranka: "+(V("stranka")||"—")+" • Objekt: "+(V("objekt")||"—"),"",
+    "DESKE:",
+    "- "+p.n+", barva "+V("sysColor")+": "+cutData.count+" kos × "+cutData.piece+" mm",
+    "- Nabava: "+cutData.rows.map(function(r){return r[1]+" × "+r[2]}).join("; "),
+    "- Odpad: "+(cutData.waste/1000).toFixed(2)+" m, izkoristek "+cutData.yield+"%","",
+    "PROFILI IN PRITRDILA:",
+    "- Nosilci: "+np+" kos (razmak ≤ "+(p.max*10)+" mm)",
+    "- Vijaki ("+V("bolt")+"): "+(2*cutData.count+2*np)+" kos",
+    "- Sidra: "+(2*np)+" kos, globina "+V("emb")+" mm, podlaga "+V("sub"),"",
+    "Risba NI statični izračun — nosilnost in sidranje preveri strokovnjak."];
+  orderText=lines.join("\n");
+  return orderText;
+}
+$("buildCut").onclick=buildCut;
+$("buildQuote").onclick=buildQuote;
+$("menuDlCut").onclick=function(){
+  if(!cutData)buildCut();
+  var csv="\ufeff"+"Vir;Deska (mm);Kosov;Št. kosov;Ostanek (mm)\n"+
+    cutData.rows.map(function(r){return '"'+r.join('";"')+'"'}).join("\n")+
+    "\n\nSkupaj;kosa "+cutData.count+" × "+cutData.piece+" mm;;;"+cutData.waste+" mm\nIzkoristek;"+cutData.yield+"%;";
+  saveBlob(V("drw")+"-rezalni-nacrt.csv",csv,"text/csv;charset=utf-8");
+};
+$("menuDlOrder").onclick=function(){if(!orderText)buildOrder();saveBlob(V("drw")+"-narocilo.txt",orderText,"text/plain;charset=utf-8")};
+$("menuDlQuote").onclick=function(){
+  if(!quoteData)buildQuote();
+  var csv="\ufeff"+"Postavka;Količina;Znesek (EUR)\n"+
+    quoteData.items.map(function(x){return '"'+x[0]+'";"'+x[1]+'";"'+x[2].toFixed(2)+'"'}).join("\n")+
+    "\n\nSKUPAJ (brez DDV);;"+quoteData.total.toFixed(2);
+  saveBlob(V("drw")+"-predracun.csv",csv,"text/csv;charset=utf-8");
+};
+
 function buildPlan(){
   var p=WC[$("sysProfile").value],L=n("L"),N=Math.max(1,Math.round(n("n"))),np=Math.max(1,Math.round(n("np")));
   var cut=Math.max(1,L),per=Math.max(1,Math.floor(p.len/cut)),boards=Math.ceil(N/per),off=p.len-per*cut;
