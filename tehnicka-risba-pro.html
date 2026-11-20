@@ -349,8 +349,8 @@ input.invalid,select.invalid{border-color:var(--bad)!important;box-shadow:0 0 0 
 </div>
 <label id="matDensityLabel" style="margin-top:8px">Material in gostota</label>
 <div class="row">
-<div><select id="matSel"><option value="2700">Aluminij (2700 kg/m³)</option><option value="7850">Jeklo (7850 kg/m³)</option><option value="1300">WPC (1300 kg/m³)</option><option value="0">Po lastni izbiri</option></select></div>
-<div><input type="number" id="rho" value="2700" step="10"></div>
+<div><select id="matSel"><option value="2700">Aluminij (2700 kg/m³)</option><option value="7850">Jeklo (7850 kg/m³)</option><option value="1300" selected>WoodCore WPC (1300 kg/m³)</option><option value="0">Po lastni izbiri</option></select></div>
+<div><input type="number" id="rho" value="1300" step="10"></div>
 </div>
 <div class="row3" style="margin-top:8px">
 <div><label>Globina sidra (mm)</label><input type="number" id="emb" value="90"></div>
@@ -685,6 +685,7 @@ function stats(arr){
   return{m:m,sd:Math.sqrt(v/Math.max(1,c))};
 }
 function applyDetection(){
+  invalidateProduction();
   if(!S.det||S.det.lines.length<2)return;
   var sc=S.det.sc,cx=S.det.cx,lines=S.det.lines,ov=S.detOverride||{};
   /* Faza 1 (Issue #2 §5): ročno popravljena polja se ne prepišejo z izračuni zaznave */
@@ -843,7 +844,7 @@ function tbl(x,y,cols,rows,head){var s="",tot=cols.reduce(function(a,b){return a
   rows.forEach(function(row,ri){cx=x;for(j=0;j<row.length;j++){s+=tx(cx+1.3,cy+3.4,String(row[j]),2.1,"start");cx+=cols[j]}cy+=4.9;if(ri<rows.length-1)s+=ln(x,cy,tot+x,cy,0.12)});
   return s}
 function mass(){
-  var L=n("L"),N=n("n"),sw=n("sw"),stn=n("st"),wa=n("wall"),rho=n("rho"),prof=V("prof");
+  var L=cutLen(),N=cutCount(),sw=n("sw"),stn=n("st"),wa=n("wall"),rho=n("rho"),prof=V("prof");
   var area;
   if(prof==="rhombus")area=sw*stn/2;
   else if(prof==="tube")area=sw*stn-Math.max(0,sw-2*wa)*Math.max(0,stn-2*wa);
@@ -1088,7 +1089,7 @@ function generate(){
   s+=rc(fx,fy-fh+botH-1.5,fw,1.5,"#ddd","#111");
   for(var i=0;i<N;i++){var yy=fy-topH-(i+1)*pitch+gap*fs/2;s+=rc(fx,yy,fw,Math.max(0.5,sh),"#e6e6e6","#111");for(var k=1;k<NP;k++)s+=ln(fx+fw*k/NP,yy,fx+fw*k/NP,yy+sh,0.15)}
   for(k=0;k<NP;k++)s+=rc(fx+fw*k/NP-1,fy-topH,2,topH,"#cfcfcf","#111");
-  center(fx-4,fy-fh/2,fx+fw+4,fy-fh/2);
+  s+=center(fx-4,fy-fh/2,fx+fw+4,fy-fh/2);
   s+=dh(fx,fx+fw,fy+5,f(L),fy-fh)+dv(fy-fh,fy,fx-7,f(H),fx);
   var chx=fx+fw+6;
   if(topH>3.2)s+=dv(fy-fh,fy-fh+topH,chx,f(topHmm),fx+fw);
@@ -1104,7 +1105,7 @@ function generate(){
   s+=rc(sx,sy-shd,swd,shd,"none","#111");
   for(i=0;i<N;i++){var yy2=sy-shd+botH+(i+0.2)*(shd-topH-botH)/N;s+=rc(sx,yy2,swd,Math.max(0.5,stn*ss),"#e6e6e6","#111")}
   s+=rc(sx+swd,sy-shd*0.45,14,3,"#ddd","#111");
-  center(sx+swd/2,sy-shd-4,sx+swd/2,sy+4);
+  s+=center(sx+swd/2,sy-shd-4,sx+swd/2,sy+4);
   s+=dh(sx,sx+swd,sy+5,f(D),sy-shd)+dv(sy-shd,sy,sx+swd+7,f(H),sx+swd);
   s+=dh(sx,sx+swd-40*ss,sy-6,f(D-40),sy-shd);
 
@@ -1134,7 +1135,7 @@ function generate(){
   s+=panel(12,172,140,50,"PREREZ A–A");
   s+=rc(17,178,7,39,"none","#111")+hatch(17,178,7,39);
   var qx=27,qy=211;
-  center(qx,qy,qx+112,qy);
+  s+=center(qx,qy,qx+112,qy);
   for(i=0;i<8;i++){var y3=qy-i*4.2-3;s+='<path d="M'+(qx+3)+' '+y3+' L'+(qx+8)+' '+(y3-1.8)+' L'+(qx+13)+' '+y3+' L'+(qx+8)+' '+(y3+1.8)+' Z" fill="#ddd" stroke="#111" stroke-width="0.22"/>'}
   s+=rc(qx+1,qy-2,11,4,"none","#111")+rc(qx+96,qy-2,11,4,"none","#111");
   s+=dh(qx+3,qx+13,qy+9,"120",qy-4);
@@ -1148,7 +1149,7 @@ function generate(){
   s+=panel(158,172,114,50,"DETAIL LAMELE · U 80×20×2");
   var ux=214,uy=198,uh=16,uw=14;
   s+=poly([[ux-uw,uy-uh],[ux+uw,uy-uh],[ux+uw,uy+uh],[ux-uw,uy+uh],[ux-uw,uy+uh-2.5],[ux+uw-2.5,uy+uh-2.5],[ux+uw-2.5,uy-uh+2.5],[ux-uw,uy-uh+2.5]],"#dcdcdc","#111",0.3);
-  center(ux-uw-4,uy,ux+uw+5,uy);center(ux,uy-uh-4,ux,uy+uh+4);
+  s+=center(ux-uw-4,uy,ux+uw+5,uy);s+=center(ux,uy-uh-4,ux,uy+uh+4);
   s+=dh(ux-uw,ux+uw,uy+uh+8,f(stn),uy+uh)+dv(uy-uh,uy+uh,ux+uw+9,f(sw),ux+uw);
   s+=tx(162,214,"notranji polmer r = 2 mm",2.3,"start");
 
@@ -1198,12 +1199,12 @@ $("gen").onclick=generate;
 $("matSel").onchange=function(){if(n("matSel")>0)$("rho").value=V("matSel")};
 function svgEl(){return $("prev").querySelector("svg")}
 function saveBlob(name,data,type){var b=new Blob([data],{type:type}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=name;a.click();setTimeout(function(){URL.revokeObjectURL(a.href)},1200)}
-$("dlSvg").onclick=function(){if(!svgEl())return;saveBlob(V("drw")+".svg",new XMLSerializer().serializeToString(svgEl()),"image/svg+xml;charset=utf-8")};
+$("dlSvg").onclick=function(){generate();if(!svgEl())return;saveBlob(V("drw")+".svg",new XMLSerializer().serializeToString(svgEl()),"image/svg+xml;charset=utf-8")};
 function printHtml(svgText,paper){
   var pw=paper==="A3"?"420mm":paper==="A4"?"297mm":"594mm",ph=paper==="A3"?"297mm":paper==="A4"?"210mm":"420mm";
   return '<!doctype html><html><head><meta charset="utf-8"><style>@page{size:'+pw+' '+ph+';margin:0}html,body{margin:0;background:#fff}svg{width:'+pw+';height:'+ph+';display:block}</style></head><body>'+svgText+'</body></html>';
 }
-$("prt").onclick=function(){if(!svgEl())return;var w=window.open("","_blank");if(!w)return;
+$("prt").onclick=function(){generate();if(!svgEl())return;var w=window.open("","_blank");if(!w)return;
   w.document.write(printHtml(new XMLSerializer().serializeToString(svgEl()),V("paper")));w.document.close();setTimeout(function(){w.focus();w.print()},400)};
 
 /* ---------- DXF export ---------- */
@@ -1286,7 +1287,7 @@ function cp1250Bytes(str){
   }
   return out.subarray(0,n2);
 }
-function dxf(){if(!svgEl())return;saveBlob(V("drw")+".dxf",cp1250Bytes(dxfString({})),"application/dxf")}
+function dxf(){generate();if(!svgEl())return;saveBlob(V("drw")+".dxf",cp1250Bytes(dxfString({})),"application/dxf")}
 $("dlDxf").onclick=dxf;
 
 /* ---------- STEP model export ---------- */
@@ -1518,6 +1519,7 @@ function roksalUseNotes(p,use,H){
 }
 var notesTouched=false;
 function applySystem(){
+  invalidateProduction();
   var p=WC[$("sysProfile").value]||WC.romb67,use=V("sysUse"),color=V("sysColor"),surf=V("sysSurface"),H=n("H");
   /* barvna paleta po profilu (lestvice roksal.com) + uskladitev površine Klasik/Rustik */
   var pal=p.palette||PAL_KLASIK.concat(["White"],PAL_RUSTIK);
@@ -1555,6 +1557,7 @@ function applySystem(){
 }
 ["sysUse","sysProfile","sysColor","L","H","mountType"].forEach(function(id){$(id).addEventListener("change",applySystem)});
 $("L").addEventListener("input",applySystem);
+$("sysProfile").addEventListener("change",function(){var p3=WC[this.value]||WC.romb67;$("stockLen").value=String(p3.len);});
 /* izbira površine (Klasik/Rustik) samodejno izbere prvi ustrezni odtenek v paleti profila */
 $("sysSurface").addEventListener("change",function(){
   var pal=(WC[$("sysProfile").value]||{}).palette||[];
@@ -1934,7 +1937,7 @@ $("menuDlOrder").onclick=function(){if(!orderText)buildOrder();saveBlob(V("drw")
 function quoteCsv(){
   return "\ufeff"+"Postavka;Količina;Znesek (EUR)\n"+
     quoteData.items.map(function(x){return '"'+x[0]+'";"'+x[1]+'";"'+x[2].toFixed(2)+'"'}).join("\n")+
-    "\n\nSKUPAJ (brez DDV);;"+quoteData.total.toFixed(2);
+    "\n\nSKUPAJ (brez DDV);;"+quoteData.total.toFixed(2)+"\nOPOMBA: predračun je orientacijski in ni ponudba.";
 }
 $("menuDlQuote").onclick=function(){
   if(!quoteData)buildQuote();
@@ -2288,6 +2291,7 @@ var PRESETS={
   kubo:{use:"fasada",profile:"kubo80",color:"Oak wood",gap:30,n:20,L:4000,H:1200,D:1200}
 };
 function applyPreset(k){
+  invalidateProduction();
   var p=PRESETS[k];if(!p)return;
   $("sysUse").value=p.use;$("sysProfile").value=p.profile;$("sysColor").value=p.color;
   $("refMode").checked=true;
@@ -2336,6 +2340,7 @@ function syncSteps(){
 function applyZoom(){var sv=svgEl();if(sv){sv.style.width=zoom+"%";sv.style.height="auto"}$("zoomVal").textContent=zoom+"%"}
 function setZoom(v){zoom=Math.max(50,Math.min(200,v));applyZoom()}
 function showExample(){
+  invalidateProduction();
   $("refMode").checked=true;
   [["L",3800],["H",1200],["D",1200],["n",16],["zoneTop",120],["zoneMid",800],["zoneBot",120],["zoneBase",60],["innerD",1160]].forEach(function(p){$(p[0]).value=p[1]});
   checks();generate();syncSteps();

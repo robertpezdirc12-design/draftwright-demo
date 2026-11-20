@@ -89,6 +89,8 @@ async function lastText() {
   t = await lastText();
   check("S6 stale: checklist svež (20 → 5 °C, 5 → 7 mm)", !!t && t.includes("pri 5 °C") && t.includes("7 mm"), (t || "").match(/Reža med deskami[^\n]*/)?.[0]);
   // izvozni dialog: mešanica sveže/zastarele je prej obstajala — zdaj vse sveže
+  setUse("precna");
+  $("sysProfile").value = "romb67"; fire($("sysProfile"), "change");
   setField("installTemp", 20); setField("L", 4000); setField("n", 16);
   $("buildCut").click(); $("makePlan").click();
   setField("L", 5800);
@@ -97,7 +99,7 @@ async function lastText() {
   document.querySelector('[data-exp-preset="full"]').click();
   downloads.length = 0;
   $("expGo").click();
-  await new Promise((r) => setTimeout(r, 400 * 12));
+  for (let i = 0; i < 200 && $("expOverlay").classList.contains("on"); i++) await new Promise((r) => setTimeout(r, 50));
   const names = downloads.map((d) => d.name);
   check("S7 dialog: 10 prenosov (risba + 9 prilog)", downloads.length === 10, names.join(", "));
   let cutTxt = null, planTxt = null, quoteTxt = null;
@@ -113,6 +115,7 @@ async function lastText() {
 
   // ---- pogl. 4: pokončna dolžina reza (P0-1) ----
   setUse("pokoncna");
+  $("sysProfile").value = "romb67"; fire($("sysProfile"), "change");
   function setUse(v) { $("sysUse").value = v; fire($("sysUse"), "change"); }
   setField("L", 3800); setField("zoneMid", 800); setField("n", 16);
   $("buildCut").click();
@@ -155,7 +158,7 @@ async function lastText() {
 
   // ---- pogl. 4: DP optimizator (P2-2) + kerf k−1 (P2-5) ----
   setUse("precna");
-  setField("L", 500); setField("n", 16);
+  setField("L", 500); setField("n", 16); setField("stockLen", "5800; 4000; 2200");
   $("buildCut").click();
   check("P2-2 DP: 16×500 iz 4×2200 = 8.80 m", $("cutOut").textContent.includes("4 desk") && $("cutOut").textContent.includes("8.80 m"), $("cutOut").textContent.slice(0, 100));
   setField("L", 2400); setField("n", 2);
@@ -191,7 +194,7 @@ async function lastText() {
   downloads.length = 0;
   $("menuDlOrder").click();
   t = await lastText();
-  check("naročilnik: nabava agregirana", !!t && t.includes("4000 mm × 11 kos") && !t.includes("4000 mm × 1 kos;"), (t || "").match(/Nabava[^\n]*/)?.[0]);
+  check("naročilnik: nabava agregirana", !!t && t.includes("5800 mm × 11 kos") && !t.includes("5800 mm × 1 kos;"), (t || "").match(/Nabava[^\n]*/)?.[0]);
   check("naročilnik: površina Klasik", !!t && t.includes("(Klasik)"));
 
   // ---- pogl. 2: refMode v projektu ----

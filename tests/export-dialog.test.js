@@ -60,8 +60,14 @@ const itemCb = (id) => document.querySelector(`#expItems [data-exp-item="${id}"]
 const advCb = (id) => document.querySelector(`#expAdv [data-exp-adv="${id}"]`);
 async function runExportAndWait() {
   downloads.length = 0; printWindows = [];
+  if ($("expGo").disabled) return downloads;
   $("expGo").click();
-  await sleep(400 * 11); // sekvenčni izvoz: 400 ms med datotekami; čakanje preseže tudi končni status callback
+  // čakaj na zaključek izvozne verige po statusu (odporno na load); največ 20 s
+  for (let i = 0; i < 400; i++) {
+    await sleep(50);
+    if (/Izvoz (končan|prekinjen)|končan z napakami|Napaka pri izvozu/.test($("globalStatus").textContent)) break;
+  }
+  await sleep(60);
   return downloads;
 }
 
