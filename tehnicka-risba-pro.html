@@ -94,6 +94,60 @@ section.collapsed>*:not(h2){display:none}
 .guided .advanced{display:none!important}
 input.invalid,select.invalid{border-color:var(--bad)!important;box-shadow:0 0 0 1px var(--bad)}
 #globalStatus{font-size:11px;color:var(--mut);padding:8px 0 0;border-top:1px solid var(--line);margin-top:10px}
+/* Export dialog — poenotene možnosti izvoza */
+.exp-overlay{position:fixed;inset:0;z-index:100;background:#000b;display:none;align-items:flex-start;justify-content:center;overflow:auto;padding:36px 14px}
+.exp-overlay.on{display:flex}
+.exp-dialog{background:var(--panel);color:var(--tx);border:1px solid var(--line);border-radius:14px;box-shadow:0 24px 60px #000d;width:100%;max-width:640px;overflow:hidden}
+.exp-head{padding:16px 18px 12px;border-bottom:1px solid var(--line);display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.exp-head h1{font-size:16px;font-weight:600;margin:0 0 3px}
+.exp-sub{color:var(--mut);font-size:12px;margin:0}
+.exp-x{background:transparent;border:none;color:var(--mut);width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:18px;flex:0 0 auto}
+.exp-x:hover{background:var(--p2);color:var(--tx)}
+.exp-body{padding:14px 18px 6px;max-height:64vh;overflow:auto}
+.exp-label{font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px}
+.exp-chips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px}
+.exp-chip{border:1px solid var(--line);background:var(--p2);color:var(--tx);padding:6px 11px;border-radius:999px;font:inherit;font-size:12px;cursor:pointer}
+.exp-chip:hover{border-color:var(--ac)}
+.exp-chip.active{background:#2a1c16;color:var(--ac);border-color:var(--ac)}
+.exp-fmt{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.exp-fmt .m{color:var(--mut);font-size:12px}
+.exp-segs{display:inline-flex;background:var(--bar);border:1px solid var(--line);border-radius:9px;padding:3px;gap:2px}
+.exp-seg{border:none;background:transparent;color:var(--mut);padding:5px 10px;border-radius:7px;font:inherit;font-size:12px;cursor:pointer}
+.exp-seg.active{background:var(--p2);color:var(--ac)}
+.exp-seg:disabled{cursor:not-allowed}
+.exp-fmt-off{color:var(--wa);font-size:11px;display:none}
+.exp-sec{border:1px solid var(--line);border-radius:10px;margin-bottom:10px;background:#1a1a17}
+.exp-sec-h{width:100%;display:flex;align-items:center;gap:10px;padding:10px 12px;background:transparent;border:none;color:var(--tx);cursor:pointer;text-align:left;font:inherit;font-size:13px;border-radius:10px}
+.exp-sec-h:hover{background:#20201c}
+.exp-chev{color:var(--mut);transition:transform .15s;font-size:11px;width:14px;flex:0 0 auto}
+.exp-sec.open .exp-chev{transform:rotate(90deg)}
+.exp-sum{flex:1;text-align:right;font-size:11px;color:var(--mut)}
+.exp-sec-b{padding:2px 12px 10px 34px;display:none}
+.exp-sec.open .exp-sec-b{display:block}
+.exp-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:7px 0;border-top:1px solid #26261f}
+.exp-row:first-child{border-top:none}
+.exp-it{display:flex;align-items:center;gap:8px;font-size:13px;min-width:0;flex-wrap:wrap}
+.exp-it .i{color:var(--mut);font-size:10.5px;border:1px solid var(--line);width:17px;height:17px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;cursor:help;flex:0 0 auto}
+.exp-it .tag{color:var(--mut);font-size:10.5px;border:1px solid var(--line);border-radius:4px;padding:1px 5px;flex:0 0 auto}
+.exp-sw{position:relative;width:36px;height:20px;flex:0 0 auto}
+.exp-sw input{opacity:0;width:0;height:0}
+.exp-sl{position:absolute;inset:0;cursor:pointer;background:#34342e;border-radius:999px;transition:.15s}
+.exp-sl:before{content:"";position:absolute;height:14px;width:14px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.15s}
+.exp-sw input:checked+.exp-sl{background:var(--ac)}
+.exp-sw input:checked+.exp-sl:before{transform:translateX(16px)}
+.exp-links{display:flex;gap:6px}
+.exp-lk{background:transparent;border:none;color:var(--ac);font:inherit;font-size:11.5px;cursor:pointer;padding:3px 6px;border-radius:6px}
+.exp-lk:hover{background:var(--p2)}
+.exp-field{margin-top:9px}
+.exp-field label{display:block;font-size:11px;color:var(--mut);margin-bottom:5px}
+.exp-foot{padding:12px 18px 16px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.exp-note{color:var(--mut);font-size:11.5px}
+.exp-note.err{color:var(--bad)}
+.exp-actions{display:flex;gap:8px}
+.exp-cancel{background:var(--p2);color:var(--tx);border:1px solid var(--line);border-radius:6px;padding:8px 13px;font:inherit;font-size:12.5px;cursor:pointer}
+.exp-cancel:hover{border-color:var(--ac)}
+.exp-go{background:var(--ac);color:#1a120e;border:1px solid var(--ac);border-radius:6px;padding:8px 14px;font:inherit;font-size:12.5px;font-weight:600;cursor:pointer}
+.exp-go:disabled{opacity:.45;cursor:not-allowed}
 @media(max-width:950px){.grid{grid-template-columns:1fr}aside{max-height:none;border-right:0;border-bottom:1px solid var(--line)}.brand small{display:none}.menubar{flex-wrap:wrap;height:auto;padding:6px 8px}}
 </style>
 </head>
@@ -143,6 +197,7 @@ input.invalid,select.invalid{border-color:var(--bad)!important;box-shadow:0 0 0 
       <button class="mi" data-call="save">Shrani projekt… <span class="k">Ctrl+S</span></button>
       <div class="sep"></div>
       <div class="label">Izvoz</div>
+      <button class="mi" data-call="exportDialog">Izvozi… — možnosti izvoza <span class="k">Ctrl+E</span></button>
       <button class="mi" data-call="prt">PDF / tisk</button>
       <button class="mi" data-call="dlSvg">Izvozi SVG</button>
       <button class="mi" data-call="dlDxf">Izvozi DXF</button>
@@ -196,6 +251,7 @@ input.invalid,select.invalid{border-color:var(--bad)!important;box-shadow:0 0 0 
       <div style="padding:6px 8px;font-size:12px;color:var(--mut);line-height:1.7">
         <div><span class="kbd">Ctrl+G</span> generiraj risbo</div>
         <div><span class="kbd">Ctrl+S</span> shrani projekt</div>
+        <div><span class="kbd">Ctrl+E</span> možnosti izvoza</div>
         <div><span class="kbd">+</span> / <span class="kbd">−</span> povečava predogleda</div>
         <div><span class="kbd">Ctrl+V</span> prilepi sliko</div>
       </div>
@@ -356,9 +412,10 @@ Konstrukcija odporna na vremenske vplive.</textarea>
 
 <section data-panel="export">
 <h2><i>7</i>Izdelava</h2>
-<p class="hint" style="margin-top:0">Sklope odpirate iz zgornje vrstice <b>Plošča ▾</b> — kliknite samo tistega, ki ga potrebujete. Polja izbivate tam pod <b>Vidni sklopi in polja…</b>, izvozi in nastavitve so v meniju <b>Datoteka</b> in <b>Orodja</b>. Vsa funkcionalnost je ohranjena.</p>
+<p class="hint" style="margin-top:0">Sklope odpirate iz zgornje vrstice <b>Plošča ▾</b> — kliknite samo tistega, ki ga potrebujete. Polja izbivate tam pod <b>Vidni sklopi in polja…</b>, celoten izvoz (risba + priloge) pripravite prek <b>Datoteka → Izvozi…</b> (Ctrl+E); posamezne hitre izvoze najdete v istem meniju.</p>
 <div class="btns" style="margin-top:10px">
   <button class="btn go" id="gen">Generiraj risbo</button>
+  <button class="btn" type="button" data-call="exportDialog">Izvozi…</button>
   <button class="btn" type="button" data-call="prt">PDF / tisk</button>
 </div>
 <p class="hint"><span class="kbd">Ctrl+G</span> generiraj · <span class="kbd">Ctrl+S</span> shrani · <span class="kbd">Alt+P</span> izbira plošče · Referenčni način: <b>Orodja</b></p>
@@ -379,6 +436,86 @@ Konstrukcija odporna na vremenske vplive.</textarea>
 </div>
 
 <button id="showAside" class="show-aside-handle" type="button" title="Prikaži stransko ploščo">☰ Plošča</button>
+<div class="exp-overlay" id="expOverlay">
+  <div class="exp-dialog" role="dialog" aria-modal="true" aria-label="Možnosti izvoza">
+    <div class="exp-head">
+      <div><h1>Možnosti izvoza</h1><p class="exp-sub">Izberite vsebino in format risbe — priloge se izvozijo v svojih nativnih formatih (CSV/TXT/JSON).</p></div>
+      <button class="exp-x" id="expClose" type="button" aria-label="Zapri" title="Zapri (Esc)">×</button>
+    </div>
+    <div class="exp-body">
+      <div class="exp-label">Prednastavitve</div>
+      <div class="exp-chips" id="expChips">
+        <button class="exp-chip active" data-exp-preset="full" type="button">Celotna dokumentacija</button>
+        <button class="exp-chip" data-exp-preset="delavnica" type="button">Za delavnico</button>
+        <button class="exp-chip" data-exp-preset="narocilo" type="button">Za naročilo</button>
+        <button class="exp-chip" data-exp-preset="minimalno" type="button">Samo risba</button>
+      </div>
+      <div class="exp-fmt">
+        <span class="m">Format risbe:</span>
+        <div class="exp-segs" id="expSegs" role="tablist" aria-label="Format risbe">
+          <button class="exp-seg active" data-exp-format="PDF" type="button">PDF / tisk</button>
+          <button class="exp-seg" data-exp-format="SVG" type="button">SVG</button>
+          <button class="exp-seg" data-exp-format="DXF" type="button">DXF</button>
+          <button class="exp-seg" data-exp-format="STEP" type="button">STEP</button>
+        </div>
+        <span class="exp-fmt-off" id="expFmtOff">Format ni aktiven — izvozijo se samo priloge.</span>
+      </div>
+      <div class="exp-sec open" data-exp-sec="vsebina">
+        <button class="exp-sec-h" type="button">
+          <span class="exp-chev">▶</span>
+          <span>Vsebina</span>
+          <span class="exp-sum" id="expSumVsebina"></span>
+        </button>
+        <div class="exp-sec-b">
+          <div id="expItems"></div>
+          <div class="exp-links" style="margin-top:6px">
+            <button class="exp-lk" type="button" data-exp-all="vse">Vse</button>
+            <button class="exp-lk" type="button" data-exp-all="nic">Nič</button>
+          </div>
+        </div>
+      </div>
+      <div class="exp-sec" data-exp-sec="list">
+        <button class="exp-sec-h" type="button">
+          <span class="exp-chev">▶</span>
+          <span>List</span>
+          <span class="exp-sum" id="expSumList"></span>
+        </button>
+        <div class="exp-sec-b">
+          <div class="exp-row" style="border-top:none">
+            <div class="exp-it"><span>Format lista</span><span class="i" title="Velja za risbo (PDF/SVG) in se uskladi s poljem »Format« na stranskem plošču.">i</span></div>
+            <select id="expPaper" style="width:auto"><option value="A3">A3 420×297</option><option value="A4">A4 297×210</option><option value="A2">A2 594×420</option></select>
+          </div>
+          <p class="hint" style="margin-top:6px">Merilo, revizija in naslovni blok se vzamejo iz sklopa »List in opombe«.</p>
+        </div>
+      </div>
+      <div class="exp-sec" data-exp-sec="napredno">
+        <button class="exp-sec-h" type="button">
+          <span class="exp-chev">▶</span>
+          <span>Napredno</span>
+          <span class="exp-sum" id="expSumAdv"></span>
+        </button>
+        <div class="exp-sec-b">
+          <div id="expAdv"></div>
+          <div class="exp-field" id="expWmField" style="display:none">
+            <label for="expWmText">Besedilo vodnega žiga</label>
+            <input type="text" id="expWmText" value="OSNUTEK">
+          </div>
+          <div class="exp-field" id="expSegField" style="display:none">
+            <label for="expSegSel">Natančnost krivulj v DXF (segmentov na krivuljo)</label>
+            <select id="expSegSel"><option value="4">Nizka (4) — manjša datoteka</option><option value="8" selected>Srednja (8) — priporočeno</option><option value="16">Visoka (16) — gladko</option></select>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="exp-foot">
+      <div class="exp-note" id="expNote"></div>
+      <div class="exp-actions">
+        <button class="exp-cancel" id="expCancel" type="button">Prekliči</button>
+        <button class="exp-go" id="expGo" type="button">Izvozi</button>
+      </div>
+    </div>
+  </div>
+</div>
 <div class="hooks" aria-hidden="true">
   <button id="modeGuided" type="button"></button>
   <button id="modeExpert" type="button"></button>
@@ -392,6 +529,7 @@ Konstrukcija odporna na vremenske vplive.</textarea>
   <button id="loadBtn" type="button"></button>
   <input type="file" id="loadFile" accept="application/json">
   <button id="dlPlan" type="button"></button>
+  <button id="exportDialog" type="button"></button>
   <button id="genQuick" type="button"></button>
   <button id="dlSvgQuick" type="button"></button>
   <button id="prtQuick" type="button"></button>
@@ -998,14 +1136,19 @@ $("matSel").onchange=function(){if(n("matSel")>0)$("rho").value=V("matSel")};
 function svgEl(){return $("prev").querySelector("svg")}
 function saveBlob(name,data,type){var b=new Blob([data],{type:type}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=name;a.click();setTimeout(function(){URL.revokeObjectURL(a.href)},1200)}
 $("dlSvg").onclick=function(){if(!svgEl())return;saveBlob(V("drw")+".svg",new XMLSerializer().serializeToString(svgEl()),"image/svg+xml;charset=utf-8")};
-$("prt").onclick=function(){if(!svgEl())return;var w=window.open("","_blank");if(!w)return;var pw=V("paper")==="A3"?"420mm":V("paper")==="A4"?"297mm":"594mm",ph=V("paper")==="A3"?"297mm":V("paper")==="A4"?"210mm":"420mm";
-  w.document.write('<!doctype html><html><head><meta charset="utf-8"><style>@page{size:'+pw+' '+ph+';margin:0}html,body{margin:0;background:#fff}svg{width:'+pw+';height:'+ph+';display:block}</style></head><body>'+new XMLSerializer().serializeToString(svgEl())+'</body></html>');w.document.close();setTimeout(function(){w.focus();w.print()},400)};
+function printHtml(svgText,paper){
+  var pw=paper==="A3"?"420mm":paper==="A4"?"297mm":"594mm",ph=paper==="A3"?"297mm":paper==="A4"?"210mm":"420mm";
+  return '<!doctype html><html><head><meta charset="utf-8"><style>@page{size:'+pw+' '+ph+';margin:0}html,body{margin:0;background:#fff}svg{width:'+pw+';height:'+ph+';display:block}</style></head><body>'+svgText+'</body></html>';
+}
+$("prt").onclick=function(){if(!svgEl())return;var w=window.open("","_blank");if(!w)return;
+  w.document.write(printHtml(new XMLSerializer().serializeToString(svgEl()),V("paper")));w.document.close();setTimeout(function(){w.focus();w.print()},400)};
 
 /* ---------- DXF export ---------- */
 function num(v){return (Math.round(v*1000)/1000).toFixed(3)}
-function dxf(){
-  if(!svgEl())return;
-  var doc=new DOMParser().parseFromString(new XMLSerializer().serializeToString(svgEl()),"image/svg+xml");
+function dxfString(opts){
+  opts=opts||{};
+  var seg=Math.max(2,opts.segs||8);
+  var doc=new DOMParser().parseFromString(opts.source||new XMLSerializer().serializeToString(svgEl()),"image/svg+xml");
   var out=[];function add(){for(var i=0;i<arguments.length;i++)out.push(arguments[i])}
   add("0","SECTION","2","HEADER","9","$ACADVER","1","AC1009","0","ENDSEC","0","SECTION","2","TABLES","0","TABLE","2","LAYER","70","1","0","LAYER","2","0","70","0","62","7","6","CONTINUOUS","0","ENDTAB","0","ENDSEC","0","SECTION","2","ENTITIES");
   function flip(v){return 297-v}
@@ -1038,23 +1181,25 @@ function dxf(){
         if(!/[A-Za-z]/.test(C)){ii++;continue}
         if(C==="M"){ii++;flushPoly();px=parseFloat(tk[ii]);py=parseFloat(tk[ii+1]);ii+=2;sp={x:px,y:py};pv.push({x:px,y:py})}
         else if(C==="L"){ii++;px=parseFloat(tk[ii]);py=parseFloat(tk[ii+1]);ii+=2;pv.push({x:px,y:py})}
-        else if(C==="Q"){ii++;var qx=parseFloat(tk[ii]),qy=parseFloat(tk[ii+1]),ex=parseFloat(tk[ii+2]),ey=parseFloat(tk[ii+3]);ii+=4;for(var s2=1;s2<=8;s2++){var tt=s2/8,mt=1-tt;pv.push({x:mt*mt*px+2*mt*tt*qx+tt*tt*ex,y:mt*mt*py+2*mt*tt*qy+tt*tt*ey})}px=ex;py=ey}
+        else if(C==="Q"){ii++;var qx=parseFloat(tk[ii]),qy=parseFloat(tk[ii+1]),ex=parseFloat(tk[ii+2]),ey=parseFloat(tk[ii+3]);ii+=4;for(var s2=1;s2<=seg;s2++){var tt=s2/seg,mt=1-tt;pv.push({x:mt*mt*px+2*mt*tt*qx+tt*tt*ex,y:mt*mt*py+2*mt*tt*qy+tt*tt*ey})}px=ex;py=ey}
         else if(C==="Z"){ii++;if(sp){pv.push({x:sp.x,y:sp.y});px=sp.x;py=sp.y}flushPoly()}
         else{ii++}
       }
       flushPoly();
     }else if(tag==="text"){
+      if(opts.geomOnly)continue;
       var tr=e.getAttribute("transform")||"",rot=0,mm=tr.match(/rotate\((-?[\d.]+)/);if(mm)rot=parseFloat(mm[1]);
       add("0","TEXT","8","0","10",num(A("x")),"20",num(flip(A("y"))),"30","0","40",num(A("font-size")||2.6),"1",(e.textContent||"").trim(),"50",num(rot));
     }
   }
   add("0","ENDSEC","0","EOF");
-  saveBlob(V("drw")+".dxf",out.join("\n"),"application/dxf");
+  return out.join("\n");
 }
+function dxf(){if(!svgEl())return;saveBlob(V("drw")+".dxf",dxfString({}),"application/dxf")}
 $("dlDxf").onclick=dxf;
 
 /* ---------- STEP model export ---------- */
-function stepExport(){
+function stepString(){
   var ents=[],id=0;
   function add(s){ents.push("#"+(++id)+" = "+s+";");return "#"+id}
   function dim(str,fallback){var a=(String(str||"").match(/\d+(?:\.\d+)?/g)||[]).map(Number);return a.length>=2?[a[0],a[1]]:fallback}
@@ -1124,17 +1269,19 @@ function stepExport(){
   out+="FILE_NAME('"+V("drw").replace(/'/g,"")+"','2026-01-01T00:00:00',(''),(''),'','','');\n";
   out+="FILE_SCHEMA(('AUTOMOTIVE_DESIGN { 1 0 10303 214 1 1 1 1 }'));\nENDSEC;\nDATA;\n";
   out+=ents.join("\n")+"\nENDSEC;\nEND-ISO-10303-21;\n";
-  saveBlob(V("drw")+".step",out,"application/step");
+  return out;
 }
-$("dlStep").onclick=stepExport;
-$("dlCsv").onclick=function(){
+$("dlStep").onclick=function(){saveBlob(V("drw")+".step",stepString(),"application/step")};
+function kosovnicaCsv(){
   var rows=[["Št.","Naziv","Material","Dimenzije (mm)","Količina"],["1","Zgornji profil","Alu/jeklo",V("topP"),"1"],["2","Lamela",V("prof"),f(n("sw"))+"x"+f(n("st"))+" x "+f(n("L")),n("n")],["3","Spodnji profil","Alu/jeklo",V("botP"),"1"],["4","Nosilec","Jeklo",V("postP"),n("np")],["5","Vijaki RF","Inox","2 na lamelo + 2 na nosilec",2*n("n")+2*n("np")],["6","Pritrdilni vijak","Inox",V("bolt"),n("np")*n("nbolt")],["","SKUPNA MASA","",f(mass())+" kg",""]];
-  saveBlob(V("drw")+"-kosovnica.csv","\ufeff"+rows.map(function(r){return r.map(function(c){return '"'+String(c).replace(/"/g,'""')+'"'}).join(";")}).join("\n"),"text/csv;charset=utf-8");
-};
+  return "\ufeff"+rows.map(function(r){return r.map(function(c){return '"'+String(c).replace(/"/g,'""')+'"'}).join(";")}).join("\n");
+}
+$("dlCsv").onclick=function(){saveBlob(V("drw")+"-kosovnica.csv",kosovnicaCsv(),"text/csv;charset=utf-8")};
 
 /* ---------- project ---------- */
 var fields=["L","H","D","n","sw","st","gap","wall","prof","topP","botP","np","postP","bolt","nbolt","zoneTop","zoneMid","zoneBot","zoneBase","innerD","sysUse","sysProfile","sysColor","sysSurface","matSel","rho","paper","scale","projType","rev","proj","drw","mat","tol","fin","aut","date","chk","ral","bracket","anchor","weld","notes","emb","sub","stN","stRise","stGoing","stW","stPosts","stH","stockLen","kerf","priceBoard","pricePost","priceScrew","priceWork","workHours","installTemp","slopeMM","mountType","weldedParts","installer","handoverDate","dobavitelj","stranka","objekt"];
-$("save").onclick=function(){var d={};fields.forEach(function(id){d[id]=V(id)});d.photo=S.photoData;d.cal=S.cal;d.calMode=S.calMode;d.calibrated=S.calibrated;d.lines=S.lines;saveBlob(V("drw")+"-project.json",JSON.stringify(d,null,2),"application/json")};
+function projectJson(){var d={};fields.forEach(function(id){d[id]=V(id)});d.photo=S.photoData;d.cal=S.cal;d.calMode=S.calMode;d.calibrated=S.calibrated;d.lines=S.lines;return JSON.stringify(d,null,2)}
+$("save").onclick=function(){saveBlob(V("drw")+"-project.json",projectJson(),"application/json")};
 $("loadBtn").onclick=function(){$("loadFile").click()};
 $("loadFile").onchange=function(e){var file=e.target.files[0];if(!file)return;var r=new FileReader();r.onload=function(){
   try{var d=JSON.parse(r.result);fields.forEach(function(id){if(d[id]!=null)$(id).value=d[id]});S.calMode=d.calMode||"linear";S.cal=d.cal||null;S.calibrated=!!d.calibrated;S.lines=d.lines||[];
@@ -1434,20 +1581,24 @@ function buildChecklist(){
 }
 $("buildCut").onclick=buildCut;
 $("buildQuote").onclick=buildQuote;
-$("menuDlCut").onclick=function(){
-  if(!cutData)buildCut();
-  var csv="\ufeff"+"Vir;Deska (mm);Kosov;Št. kosov;Ostanek (mm)\n"+
+function cutCsv(){
+  return "\ufeff"+"Vir;Deska (mm);Kosov;Št. kosov;Ostanek (mm)\n"+
     cutData.rows.map(function(r){return '"'+r.join('";"')+'"'}).join("\n")+
     "\n\nSkupaj;kosa "+cutData.count+" × "+cutData.piece+" mm;;;"+cutData.waste+" mm\nIzkoristek;"+cutData.yield+"%;";
-  saveBlob(V("drw")+"-rezalni-nacrt.csv",csv,"text/csv;charset=utf-8");
+}
+$("menuDlCut").onclick=function(){
+  if(!cutData)buildCut();
+  saveBlob(V("drw")+"-rezalni-nacrt.csv",cutCsv(),"text/csv;charset=utf-8");
 };
 $("menuDlOrder").onclick=function(){if(!orderText)buildOrder();saveBlob(V("drw")+"-narocilo.txt",orderText,"text/plain;charset=utf-8")};
-$("menuDlQuote").onclick=function(){
-  if(!quoteData)buildQuote();
-  var csv="\ufeff"+"Postavka;Količina;Znesek (EUR)\n"+
+function quoteCsv(){
+  return "\ufeff"+"Postavka;Količina;Znesek (EUR)\n"+
     quoteData.items.map(function(x){return '"'+x[0]+'";"'+x[1]+'";"'+x[2].toFixed(2)+'"'}).join("\n")+
     "\n\nSKUPAJ (brez DDV);;"+quoteData.total.toFixed(2);
-  saveBlob(V("drw")+"-predracun.csv",csv,"text/csv;charset=utf-8");
+}
+$("menuDlQuote").onclick=function(){
+  if(!quoteData)buildQuote();
+  saveBlob(V("drw")+"-predracun.csv",quoteCsv(),"text/csv;charset=utf-8");
 };
 $("buildChecklist").onclick=buildChecklist;
 $("menuBuildChecklist").onclick=buildChecklist;
@@ -1478,11 +1629,231 @@ function buildPlan(){
   $("planOut").innerHTML='<table style="width:100%;font-size:11px;border-collapse:collapse">'+rows.map(function(r){return '<tr><td style="padding:2px 4px;border-bottom:1px solid var(--line)">'+E(r[0])+'</td><td style="padding:2px 4px;border-bottom:1px solid var(--line)">'+E(r[1])+'</td><td style="padding:2px 4px;border-bottom:1px solid var(--line);text-align:right;color:var(--tx)">'+E(r[2])+'</td></tr>'}).join('')+'</table><p style="margin-top:6px">Barva: '+E(V("sysColor"))+' · površina: '+E(V("sysSurface"))+' · montaža nad +5 °C. Količine so orientacijske — preverite jih pri naročilu.</p>';
 }
 $("makePlan").onclick=buildPlan;
+function planCsv(){
+  return "\ufeff"+"Postavka;Specifikacija;Količina\n"+planData.map(function(r){return '"'+r.join('";"')+'"'}).join("\n");
+}
 $("dlPlan").onclick=function(){
   if(!planData)buildPlan();
-  var csv="\ufeff"+"Postavka;Specifikacija;Količina\n"+planData.map(function(r){return '"'+r.join('";"')+'"'}).join("\n");
-  saveBlob(V("drw")+"-montaza.csv",csv,"text/csv;charset=utf-8");
+  saveBlob(V("drw")+"-montaza.csv",planCsv(),"text/csv;charset=utf-8");
 };
+
+/* ---------- Izvozni dialog — poenotene možnosti izvoza (Ctrl+E) ---------- */
+(function(){
+  var EXP={open:false,format:"PDF",preset:"full"};
+  var EXP_ITEMS=[
+    {id:"risba",label:"Risba (tehnični list)",tag:"risba",tip:"Trenutno generirani list: pogledi, tloris, izometrija, prerezi, detajli, kosovnica na listu in naslovni blok. Izvozi se v izbranem formatu (PDF/SVG/DXF/STEP).",on:true},
+    {id:"kosovnica",label:"Kosovnica",tag:"CSV",tip:"Seznam sestavnih delov z materialom, dimenzijami, količinami in skupno maso konstrukcije.",on:true},
+    {id:"cut",label:"Rezalni načrt (kerf)",tag:"CSV",tip:"Optimizacija rezov po tovariških dolžinah desk z upoštevanjem širine rezila; poraba, odpadek in izkoristek.",on:true},
+    {id:"plan",label:"Montažni načrt",tag:"CSV",tip:"Količine za montažo: lamele, zaloga desk, nosilci, sidra, ročaj, vijaki — po izbranem profilu in uporabi.",on:true},
+    {id:"quote",label:"Predračun",tag:"CSV",tip:"Orientacijski predračun brez DDV: deske, nosilci, vijaki RF in pritrdilni, dela. Ni ponudba.",on:true},
+    {id:"order",label:"Naročilnik",tag:"TXT",tip:"Pripravljeno naročilo materiala za dobavitelja: deske po rezalnem načrtu, profili, pritrdila, sidra.",on:true},
+    {id:"checklist",label:"Montažni checklist",tag:"TXT",tip:"Prevzemna kontrola po sklopih A–E: dostava, pred montažo, geometrija, zaključek, reklamacijska dokumentacija.",on:true},
+    {id:"project",label:"Projekt (celotno stanje)",tag:"JSON",tip:"Vsa polja, umeritev in slika — za poznejše odpiranje projekta v aplikaciji.",on:true}
+  ];
+  var EXP_ADV=[
+    {id:"wm",label:"Vodni žig na risbi",tip:"Prosojno diagonalno besedilo prek risbe. Velja za PDF in SVG; na DXF se ne izvaža (namen CNC).",on:false},
+    {id:"geom",label:"DXF: samo geometrija",tip:"Izvoz risbe brez TEXT entitet — primerno za CNC obdelavo. Priloge niso prizadete.",on:false},
+    {id:"date",label:"Datum v imenu datotek",tip:"K imenu vsake datoteke doda današnji datum (dd-mm-llll).",on:false},
+    {id:"meta",label:"Metapodatki v SVG",tip:"V SVG doda <title> in <desc> iz naslovnega bloka (projekt, merilo, format, datum, profil).",on:false}
+  ];
+  var EXP_PRESETS={
+    full:{risba:1,kosovnica:1,cut:1,plan:1,quote:1,order:1,checklist:1,project:1},
+    delavnica:{risba:1,kosovnica:1,cut:1,plan:1,quote:0,order:0,checklist:0,project:0},
+    narocilo:{risba:0,kosovnica:0,cut:1,plan:0,quote:1,order:1,checklist:0,project:0},
+    minimalno:{risba:1,kosovnica:0,cut:0,plan:0,quote:0,order:0,checklist:0,project:0}
+  };
+  function item(id){for(var i=0;i<EXP_ITEMS.length;i++)if(EXP_ITEMS[i].id===id)return EXP_ITEMS[i];return null}
+  function adv(id){for(var i=0;i<EXP_ADV.length;i++)if(EXP_ADV[i].id===id)return EXP_ADV[i];return null}
+  function expRenderItems(){
+    var c=$("expItems");
+    c.innerHTML=EXP_ITEMS.map(function(it){
+      return '<div class="exp-row"><div class="exp-it"><span>'+E(it.label)+'</span><span class="i" title="'+E(it.tip)+'">i</span><span class="tag">'+E(it.tag)+'</span></div>'+
+        '<label class="exp-sw"><input type="checkbox" data-exp-item="'+it.id+'"'+(it.on?" checked":"")+'><span class="exp-sl"></span></label></div>';
+    }).join("");
+    [].forEach.call(c.querySelectorAll("[data-exp-item]"),function(cb){
+      cb.addEventListener("change",function(){
+        item(cb.getAttribute("data-exp-item")).on=cb.checked;
+        EXP.preset=null;
+        [].forEach.call(document.querySelectorAll("[data-exp-preset]"),function(x){x.classList.remove("active")});
+        expUpdate();
+      });
+    });
+  }
+  function expRenderAdv(){
+    var c=$("expAdv");
+    c.innerHTML=EXP_ADV.map(function(a){
+      return '<div class="exp-row"><div class="exp-it"><span>'+E(a.label)+'</span><span class="i" title="'+E(a.tip)+'">i</span></div>'+
+        '<label class="exp-sw"><input type="checkbox" data-exp-adv="'+a.id+'"'+(a.on?" checked":"")+'><span class="exp-sl"></span></label></div>';
+    }).join("");
+    [].forEach.call(c.querySelectorAll("[data-exp-adv]"),function(cb){
+      cb.addEventListener("change",function(){adv(cb.getAttribute("data-exp-adv")).on=cb.checked;expUpdate()});
+    });
+  }
+  function wordPriloga(k){return k===1?"1 priloga":k===2?"2 prilogi":(k>=3&&k<=4)?k+" priloge":k+" prilog"}
+  function wordDatoteka(k){return k===1?"1 datoteka":k===2?"2 datoteki":(k>=3&&k<=4)?k+" datoteke":k+" datotek"}
+  function wordVklopljen(k){return k===1?"1 vklopljena":k===2?"2 vklopljeni":(k>=3&&k<=4)?k+" vklopljene":k+" vklopljenih"}
+  function expUpdate(){
+    var onN=EXP_ITEMS.filter(function(i){return i.on}).length;
+    $("expSumVsebina").textContent="Vključeno "+onN+"/"+EXP_ITEMS.length;
+    var risba=item("risba").on;
+    $("expFmtOff").style.display=risba?"none":"inline";
+    [].forEach.call(document.querySelectorAll("#expSegs .exp-seg"),function(b){b.disabled=!risba;b.style.opacity=risba?"":"0.4"});
+    var advOn=EXP_ADV.filter(function(a){return a.on}).length;
+    $("expSumAdv").textContent=advOn?wordVklopljen(advOn):"Privzeto";
+    $("expSumList").textContent=$("expPaper").value+" · merilo "+V("scale");
+    $("expWmField").style.display=(adv("wm").on&&risba&&(EXP.format==="PDF"||EXP.format==="SVG"))?"block":"none";
+    $("expSegField").style.display=(EXP.format==="DXF"&&risba)?"block":"none";
+    if(!onN){$("expNote").textContent="Nič ni izbrano — izberite vsaj en del vsebine.";$("expNote").className="exp-note err";$("expGo").disabled=true;return}
+    $("expNote").className="exp-note";$("expGo").disabled=false;
+    var names={PDF:"PDF / tisk",SVG:"SVG",DXF:"DXF",STEP:"STEP"};
+    var pr=onN-(risba?1:0);
+    var txt=risba?(names[EXP.format]+" · risba"+(pr>0?" + "+wordPriloga(pr):" (brez prilog)")):("Samo priloge: "+wordPriloga(pr));
+    if(adv("date").on)txt+=" · datum v imenu";
+    $("expNote").textContent=txt+(risba?" · "+$("expPaper").value:"");
+  }
+  var lastFocus=null;
+  function openExport(){
+    lastFocus=document.activeElement;
+    EXP.open=true;
+    expRenderItems();expRenderAdv();
+    $("expPaper").value=V("paper");
+    [].forEach.call(document.querySelectorAll("[data-exp-preset]"),function(b){b.classList.toggle("active",b.getAttribute("data-exp-preset")===(EXP.preset||""))});
+    expUpdate();
+    $("expOverlay").classList.add("on");
+    $("expClose").focus();
+  }
+  function closeExport(){
+    EXP.open=false;$("expOverlay").classList.remove("on");
+    if(lastFocus&&document.body.contains(lastFocus)&&lastFocus!==document.body){try{lastFocus.focus()}catch(e){}}
+    lastFocus=null;
+  }
+  function expBase(){
+    var b=String(V("drw")||"").replace(/[\\/:*?"<>|]+/g,"-").trim().slice(0,80)||"izvoz";
+    if(adv("date").on){var t=new Date();b+="-"+("0"+t.getDate()).slice(-2)+"-"+("0"+(t.getMonth()+1)).slice(-2)+"-"+t.getFullYear()}
+    return b;
+  }
+  function svgVariant(o){
+    o=o||{};
+    var sv=svgEl();if(!sv)return null;
+    var clone=sv.cloneNode(true);
+    var pw=o.paper==="A4"?"297":o.paper==="A2"?"594":"420",ph=o.paper==="A4"?"210":o.paper==="A2"?"420":"297";
+    clone.setAttribute("width",pw+"mm");clone.setAttribute("height",ph+"mm");
+    if(o.meta){
+      var NS="http://www.w3.org/2000/svg";
+      var t=document.createElementNS(NS,"title");t.textContent=(V("proj")||"Risba")+" — "+(V("drw")||"");
+      var dd=document.createElementNS(NS,"desc");
+      dd.textContent="Tehnična risba PRO · merilo "+V("scale")+" · format "+(o.paper||"A3")+" · rev. "+V("rev")+" · datum "+V("date")+" · profil "+V("sysProfile")+" · barva "+V("sysColor");
+      clone.insertBefore(dd,clone.firstChild);clone.insertBefore(t,clone.firstChild);
+    }
+    if(o.watermark){
+      var NS2="http://www.w3.org/2000/svg";
+      var g=document.createElementNS(NS2,"g");g.setAttribute("opacity","0.28");
+      var wt=document.createElementNS(NS2,"text");
+      wt.setAttribute("x","210");wt.setAttribute("y","155");wt.setAttribute("text-anchor","middle");
+      wt.setAttribute("font-family","Arial,Helvetica,sans-serif");wt.setAttribute("font-size","46");wt.setAttribute("font-weight","700");
+      wt.setAttribute("fill","#c0392b");wt.setAttribute("transform","rotate(-28 210 155)");
+      wt.textContent=String(o.wmText||"OSNUTEK").trim()||"OSNUTEK";
+      g.appendChild(wt);clone.appendChild(g);
+    }
+    return new XMLSerializer().serializeToString(clone);
+  }
+  function expRun(){
+    var risba=item("risba").on;
+    var wm=adv("wm").on?(String($("expWmText").value||"").trim()||"OSNUTEK"):null;
+    var base=expBase();
+    var jobs=[];
+    if(risba){
+      var fmt=EXP.format,paper=$("expPaper").value;
+      if(fmt==="PDF"||fmt==="SVG"||fmt==="DXF"){
+        generate(); // vedno znova iz trenutnih polj — izvoz odraža zadnje stanje, ne zastarelega predogleda
+        if(!svgEl()){$("globalStatus").textContent="Izvoz prekinjen — risbe ni mogoče generirati (preverite mere).";$("globalStatus").style.color="var(--bad)";closeExport();return}
+      }
+      if(fmt==="PDF"){
+        jobs.push({n:"risba (PDF / tisk)",f:function(){
+          var sv=svgVariant({paper:paper,watermark:!!wm,wmText:wm,meta:adv("meta").on});
+          if(!sv)throw new Error("ni risbe");
+          var w=window.open("","_blank");
+          if(!w)throw new Error("pojavni okvir je blokiran — dovoli pojavne okvirje ali uporabi SVG");
+          w.document.write(printHtml(sv,paper));w.document.close();
+          setTimeout(function(){w.focus();w.print()},400);
+        }});
+      }else if(fmt==="SVG"){
+        jobs.push({n:"risba (SVG)",f:function(){
+          var sv=svgVariant({paper:paper,watermark:!!wm,wmText:wm,meta:adv("meta").on});
+          if(!sv)throw new Error("ni risbe");
+          saveBlob(base+".svg",sv,"image/svg+xml;charset=utf-8");
+        }});
+      }else if(fmt==="DXF"){
+        jobs.push({n:"risba (DXF)",f:function(){saveBlob(base+".dxf",dxfString({geomOnly:adv("geom").on,segs:parseInt($("expSegSel").value,10)||8}),"application/dxf")}});
+      }else if(fmt==="STEP"){
+        jobs.push({n:"risba (STEP)",f:function(){saveBlob(base+".step",stepString(),"application/step")}});
+      }
+    }
+    if(item("kosovnica").on)jobs.push({n:"kosovnica (CSV)",f:function(){saveBlob(base+"-kosovnica.csv",kosovnicaCsv(),"text/csv;charset=utf-8")}});
+    if(item("cut").on)jobs.push({n:"rezalni načrt (CSV)",f:function(){if(!cutData)buildCut();saveBlob(base+"-rezalni-nacrt.csv",cutCsv(),"text/csv;charset=utf-8")}});
+    if(item("plan").on)jobs.push({n:"montažni načrt (CSV)",f:function(){if(!planData)buildPlan();saveBlob(base+"-montaza.csv",planCsv(),"text/csv;charset=utf-8")}});
+    if(item("quote").on)jobs.push({n:"predračun (CSV)",f:function(){if(!quoteData)buildQuote();saveBlob(base+"-predracun.csv",quoteCsv(),"text/csv;charset=utf-8")}});
+    if(item("order").on)jobs.push({n:"naročilnik (TXT)",f:function(){saveBlob(base+"-narocilo.txt",buildOrder(),"text/plain;charset=utf-8")}});
+    if(item("checklist").on)jobs.push({n:"montažni checklist (TXT)",f:function(){saveBlob(base+"-montazni-checklist.txt",buildChecklist(),"text/plain;charset=utf-8")}});
+    if(item("project").on)jobs.push({n:"projekt (JSON)",f:function(){saveBlob(base+"-project.json",projectJson(),"application/json")}});
+    if(!jobs.length){closeExport();return}
+    var wmApplied=!!wm&&risba&&(EXP.format==="PDF"||EXP.format==="SVG");
+    var idx=0,failed=[];
+    (function next(){
+      if(idx>=jobs.length){
+        if(failed.length){
+          $("globalStatus").textContent="Izvoz končan z napakami: "+wordDatoteka(jobs.length-failed.length)+" uspešnih, neuspešnih "+failed.length+" ("+failed.join("; ")+").";
+          $("globalStatus").style.color="var(--bad)";
+        }else{
+          $("globalStatus").textContent="Izvoz končan: "+wordDatoteka(jobs.length)+(wmApplied?" (z vodnim žigom)":"")+".";
+          $("globalStatus").style.color="";
+        }
+        closeExport();return}
+      var j=jobs[idx];
+      $("globalStatus").textContent="Izvažam… "+j.n+" ("+(idx+1)+"/"+jobs.length+")";
+      try{j.f()}catch(err){failed.push(j.n+((err&&err.message)?": "+err.message:""));$("globalStatus").textContent="Napaka pri "+j.n+": "+err.message}
+      idx++;setTimeout(next,400);
+    })();
+  }
+  $("expGo").onclick=expRun;
+  $("expCancel").onclick=closeExport;
+  $("expClose").onclick=closeExport;
+  $("expOverlay").addEventListener("click",function(e){if(e.target===this)closeExport()});
+  $("expPaper").addEventListener("change",function(){$("paper").value=this.value;expUpdate()});
+  [].forEach.call(document.querySelectorAll("[data-exp-preset]"),function(b){
+    b.addEventListener("click",function(){
+      var p=EXP_PRESETS[b.getAttribute("data-exp-preset")];if(!p)return;
+      EXP.preset=b.getAttribute("data-exp-preset");
+      EXP_ITEMS.forEach(function(it){it.on=!!p[it.id]});
+      [].forEach.call(document.querySelectorAll("[data-exp-preset]"),function(x){x.classList.toggle("active",x===b)});
+      expRenderItems();expUpdate();
+    });
+  });
+  [].forEach.call(document.querySelectorAll("#expSegs .exp-seg"),function(b){
+    b.addEventListener("click",function(){
+      EXP.format=b.getAttribute("data-exp-format");
+      [].forEach.call(document.querySelectorAll("#expSegs .exp-seg"),function(x){x.classList.toggle("active",x===b)});
+      expUpdate();
+    });
+  });
+  [].forEach.call(document.querySelectorAll("[data-exp-sec] > .exp-sec-h"),function(h){
+    h.addEventListener("click",function(){h.parentNode.classList.toggle("open")});
+  });
+  [].forEach.call(document.querySelectorAll("[data-exp-all]"),function(b){
+    b.addEventListener("click",function(){
+      var all=b.getAttribute("data-exp-all")==="vse";
+      EXP_ITEMS.forEach(function(it){it.on=all});
+      EXP.preset=null;
+      [].forEach.call(document.querySelectorAll("[data-exp-preset]"),function(x){x.classList.remove("active")});
+      expRenderItems();expUpdate();
+    });
+  });
+  $("exportDialog").onclick=openExport;
+  document.addEventListener("keydown",function(e){if(EXP.open&&e.key==="Escape")closeExport()});
+  document.addEventListener("keydown",function(e){
+    if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="e"){e.preventDefault();openExport()}
+  });
+})();
 
 /* ---------- Field picker: show only what the user needs ---------- */
 var FIELD_SECTIONS={photo:1,cal:2,detect:3,sheet:5,plan:6,export:7};
