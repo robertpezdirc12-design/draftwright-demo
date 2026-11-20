@@ -155,6 +155,8 @@ input.invalid,select.invalid{border-color:var(--bad)!important;box-shadow:0 0 0 
       <button class="mi" id="menuDlCut" data-call="dlCut">Izvozi rezalni načrt (CSV)</button>
       <button class="mi" id="menuDlOrder" data-call="dlOrder">Izvozi naročilnik (TXT)</button>
       <button class="mi" id="menuDlQuote" data-call="dlQuote">Izvozi predračun (CSV)</button>
+      <button class="mi" id="menuBuildChecklist" data-call="buildChecklist">Pripravi montažni checklist</button>
+      <button class="mi" id="menuDlChecklist" data-call="dlChecklist">Izvozi montažni checklist (TXT)</button>
       <div class="sep"></div>
       <button class="mi" id="menuSelfTest" data-call="selfTest">Samoprevera (90 kombinacij)</button>
     </div>
@@ -330,7 +332,7 @@ Konstrukcija odporna na vremenske vplive.</textarea>
 
 <section data-panel="plan">
 <h2><i>6</i>Montaža in količine</h2>
-<div class="btns"><button class="btn" id="makePlan">Pripravi montažni načrt</button><button class="btn" id="buildCut">Rezalni načrt (kerf)</button><button class="btn" id="buildQuote">Predračun</button></div>
+<div class="btns"><button class="btn" id="makePlan">Pripravi montažni načrt</button><button class="btn" id="buildCut">Rezalni načrt (kerf)</button><button class="btn" id="buildQuote">Predračun</button><button class="btn" id="buildChecklist">Montažni checklist</button></div>
 <div class="row3" style="margin-top:8px">
 <div><label>Tovariške dolžine desk (mm, loči z ;)</label><input id="stockLen" value="5800; 4000; 2200"></div>
 <div><label>Širina rezila — kerf (mm)</label><input id="kerf" type="number" value="3" min="0" step="0.5"></div>
@@ -339,9 +341,16 @@ Konstrukcija odporna na vremenske vplive.</textarea>
 <div><label>Cena vijak (EUR/kos)</label><input id="priceScrew" type="number" value="0.9" min="0" step="0.1"></div>
 <div><label>Cena delo (EUR/ura)</label><input id="priceWork" type="number" value="35" min="0" step="0.1"></div>
 <div><label>Ocena dela (ure)</label><input id="workHours" type="number" value="12" min="0" step="0.5"></div>
+<div><label>Temperatura ob montaži (°C)</label><input id="installTemp" type="number" value="20" step="1"></div>
+<div><label>Padec podlage (mm/m)</label><input id="slopeMM" type="number" value="10" min="0" step="1"></div>
+<div><label>Način pritrditve</label><select id="mountType"><option value="na ploščo">Na ploščo</option><option value="bočno na ploščo">Bočno na ploščo</option><option value="v tla">V tla / temelj</option><option value="kovinska konstrukcija">Obstoječa kovinska konstrukcija</option></select></div>
+<div><label>Varjeni deli na obstoječih stebrih</label><select id="weldedParts"><option value="ne">Ni jih</option><option value="da">Da — odstraniti pred montažo</option><option value="neznano">Ni preverjeno</option></select></div>
+<div><label>Izvajalec montaže</label><input id="installer" type="text" value=""></div>
+<div><label>Datum prevzema / zaključka</label><input id="handoverDate" type="text" value=""></div>
 </div>
 <div id="cutOut" class="hint" style="margin-top:8px"></div>
 <div id="quoteOut" class="hint" style="margin-top:8px"></div>
+<div id="checklistOut" class="hint" style="margin-top:8px;white-space:pre-wrap"></div>
 <div id="planOut" class="hint" style="margin-top:8px">Izmerite: L, H, D, cone, notranjo globino in št. nosilcev. Nato pripravite načrt (izvoz: Datoteka → Izvozi montažni načrt).</div>
 </section>
 
@@ -584,6 +593,17 @@ function checks(){
   if(ref){var zs=n("zoneTop")+n("zoneMid")+n("zoneBot")+n("zoneBase");
     if(Math.abs(zs-H)>0.5)msgs.push("Vsota con ("+f(zs)+" mm) se ne ujema z višino H ("+f(H)+" mm) — razlika "+f(H-zs)+" mm je na listu prikazana kot odmik.");
   }
+  if(typeof WC!=="undefined"&&$("sysProfile")){
+    var pc=WC[$("sysProfile").value],use=V("sysUse");
+    if(pc){
+      if((pc.allowed||[]).indexOf(use)<0)msgs.push("Profil "+pc.n+" ni predviden za "+(USE_NAMES[use]||use)+".");
+      var lim=roksalLimit(pc,use,H),npv=Math.max(1,Math.round(n("np"))),span=L/Math.max(1,npv-1);
+      if(npv>1&&span>lim.v+0.5)msgs.push("Razmak "+lim.label.toLowerCase()+" "+Math.round(span)+" mm presega Roksal omejitev "+lim.v+" mm.");
+      if(use==="terasa"&&n("slopeMM")<10)msgs.push("Padec podlage je manjši od 10 mm/m — Roksal zahteva vsaj 1 cm/m.");
+      if((use==="terasa"||use==="precna"||use==="pokoncna")&&n("installTemp")<5)msgs.push("Montaža pod +5 °C ni primerna — preverite temperaturo.");
+      if((use==="precna"||use==="pokoncna")&&V("weldedParts")==="neznano")msgs.push("Varjeni deli na obstoječih stebrih niso preverjeni — odstraniti jih je treba pred montažo.");
+    }
+  }
   var box=$("checks");box.className="warnbox"+(msgs.length?" on":"");box.innerHTML=msgs.map(function(m){return"• "+E(m)}).join("<br>");
   var zoneBad=msgs.some(function(m){return m.indexOf("srednje polje")>=0});
   $("n").classList.toggle("invalid",zoneBad);$("gap").classList.toggle("invalid",zoneBad);
@@ -591,6 +611,8 @@ function checks(){
 }
 ["L","H","D","n","sw","gap","st","wall"].forEach(function(id){$(id).addEventListener("input",checks)});
 ["zoneTop","zoneMid","zoneBot","zoneBase"].forEach(function(id){$(id).addEventListener("input",checks)});
+["installTemp","slopeMM"].forEach(function(id){$(id).addEventListener("input",checks)});
+["weldedParts"].forEach(function(id){$(id).addEventListener("change",checks)});
 $("refMode").addEventListener("change",function(){var m=$("refModeMenu");if(m)m.checked=$("refMode").checked;checks()});
 
 /* ---------- SVG sheet ---------- */
@@ -1097,7 +1119,7 @@ $("dlCsv").onclick=function(){
 };
 
 /* ---------- project ---------- */
-var fields=["L","H","D","n","sw","st","gap","wall","prof","topP","botP","np","postP","bolt","nbolt","zoneTop","zoneMid","zoneBot","zoneBase","innerD","sysUse","sysProfile","sysColor","sysSurface","matSel","rho","paper","scale","projType","rev","proj","drw","mat","tol","fin","aut","date","chk","ral","bracket","anchor","weld","notes","emb","sub","stN","stRise","stGoing","stW","stPosts","stH","stockLen","kerf","priceBoard","pricePost","priceScrew","priceWork","workHours","dobavitelj","stranka","objekt"];
+var fields=["L","H","D","n","sw","st","gap","wall","prof","topP","botP","np","postP","bolt","nbolt","zoneTop","zoneMid","zoneBot","zoneBase","innerD","sysUse","sysProfile","sysColor","sysSurface","matSel","rho","paper","scale","projType","rev","proj","drw","mat","tol","fin","aut","date","chk","ral","bracket","anchor","weld","notes","emb","sub","stN","stRise","stGoing","stW","stPosts","stH","stockLen","kerf","priceBoard","pricePost","priceScrew","priceWork","workHours","installTemp","slopeMM","mountType","weldedParts","installer","handoverDate","dobavitelj","stranka","objekt"];
 $("save").onclick=function(){var d={};fields.forEach(function(id){d[id]=V(id)});d.photo=S.photoData;d.cal=S.cal;d.calMode=S.calMode;d.calibrated=S.calibrated;d.lines=S.lines;saveBlob(V("drw")+"-project.json",JSON.stringify(d,null,2),"application/json")};
 $("loadBtn").onclick=function(){$("loadFile").click()};
 $("loadFile").onchange=function(e){var file=e.target.files[0];if(!file)return;var r=new FileReader();r.onload=function(){
@@ -1106,47 +1128,101 @@ $("loadFile").onchange=function(e){var file=e.target.files[0];if(!file)return;va
     drawOverlay();checks();generate();dt("Projekt naložen.","")}catch(err){dt("Napaka pri nalaganju: "+err.message,"bad")}
 };r.readAsText(file)};
 
-/* ---------- Roksal WoodCore system logic ---------- */
+/* ---------- Roksal WoodCore system logic — use-specific rules (v14) ---------- */
 var WC={
-  romb67:{n:"ROMB-67",w:67,t:26,len:5800,max:145,fix:"skrito — L-kotnik in alu cev v sredini profila"},
-  polna128:{n:"POLNA-128",w:128,t:16.5,len:2200,max:110,fix:"vidno spredaj — predvrtanje +1 mm"},
-  deska150:{n:"DESKA-150",w:150,t:25,len:4000,max:130,fix:"vidno spredaj — predvrtanje +1 mm"},
-  polna57:{n:"POLNA-57/32",w:57,t:32,len:5800,max:150,fix:"skrito zadaj — RF vijaki skozi cev"},
-  polna100:{n:"POLNA-100",w:100,t:12,len:5800,max:180,fix:"vidno spredaj — predvrtanje +1 mm"},
-  kubo80:{n:"KUBO-80/42",w:80,t:42,len:5800,max:120,fix:"skrito — alu cev 20x60x2 mm v profilu"}
+  romb67:{n:"ROMB-67",w:67,t:26,len:5800,max:145,fix:"skrito — L-kotnik in alu cev v sredini profila",
+    allowed:["precna","pokoncna","fasada"],post:{precna:1450,pokoncna:1500},rail:{pokoncna:1100},
+    facade:{studMax:800,buildup:"71–75 mm"},drill:"3.9 vijak → Ø3.2 v alu, Ø4.2–4.5 v WPC",colors:7},
+  polna128:{n:"POLNA-128",w:128,t:16.5,len:2200,max:110,fix:"vidno spredaj — predvrtanje +1 mm",
+    allowed:["precna","pokoncna"],post:{precna:1100,pokoncna:1500},rail:{pokoncna:1000},
+    drill:"predvrtanje Ø vijak +1 mm, vijak 30 mm od roba",colors:6},
+  deska150:{n:"DESKA-150",w:150,t:25,len:4000,max:130,fix:"vidno spredaj — predvrtanje +1 mm",
+    allowed:["precna","terasa"],post:{precna:1400},
+    drill:"predvrtanje Ø vijak +1 mm, vijačenje v sredino rebra",colors:5},
+  polna57:{n:"POLNA-57/32",w:57,t:32,len:5800,max:150,fix:"skrito zadaj — RF vijaki skozi cev",
+    allowed:["pokoncna"],post:{pokoncna:1500},rail:{pokoncna:1000},
+    drill:"skrito vijačenje, 57 ali 32 mm naleganje",colors:4},
+  polna100:{n:"POLNA-100",w:100,t:12,len:5800,max:180,fix:"vidno spredaj — predvrtanje +1 mm",
+    allowed:["pokoncna","fasada"],post:{pokoncna:1500},rail:{pokoncna:800},
+    facade:{studMax:500,buildup:"~60 mm"},drill:"predvrtanje Ø vijak +1 mm, vijak 30 mm od roba",colors:8},
+  kubo80:{n:"KUBO-80/42",w:80,t:42,len:5800,max:120,fix:"skrito — alu cev 20x60x2 mm v profilu",
+    allowed:["fasada"],facade:{studMax:1000,buildup:"82 ali 120 mm"},
+    drill:"alu cev 20×60×2 mm, pritrditev zgoraj/spodaj do 2500 mm",colors:4}
 };
+var USE_NAMES={precna:"prečna ograja",pokoncna:"pokončna ograja",fasada:"fasada",terasa:"terasa",stopniscna:"stopniščna ograja"};
+function roksalLimit(p,use,H){
+  if(!p)return {v:1500,label:"razmak nosilcev"};
+  if(use==="terasa")return {v:350,label:"razmak podložnih letev"};
+  if(use==="fasada")return {v:(p.facade&&p.facade.studMax)||p.max*10,label:"razmak podkonstrukcije"};
+  if(use==="precna")return {v:(p.post&&p.post.precna)||p.max*10,label:"razmak med stebri"};
+  if(use==="pokoncna"){
+    var pv=(H<=1500?1800:1500);
+    if(p.post&&p.post.pokoncna)pv=Math.min(pv,p.post.pokoncna);
+    return {v:pv,label:"razmak med stebri"};
+  }
+  return {v:1500,label:"razmak nosilcev"};
+}
+function roksalRailLimit(p){return (p&&p.rail&&p.rail.pokoncna)||1000}
+function roksalUseNotes(p,use,H){
+  var lim=roksalLimit(p,use,H),rail=roksalRailLimit(p),rows=Math.max(2,Math.ceil(H/rail)+1);
+  if(use==="precna"){
+    var s=p.n+": "+lim.label+" ≤ "+lim.v+" mm; predvrtanje +1 mm, vijak 30 mm od roba reza.";
+    if(p.n.indexOf("ROMB")>=0)s+=" Pri >1450 mm dodaj vmesno povezavo do <1800 mm, nad tem nov steber.";
+    return s;
+  }
+  if(use==="pokoncna"){
+    var t=p.n+": stebri ≤ "+lim.v+" mm; vodoravne cevi "+rows+"×, razmak ≤ "+rail+" mm.";
+    t+=(V("mountType")==="bočno na ploščo")?" Vijak ≤100 mm od roba reza; na ploščo ≤150 mm.":" Vijak 30–150 mm od roba reza.";
+    if(p.n.indexOf("ROMB")>=0)t+=" Romb: čepi na koncih, alu cev v profilu.";
+    return t;
+  }
+  if(use==="fasada"){
+    var ff=p.facade||{studMax:p.max*10,buildup:"—"};
+    var t2=p.n+": podkonstrukcija ≤ "+ff.studMax+" mm; skupna debelina na izolaciji "+ff.buildup+"; okoli odprtin alu pločevina 2 mm.";
+    if(p.n.indexOf("KUBO")>=0)t2+=" KUBO samo do 2500 mm z alu cevjo 20×60×2 mm, pritrditev zgoraj/spodaj.";
+    return t2;
+  }
+  if(use==="terasa")return "Terasa: podložne letve 330–350 mm (center), padec ≥ 10 mm/m, reža 5–6 mm, odmik od sten 6 mm; drenažne luknje Ø4.2 mm 5 cm od roba v vsak prekat; rez spodnje stene 5°.";
+  if(use==="stopniscna")return "Stopniščna ograja: ročica vzporedno stopnicam, nosilci na vsakih "+f(n("stGoing"))+" mm, sidranje v nosilno podlago.";
+  return p.n+": "+p.fix+".";
+}
 function applySystem(){
-  var p=WC[$("sysProfile").value],use=V("sysUse"),color=V("sysColor"),surf=V("sysSurface");
+  var p=WC[$("sysProfile").value]||WC.romb67,use=V("sysUse"),color=V("sysColor"),surf=V("sysSurface"),H=n("H");
   $("sw").value=p.w;$("st").value=p.t;
-  var need=Math.max(2,Math.ceil(n("L")/(p.max*10))+1);$("np").value=need;
-  var span=n("L")/(need-1),bad=span>p.max*10;
-  var msg="Profil "+p.n+": "+f(p.w)+"×"+f(p.t)+"×"+p.len+" mm, "+p.fix+". ";
-  msg+=bad?("RAZMAK "+Math.round(span)+" mm PRESEGA največ "+Math.round(p.max*10)+" mm!"):("Razmak nosilcev "+Math.round(span)+" mm ≤ "+Math.round(p.max*10)+" mm.");
-  if(p.n.indexOf("KUBO")>=0&&span>1200)msg+=" Pri 1200–2600 mm je obvezna alu cev 20×60×2 mm.";
-  $("sysStatus").textContent=msg;$("sysStatus").className="status"+(bad?" bad":"");
-  $("sysHint").textContent="Dolžina deske "+p.len+" mm; največji razmak nosilcev "+(p.max*10)+" mm; barva "+color+", površina "+surf+".";
-  var extra=p.n+": "+p.fix+".";
-  if(use==="fasada")extra="Fasada: macesnove letve 40×60 mm v razmaku 700–800 mm; ROMB skupaj 71 mm; okoli odprtin alu pločevina 2 mm.";
-  if(use==="terasa")extra="Terasa: višina podkonstrukcije z desko 55/65 mm; skriti klip sistem; zagotoviti odtok vode.";
-  if(use==="pokoncna")extra="Pokončna ograja: vijak 30 mm od roba, največ 150 mm pri montaži na ploščo.";
-  if(use==="stopniscna")extra="Stopniščna ograja: ročicavzporedno stopnicam, nosilci na vsakih " + f(n("stGoing")) + " mm, sidranje v nosilno podlago.";
-  var sb=$("stairBox");if(sb)sb.style.display=(use==="stopniscna")?"block":"none";
+  var lim=roksalLimit(p,use,H),need=Math.max(2,Math.ceil(n("L")/Math.max(1,lim.v))+1);
+  $("np").value=need;
+  var span=n("L")/(need-1),bad=span>lim.v+0.5,wrongUse=(p.allowed||[]).indexOf(use)<0;
+  var msg="Profil "+p.n+": "+f(p.w)+"×"+f(p.t)+"×"+p.len+" mm, "+p.fix+". "+lim.label+" ≤ "+lim.v+" mm. ";
+  msg+=bad?("RAZMAK "+Math.round(span)+" mm PRESEGA največ "+lim.v+" mm!"):(lim.label.charAt(0).toUpperCase()+lim.label.slice(1)+" "+Math.round(span)+" mm ≤ "+lim.v+" mm.");
+  if(wrongUse)msg+=" POZOR: profil ni predviden za "+(USE_NAMES[use]||use)+".";
+  if(use==="pokoncna"){
+    var rail=roksalRailLimit(p),rows=Math.max(2,Math.ceil(H/rail)+1);
+    msg+=" Vodoravne cevi: "+rows+" vrst, razmak ≤ "+rail+" mm.";
+  }
+  if(p.n.indexOf("KUBO")>=0&&use==="fasada")msg+=" KUBO: pritrditev samo zgoraj in spodaj do 2500 mm z alu cevjo 20×60×2 mm.";
+  $("sysStatus").textContent=msg;$("sysStatus").className="status"+((bad||wrongUse)?" bad":"");
+  $("sysHint").textContent="Dolžina deske "+p.len+" mm; "+lim.label+" ≤ "+lim.v+" mm; barva "+color+", površina "+surf+".";
+  var extra=roksalUseNotes(p,use,H);
   var nt=["Vse mere so v milimetrih (mm); pred izdelavo preveriti na objektu.",
     "Material: WoodCore WPC — 60 % bambusovih vlaken, 30 % recikliranega HDPE, 10 % dodatkov; 15 let garancije.",
     "Barva: "+color+" ("+surf+"); odtenek se v prvem letu posvetli za 5–10 %.",
-    "Montaža nad +5 °C; izvrtina v WPC 1 mm večja od vijaka, vijak 3 cm od roba.",extra];
+    extra,
+    "Montaža nad +5 °C; izvrtina v WPC 1 mm večja od vijaka, vijak 30–150 mm od roba.",
+    "Dilatacijske reže po Roksal temperaturni tabeli; vogal 1 mm.",
+    "Garancija: 15 let na material, 2 leti na dela izvedena s strani Roksal/a."];
   $("notes").value=nt.join("\n");
   $("mat").value="WoodCore WPC (bambus / HDPE)";$("ral").value=color;
+  var sb=$("stairBox");if(sb)sb.style.display=(use==="stopniscna")?"block":"none";
   checks();
 }
-["sysUse","sysProfile","sysColor","sysSurface","L"].forEach(function(id){$(id).addEventListener("change",applySystem)});
+["sysUse","sysProfile","sysColor","sysSurface","L","H","mountType"].forEach(function(id){$(id).addEventListener("change",applySystem)});
 $("L").addEventListener("input",applySystem);
 
 /* ---------- cut list / installation plan ---------- */
 var planData=null;
 
 /* ---------- Manufacturing: kerf-aware cut optimizer, quote, order ---------- */
-var cutData=null, quoteData=null, orderText="";
+var cutData=null, quoteData=null, orderText="", checklistText="";
 function parseLens(raw){
   var out=[];
   String(raw||"").split(/[;,]/).forEach(function(x){
@@ -1248,7 +1324,7 @@ function buildQuote(){
 }
 function buildOrder(){
   if(!cutData)buildCut();
-  var p=WC[$("sysProfile").value],np=Math.max(1,Math.round(n("np")));
+  var p=WC[$("sysProfile").value],np=Math.max(1,Math.round(n("np"))),lim=roksalLimit(p,V("sysUse"),n("H"));
   var lines=["NAROČILO — WPC material ("+(V("dobavitelj")||"WoodCore")+")",
     "Naloga: "+V("drw")+" • Stranka: "+(V("stranka")||"—")+" • Objekt: "+(V("objekt")||"—"),"",
     "DESKE:",
@@ -1256,12 +1332,89 @@ function buildOrder(){
     "- Nabava: "+cutData.rows.map(function(r){return r[1]+" × "+r[2]}).join("; "),
     "- Odpad: "+(cutData.waste/1000).toFixed(2)+" m, izkoristek "+cutData.yield+"%","",
     "PROFILI IN PRITRDILA:",
-    "- Nosilci: "+np+" kos (razmak ≤ "+(p.max*10)+" mm)",
+    "- Nosilci: "+np+" kos ("+lim.label+" ≤ "+lim.v+" mm)",
     "- Vijaki ("+V("bolt")+"): "+(2*cutData.count+2*np)+" kos",
     "- Sidra: "+(2*np)+" kos, globina "+V("emb")+" mm, podlaga "+V("sub"),"",
     "Risba NI statični izračun — nosilnost in sidranje preveri strokovnjak."];
   orderText=lines.join("\n");
   return orderText;
+}
+function buildChecklist(){
+  var p=WC[$("sysProfile").value]||WC.romb67,use=V("sysUse"),H=n("H"),lim=roksalLimit(p,use,H),rail=roksalRailLimit(p),rowsN=Math.max(2,Math.ceil(H/rail)+1);
+  var L=[];
+  L.push("MONTAŽNI CHECKLIST / PREVZEMNA KONTROLA — ROKSAL WOODCORE");
+  L.push("Risba: "+V("drw")+" · Rev: "+V("rev")+" · Projekt: "+V("proj"));
+  L.push("Stranka: "+(V("stranka")||"—")+" · Objekt: "+(V("objekt")||"—")+" · Izvajalec: "+(V("installer")||"—"));
+  L.push("Profil: "+p.n+" · "+f(p.w)+"×"+f(p.t)+"×"+p.len+" mm · Barva: "+V("sysColor")+" ("+V("sysSurface")+")");
+  L.push("Temperature ob montaži: "+V("installTemp")+" °C (min. +5 °C) · Padec podlage: "+V("slopeMM")+" mm/m · Datum: "+(V("handoverDate")||"—"));
+  L.push("Pravilo: "+roksalUseNotes(p,use,H));
+  if((p.allowed||[]).indexOf(use)<0)L.push("POZOR: profil "+p.n+" ni predviden za "+(USE_NAMES[use]||use)+" — pred naročilom potrditi pri Roksal!");
+  L.push("");
+  L.push("A. DOSTAVA IN SKLADIŠČENJE");
+  L.push("[ ] Količina, vidna kakovost in embalaža preverjeni ob prevzemu; nepravilnosti takoj sporočene.");
+  L.push("[ ] Profili 4,0 / 5,8 m podprti po celi dolžini; nobenega nalaganja na streho osebnega vozila.");
+  L.push("[ ] Material skladiščen suho, zračno, ravno in čisto; ob zunanjem skladiščenju pokrito.");
+  L.push("[ ] Serija/odtenek evidentirana; Rustic Oak / Rustic Walnut imata izrazitejšo variacijo.");
+  L.push("");
+  L.push("B. PRED MONTAŽO");
+  L.push("[ ] Jutranja temperatura ≥ +5 °C; dilatacijske reže določene po Roksal temperaturni tabeli.");
+  L.push("[ ] Nosilnost podlage, steber, zidov in sidranje preverjeni; risba ni statični izračun.");
+  L.push("[ ] Obstoječi varjeni deli na stebrih odstranjeni: "+(V("weldedParts")==="da"?"DA — odstraniti":V("weldedParts")==="ne"?"NI DELOV":"NI PREVERJENO"));
+  L.push("[ ] Stebri v ravnini; način pritrditve: "+V("mountType")+".");
+  if(use==="terasa")L.push("[ ] Podlaga: beton ≥ 60 mm ali estrih z hidroizolacijo, padec ≥ 10 mm/m, odtok prost.");
+  L.push("");
+  L.push("C. GEOMETRIJA IN PRITRDITEV");
+  L.push("[ ] "+lim.label+": izmerjeno ____ mm, dovoljeno ≤ "+lim.v+" mm.");
+  if(use==="precna"){
+    L.push("[ ] Spoji desk samo na stebru; pritrdilni vijak 30 mm od roba reza.");
+    L.push("[ ] Predvrtanje: "+p.drill+"; vijaki Inox A2/A4.");
+    if(p.n.indexOf("ROMB")>=0)L.push("[ ] ROMB: alu cev v profilu obvezna; pri >1450 mm vmesna povezava do <1800 mm, nad tem nov steber.");
+    L.push("[ ] Ročica: vijaki vsakih 500 mm od zgoraj navzdol, segment ≤ 4000 mm, vogal 1 mm.");
+    L.push("[ ] Korita/posode: kovinska konstrukcija v razmaku 700 mm.");
+  }else if(use==="pokoncna"){
+    L.push("[ ] Vodoravne cevi: "+rowsN+" vrst, razmak ≤ "+rail+" mm.");
+    L.push("[ ] Odmik vijaka od roba reza: min. 30 mm, max. "+(V("mountType")==="bočno na ploščo"?"100 mm (bočno)":"150 mm (na ploščo)")+".");
+    L.push("[ ] Predvrtanje: "+p.drill+"; vijaki Inox A2/A4.");
+    if(p.n.indexOf("ROMB")>=0)L.push("[ ] ROMB: alu cev v profilu, konci zaprti s čepi.");
+    L.push("[ ] Ročica: vijaki vsakih 500 mm od zgoraj navzdol, segment ≤ 4000 mm, vogal 1 mm.");
+  }else if(use==="fasada"){
+    L.push("[ ] Skupna debelina na izolaciji: "+((p.facade&&p.facade.buildup)||"—")+"; okoli odprtin alu pločevina 2 mm.");
+    L.push("[ ] Prezračevanje podkonstrukcije zagotovljeno; paneli brez prezračevanja niso dovoljeni.");
+    if(p.n.indexOf("KUBO")>=0)L.push("[ ] KUBO: alu cev 20×60×2 mm, samo zgoraj/spodaj do 2500 mm.");
+    if(p.n.indexOf("ROMB")>=0)L.push("[ ] ROMB: montaža brez alu cevi v sredini profila NI mogoča.");
+    L.push("[ ] Po montaži brez naknadnega vrtanja/rezanja brez pisnega soglasja.");
+  }else if(use==="terasa"){
+    L.push("[ ] Podložne letve 330–350 mm (center), vsak konec deske ima svojo letev in distančnik.");
+    L.push("[ ] Reža med deskami 5–6 mm, odmik od sten minimalno 6 mm.");
+    L.push("[ ] Drenažne luknje Ø4.2 mm, približno 5 cm od roba, v VSKAK prekat.");
+    L.push("[ ] Spodnja stena desk rezana pod kotom 5° tam, kjer voda teče proti deski.");
+    L.push("[ ] L-letev ≤ 2000 mm, vijaki vsakih 300 mm na vsaki drugi deski; ne ob zidovih/robnikih.");
+  }else{
+    L.push("[ ] Nosilci na vsakih "+f(n("stGoing"))+" mm stopnišča; ročica vzporedno stopnicam.");
+    L.push("[ ] Sidranje v nosilno podlago, globina "+V("emb")+" mm, podlaga "+V("sub")+".");
+  }
+  L.push("");
+  L.push("D. ZAKLJUČEK IN GARANCIJA");
+  L.push("[ ] Prah po montaži odstranjen s temeljitim pranjem z navadno vodo (tlak ≤ 60 bar, dovolj velika razdalja).");
+  L.push("[ ] Barva se v prvem letu lahko posvetli 5–10 %; odstopanje med serijami ni reklamacija.");
+  L.push("[ ] Materialna garancija 15 let; garancija na izvedena dela 2 leti (če je izvajalec Roksal/pogodbenik).");
+  L.push("[ ] B2B: vidne napake takoj, skrite napake in ugovor računa v 8 dneh; komercialna garancija ob plačilu v 30 dneh.");
+  L.push("");
+  L.push("E. FOTOGRAFSKA DOKUMENTACIJA ZA REKLAMACIJO");
+  L.push("[ ] 1. Celotna izvedba (širši posnetek).");
+  L.push("[ ] 2. Poškodovan element celo in od blizu.");
+  L.push("[ ] 3. Podkonstrukcija in nosilna konstrukcija.");
+  L.push("[ ] 4. Podlaga, reže, naklon in odvodnjavanje.");
+  L.push("[ ] 5. Pritrdilna mesta, uporabljeni vijaki in dimenzije izvrtin.");
+  L.push("[ ] 6. Zaključki in drugi tehnično pomembni detajli.");
+  L.push("[ ] Račun/dokazilo o nakupu in opis napake priložena.");
+  L.push("");
+  L.push("Izvajalec: ______________________   Datum: ______________   Podpis: ______________________");
+  L.push("Prevzel/a: _____________________   Datum: ______________   Podpis: ______________________");
+  checklistText=L.join("\n");
+  $("checklistOut").textContent=checklistText;
+  $("globalStatus").textContent="Montažni checklist pripravljen — "+L.length+" vrstic.";
+  return checklistText;
 }
 $("buildCut").onclick=buildCut;
 $("buildQuote").onclick=buildQuote;
@@ -1280,20 +1433,30 @@ $("menuDlQuote").onclick=function(){
     "\n\nSKUPAJ (brez DDV);;"+quoteData.total.toFixed(2);
   saveBlob(V("drw")+"-predracun.csv",csv,"text/csv;charset=utf-8");
 };
+$("buildChecklist").onclick=buildChecklist;
+$("menuBuildChecklist").onclick=buildChecklist;
+$("menuDlChecklist").onclick=function(){
+  if(!checklistText)buildChecklist();
+  saveBlob(V("drw")+"-montazni-checklist.txt",checklistText,"text/plain;charset=utf-8");
+};
 
 function buildPlan(){
-  var p=WC[$("sysProfile").value],L=n("L"),N=Math.max(1,Math.round(n("n"))),np=Math.max(1,Math.round(n("np")));
-  var cut=Math.max(1,L),per=Math.max(1,Math.floor(p.len/cut)),boards=Math.ceil(N/per),off=p.len-per*cut;
+  var p=WC[$("sysProfile").value],L=n("L"),H=n("H"),N=Math.max(1,Math.round(n("n"))),np=Math.max(1,Math.round(n("np")));
+  var use=V("sysUse"),lim=roksalLimit(p,use,H),cut=Math.max(1,L),per=Math.max(1,Math.floor(p.len/cut)),boards=Math.ceil(N/per),off=p.len-per*cut;
   var handles=Math.max(1,Math.ceil(L/4000)),hlen=L/handles;
   var rows=[
     ["Lamela "+p.n,f(p.w)+"x"+f(p.t)+"x"+f(cut)+" mm",N+" kos"],
     ["Zaloga desk",p.len+" mm — "+per+" kosov na desko",boards+" desek"],
     ["Odpad",f(off)+" mm na desko","~"+f(off*boards/1000)+" m"],
-    ["Stebrički / nosilci","razmak ≤ "+(p.max*10)+" mm",np+" kos"],
+    ["Stebrički / nosilci",lim.label+" ≤ "+lim.v+" mm",np+" kos"],
     ["Sidra","2 na nosilec",(2*np)+" kos"],
     ["Ročaj",f(hlen)+" mm na kos",handles+" kos"],
     ["Vijaki RF","2 na lamelo + 2 na nosilec",(2*N+2*np)+" kos"]
   ];
+  if(use==="pokoncna"){
+    var rail=roksalRailLimit(p),rowsN=Math.max(2,Math.ceil(H/rail)+1);
+    rows.splice(4,0,["Vodoravne cevi","razmak ≤ "+rail+" mm",rowsN+" kosov"]);
+  }
   planData=rows;
   $("planOut").innerHTML='<table style="width:100%;font-size:11px;border-collapse:collapse">'+rows.map(function(r){return '<tr><td style="padding:2px 4px;border-bottom:1px solid var(--line)">'+E(r[0])+'</td><td style="padding:2px 4px;border-bottom:1px solid var(--line)">'+E(r[1])+'</td><td style="padding:2px 4px;border-bottom:1px solid var(--line);text-align:right;color:var(--tx)">'+E(r[2])+'</td></tr>'}).join('')+'</table><p style="margin-top:6px">Barva: '+E(V("sysColor"))+' · površina: '+E(V("sysSurface"))+' · montaža nad +5 °C. Količine so orientacijske — preverite jih pri naročilu.</p>';
 }
