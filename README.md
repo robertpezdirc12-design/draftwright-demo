@@ -24,12 +24,24 @@
 - naslovni blok: projekt, merilo, format, revizija, datum, risba št., izdelal
 - trije tipi lista: klasični, referenčni (WoodCore cona + mere), stopniščni
 
-### 4. Izvozi
+### 4. Izvoz — dialog »Možnosti izvoza« (Ctrl+E)
+
+Poenotena točka izvoza: **Datoteka → Izvozi…** (ali gumb »Izvozi…« v sklopu Izdelava). Izberete lahko:
+
+- **prednastavitve**: celotna dokumentacija · za delavnico (risba + rezalni načrt + kosovnica + montaža) · za naročilo · samo risba
+- **vsebina** (8 delov): risba, kosovnica, rezalni načrt (kerf), montažni načrt, predračun, naročilnik, montažni checklist, projekt (JSON)
+- **format risbe**: PDF / tisk, SVG, DXF, STEP — priloge se izvozijo v nativnih formatih (CSV/TXT/JSON)
+- **format lista**: A3/A4/A2 (dvosmerno usklajeno s poljem na stranskem plošču)
+- **napredno**: vodni žig (PDF/SVG), DXF samo-geometrija (CNC, brez besedil), natančnost krivulj v DXF (4/8/16 segmentov), datum v imenu datotek, metapodatki v SVG
+
+Risba se ob izvozu vedno znova generira iz trenutnih polj, tako da izvoz vedno odraža zadnje stanje. Posamezne hitre izvoze (meni Datoteka) ostanejo nespremenjeni — vsi uporabljajo iste graditelje izhodov.
+
+### 5. Izvozi v podrobnostih
 | Izvoz | Oblika |
 |---|---|
 | PDF / tisk | brskalni tisk, `@page` po izbranem formatu (A3/A4/A2) |
-| SVG | vektorski list |
-| DXF | R12 (LINE/TEXT), kvadratne krivulje vzorčene v polilinije — za CAD |
+| SVG | vektorski list, opcijsko z vodnim žigom in metapodatki |
+| DXF | R12 (LINE/TEXT), kvadratne krivulje vzorčene v polilinije — za CAD/CNC |
 | STEP | AP214, parametrični solid model (BREP) |
 | Kosovnica | CSV |
 | Montažni načrt | CSV |
@@ -39,16 +51,16 @@
 | Montažni checklist | TXT — sklopi A–E (dostava, montaža, geometrija, garancija, reklamacijska dokumentacija) |
 | Projekt | JSON (shranjevanje / odpiranje celotnega stanja) |
 
-### 5. Delovni načini
+### 6. Delovni načini
 - vodeni / strokovni način, izbira vidnih sklopov in polj
-- bližnjice: **Ctrl+G** generiraj · **Ctrl+S** shrani · **Alt+P** izbira plošče · **Ctrl+V** prilepi sliko · **+/−** povečava
+- bližnjice: **Ctrl+G** generiraj · **Ctrl+S** shrani · **Ctrl+E** možnosti izvoza · **Alt+P** izbira plošče · **Ctrl+V** prilepi sliko · **+/−** povečava
 - samodejno shranjevanje stanja (localStorage)
 
 ## Samoprevera
 
 Meni **Datoteka → Samoprevera (90 kombinacij)** generira 6 profilov × 5 uporab × 3 različice mer in preveri, da nastane veljaven SVG brez JS napak.
 
-Za avtomatski test je v repozitoriju še [tests/smoke.test.js](tests/smoke.test.js) (jsdom), ki ga poganja CI ([.github/workflows/ci.yml](.github/workflows/ci.yml)):
+Za avtomatske teste je v repozitoriju še [tests/](tests/) (jsdom): `smoke.test.js` (generiranje listov, validacije, izvozi) in `export-dialog.test.js` (izvozni dialog — vsi formati, napredne nastavitve in robni primeri). Požene jih CI ([.github/workflows/ci.yml](.github/workflows/ci.yml)):
 
 ```bash
 npm install
@@ -59,10 +71,9 @@ npm test
 
 ```
 index.html               preusmeritev na aplikacijo
-tehnicka-risba-pro.html  glavna aplikacija (vse v eni datoteki)
-export-options-pro.html  prototip UI dialoga »Možnosti izvoza«
+tehnicka-risba-pro.html  glavna aplikacija (vse v eni datoteki, vključno z izvoznim dialogom)
 samples/                 vzorčni izvozi (SVG/PDF/DXF/STEP) in testni posnetki
-tests/                   jsdom smoke test
+tests/                   jsdom testi (smoke + izvozni dialog)
 ```
 
 ## Zagon
