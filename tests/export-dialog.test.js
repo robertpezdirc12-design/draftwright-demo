@@ -257,9 +257,9 @@ async function runExportAndWait() {
   $("save").click();
   check("hitri shranjevalnik projekta še deluje", downloads.length === 1 && downloads[0].name.endsWith("-project.json"));
 
-  // 17) samoprevera po refactorju (90 kombinacij)
+  // 17) samoprevera po refactorju (126 kombinacij)
   $("menuSelfTest").click();
-  check("samoprevera 90/90 po integraciji", /90 kombinacij · 0 napak · 0 JS napak/.test($("globalStatus").textContent), $("globalStatus").textContent);
+  check("samoprevera 126/126 po integraciji", /126 kombinacij · 0 napak · 0 JS napak/.test($("globalStatus").textContent), $("globalStatus").textContent);
 
   console.log(`\n  Rezultat: ${pass} OK, ${fail} FAIL${errors.length ? ", JS napake: " + errors.join(" | ") : ", brez JS napak"}`);
   process.exit(fail || errors.length ? 1 : 0);

@@ -4,7 +4,7 @@
   "private": true,
   "description": "Draftwright demo - Tehnicna risba PRO (slika -> risba -> izvoz)",
   "scripts": {
-    "test": "node tests/smoke.test.js && node tests/export-dialog.test.js"
+    "test": "node tests/smoke.test.js && node tests/export-dialog.test.js && node tests/roksal-p1.test.js"
   },
   "devDependencies": {
     "jsdom": "^31.0.1"

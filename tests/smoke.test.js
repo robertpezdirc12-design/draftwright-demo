@@ -125,10 +125,10 @@ function check(name, ok, info) {
     check("predracun CSV: RF + pritrdilni vijaki", ok2, inf2);
   }
 
-  // 11) vgrajena samoprevera: 90 kombinacij
+  // 11) vgrajena samoprevera: 126 kombinacij
   $("menuSelfTest").click();
   t = $("globalStatus").textContent;
-  check("vgrajena samoprevera 90/90", t.includes("90 kombinacij") && t.includes("0 napak") && t.includes("0 JS napak"), t);
+  check("vgrajena samoprevera 126/126", t.includes("126 kombinacij") && t.includes("0 napak") && t.includes("0 JS napak"), t);
 
   console.log(`\n  Rezultat: ${pass} OK, ${fail} FAIL${errors.length ? ", JS napake: " + errors.join(" | ") : ", brez JS napak"}`);
   process.exit(fail || errors.length ? 1 : 0);
