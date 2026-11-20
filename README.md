@@ -61,7 +61,8 @@ Risba se ob izvozu vedno znova generira iz trenutnih polj, tako da izvoz vedno o
 ### 6. Delovni načini
 - vodeni / strokovni način, izbira vidnih sklopov in polj
 - bližnjice: **Ctrl+G** generiraj · **Ctrl+S** shrani · **Ctrl+E** možnosti izvoza · **Alt+P** izbira plošče · **Ctrl+V** prilepi sliko · **+/−** povečava
-- dostopnost: `aria-live` status, `label for=` na 75+ poljih
+- dostopnost: `aria-live` status, `label for=` na 77 poljih
+- **interaktivni tloris** (sklop 8): risanje trase po mreži (1 px = 10 mm), dolžine/nosilci po segmentih (Roksal limiti), Undo/Redo (Ctrl+Z/Y), »Uporabi v izračun« → L; trasa v projektu (shema v2) in autosave
 - samodejno shranjevanje stanja + kalibracije (localStorage; fotografija izrazito NE — kvota)
 
 ## Samoprevera

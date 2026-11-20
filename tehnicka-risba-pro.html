@@ -165,6 +165,7 @@ input.invalid,select.invalid{border-color:var(--bad)!important;box-shadow:0 0 0 
       <button class="mi" data-goto="sheet">List in opombe <span class="k">5</span></button>
       <button class="mi" data-goto="plan">Montaža in količine <span class="k">6</span></button>
       <button class="mi" data-goto="export">Izdelava <span class="k">7</span></button>
+      <button class="mi" data-goto="tloris">Tloris <span class="k">8</span></button>
       <button class="mi" data-goto="all">Razgrni vse vidne <span class="k">*</span></button>
       <div class="sep"></div>
       <div class="label">Vidnost</div>
@@ -182,6 +183,7 @@ input.invalid,select.invalid{border-color:var(--bad)!important;box-shadow:0 0 0 
           <label><input type="checkbox" data-fg="sheet"> List in opombe</label>
           <label><input type="checkbox" data-fg="plan"> Montaža in količine</label>
           <label><input type="checkbox" data-fg="export" checked> Izdelava in izvoz</label>
+          <label><input type="checkbox" data-fg="tloris" checked> Tloris</label>
           <button class="btn" id="fieldReset" type="button">Ponastavi na osnovno</button>
         </div>
       </div>
@@ -436,6 +438,19 @@ Konstrukcija odporna na vremenske vplive.</textarea>
   <button class="btn" type="button" data-call="prt">PDF / tisk</button>
 </div>
 <p class="hint"><span class="kbd">Ctrl+G</span> generiraj · <span class="kbd">Ctrl+S</span> shrani · <span class="kbd">Alt+P</span> izbira plošče · Referenčni način: <b>Orodja</b></p>
+</section>
+
+<section data-panel="tloris">
+<h2><i>8</i>Tloris (interaktivno)</h2>
+<p class="hint" style="margin-top:0">Kliknite po mreži za oglišča trase — 1 piksel = 10 mm (platno 6000×4000 mm). <span class="kbd">Escape</span> zaključi traso. Nosilci se izpeljejo po Roksal limitih za izbrano uporabo/profil.</p>
+<svg id="tlorisSvg" viewBox="0 0 600 400" style="width:100%;background:#0d0d0d;border:1px solid var(--line);border-radius:8px;cursor:crosshair;display:block"></svg>
+<div class="btns" style="margin-top:8px">
+  <button class="btn" id="tlorisUndo" type="button">Undo <span class="kbd">Ctrl+Z</span></button>
+  <button class="btn" id="tlorisRedo" type="button">Redo <span class="kbd">Ctrl+Y</span></button>
+  <button class="btn" id="tlorisClear" type="button">Počisti</button>
+  <button class="btn go" id="tlorisApply" type="button">Uporabi v izračun</button>
+</div>
+<div class="status" id="tlorisStatus">Trasa prazna — kliknite za prvo oglišče.</div>
 </section>
 
 <div id="globalStatus" aria-live="polite">Pripravljeno.</div>
@@ -1490,13 +1505,14 @@ function kosovnicaCsv(){
   rows.push(["","Vrata WoodCore (TBI — ni v BOM)","TBI — podatki proizvajalca","TBI","TBI","potrebna specifikacija Roksala"]);
   return bomfeff+rows.map(function(r){return r.map(function(c){return '"'+String(c).replace(/"/g,'""')+'"'}).join(";")}).join("\n");
 }
-var PROJ_SCHEMA="draftwright-project",PROJ_VERSION=1;
+var PROJ_SCHEMA="draftwright-project",PROJ_VERSION=2;
 $("dlCsv").onclick=function(){saveBlob(V("drw")+"-kosovnica.csv",kosovnicaCsv(),"text/csv;charset=utf-8")};
 var fields=["L","H","D","n","sw","st","gap","wall","prof","topP","botP","np","postP","bolt","nbolt","zoneTop","zoneMid","zoneBot","zoneBase","innerD","sysUse","sysProfile","sysColor","sysSurface","matSel","rho","paper","scale","projType","rev","proj","drw","mat","tol","fin","aut","date","chk","ral","bracket","anchor","weld","notes","emb","sub","stN","stRise","stGoing","stW","stPosts","stH","stockLen","kerf","priceBoard","pricePost","priceScrew","priceWork","workHours","installTemp","slopeMM","mountType","weldedParts","installer","handoverDate","subType","strankaTip","strankaDav","strankaNaslov","strankaEmail","strankaTel","dobavaMode","dobavitelj","stranka","objekt"];
 function projectJson(){
   var data={};fields.forEach(function(id){data[id]=V(id)});
   data.refMode=$("refMode").checked;data.photo=S.photoData;data.cal=S.cal;data.calMode=S.calMode;
   data.calibrated=S.calibrated;data.lines=S.lines;data.detOverride=S.detOverride||null;
+  data.plan={walls:TLR.walls.slice(),anchor:TLR.anchor};
   return JSON.stringify({schema:PROJ_SCHEMA,version:PROJ_VERSION,savedWith:"Tehnična risba PRO",data:data},null,2);
 }
 $("save").onclick=function(){saveBlob(V("drw")+"-project.json",projectJson(),"application/json")};
@@ -1506,7 +1522,10 @@ $("loadFile").onchange=function(e){var file=e.target.files[0];if(!file)return;va
     var d=JSON.parse(r.result);
     if(d&&d.schema===PROJ_SCHEMA&&d.data){
       if((d.version||0)>PROJ_VERSION)throw new Error("projekt je shranjen z novejšo različico ("+d.version+") — posodobite aplikacijo");
-      d=d.data; // ovojnica v1
+      /* migracija: v1 (brez plan) → v2 doda prazno traso; v2 obnovi tloris */
+      if(d.version===1&&!d.data.plan)d.data.plan={walls:[],anchor:null};
+      if(d.data.plan){TLR.walls=(d.data.plan.walls||[]).slice();TLR.anchor=d.data.plan.anchor||null;tlrRender()}
+      d=d.data;
     }
     else if(d&&d.schema&&d.schema!==PROJ_SCHEMA)throw new Error("nepodprta shema "+d.schema+" (pričakovana "+PROJ_SCHEMA+")");
     /* legacy (v0): ravna struktura brez ovojnice — sprejeto */
@@ -2388,8 +2407,70 @@ $("dlPlan").onclick=function(){
   });
 })();
 
-/* ---------- Field picker: show only what the user needs ---------- */
-var FIELD_SECTIONS={photo:1,cal:2,detect:3,sheet:5,plan:6,export:7};
+/* ---------- Faza 5 (Issue #10 pogl. 10): interaktivni tloris trase ograje ----------
+   Arhitektura (arhitekturno poročilo): SVG platno + snapshot undo/redo; model mm, 1 px = 10 mm;
+   nosilci izpeljani prek roksalLimit na segment; enosmerno plan → polja (Uporabi v izračun). */
+var TLR={walls:[],anchor:null,undo:[],redo:[]};
+var TL_PX2MM=10,TL_W=600,TL_H=400;
+function tlrPushUndo(){TLR.undo.push(JSON.stringify({w:TLR.walls,a:TLR.anchor}));if(TLR.undo.length>50)TLR.undo.shift();TLR.redo=[]}
+function tlrPosts(len){var p3=WC[$("sysProfile").value]||WC.romb67,l3=roksalLimit(p3,V("sysUse"),n("H"));return Math.max(2,Math.ceil(len/Math.max(1,l3.v))+1)}
+function tlrRender(){
+  var svg=$("tlorisSvg");if(!svg)return;
+  var grid=10,i,x,y,s="";
+  for(x=grid;x<TL_W;x+=grid)s+='<line x1="'+x+'" y1="0" x2="'+x+'" y2="'+TL_H+'" stroke="#1c1c1a" stroke-width="1"/>';
+  for(y=grid;y<TL_H;y+=grid)s+='<line x1="0" y1="'+y+'" x2="'+TL_W+'" y2="'+y+'" stroke="#1c1c1a" stroke-width="1"/>';
+  TLR.walls.forEach(function(w3,idx){
+    var x1=w3.x1/TL_PX2MM,y1=w3.y1/TL_PX2MM,x2=w3.x2/TL_PX2MM,y2=w3.y2/TL_PX2MM;
+    var len=Math.hypot(w3.x2-w3.x1,w3.y2-w3.y1),np=tlrPosts(len);
+    s+='<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="'+(idx===TLR.walls.length-1?"var(--ac)":"#e9e7dd")+'" stroke-width="3"/>';
+    for(var k3=0;k3<np;k3++){
+      var t3=np>1?k3/(np-1):0;
+      s+='<rect x="'+(x1+(x2-x1)*t3-2)+'" y="'+(y1+(y2-y1)*t3-2)+'" width="4" height="4" fill="#8aa86a"/>';
+    }
+    s+='<text x="'+((x1+x2)/2)+'" y="'+((y1+y2)/2-4)+'" font-size="9" fill="#e0a44c" text-anchor="middle">'+f(len)+' mm · '+np+' nos.</text>';
+    s+='<circle cx="'+x1+'" cy="'+y1+'" r="3" fill="#e9e7dd"/>';
+  });
+  if(TLR.walls.length){var last=TLR.walls[TLR.walls.length-1];s+='<circle cx="'+(last.x2/TL_PX2MM)+'" cy="'+(last.y2/TL_PX2MM)+'" r="4" fill="var(--ac)"/>'}
+  if(TLR.anchor)s+='<circle cx="'+(TLR.anchor.x/TL_PX2MM)+'" cy="'+(TLR.anchor.y/TL_PX2MM)+'" r="4" fill="var(--ac)"/>';
+  svg.innerHTML=s;
+  var total=TLR.walls.reduce(function(a,w4){return a+Math.hypot(w4.x2-w4.x1,w4.y2-w4.y1)},0);
+  $("tlorisStatus").textContent=TLR.walls.length?("Segmentov: "+TLR.walls.length+" · skupna dolžina: "+f(total)+" mm"+(TLR.anchor?" · trasa v teku (Escape zaključi)":"")):"Trasa prazna — kliknite za prvo oglišče.";
+  $("tlorisUndo").disabled=!TLR.undo.length;$("tlorisRedo").disabled=!TLR.redo.length;
+}
+function tlrUndo(){if(!TLR.undo.length)return;TLR.redo.push(JSON.stringify({w:TLR.walls,a:TLR.anchor}));var st2=JSON.parse(TLR.undo.pop());TLR.walls=st2.w;TLR.anchor=st2.a;tlrRender()}
+function tlrRedo(){if(!TLR.redo.length)return;TLR.undo.push(JSON.stringify({w:TLR.walls,a:TLR.anchor}));var st3=JSON.parse(TLR.redo.pop());TLR.walls=st3.w;TLR.anchor=st3.a;tlrRender()}
+  var svg=$("tlorisSvg");
+  svg.addEventListener("click",function(e){
+    var r=this.getBoundingClientRect();
+    var mx=Math.round((e.clientX-r.left)*TL_W/r.width*TL_PX2MM),my=Math.round((e.clientY-r.top)*TL_H/r.height*TL_PX2MM);
+    mx=Math.max(0,Math.min(TL_W*TL_PX2MM,mx));my=Math.max(0,Math.min(TL_H*TL_PX2MM,my));
+    tlrPushUndo();
+    if(TLR.anchor){TLR.walls.push({x1:TLR.anchor.x,y1:TLR.anchor.y,x2:mx,y2:my})}
+    TLR.anchor={x:mx,y:my};
+    tlrRender();
+  });
+  $("tlorisUndo").onclick=tlrUndo;
+  $("tlorisRedo").onclick=tlrRedo;
+  $("tlorisClear").onclick=function(){if(!TLR.walls.length&&!TLR.anchor)return;tlrPushUndo();TLR.walls=[];TLR.anchor=null;tlrRender()};
+  $("tlorisApply").onclick=function(){
+    var total=TLR.walls.reduce(function(a,w5){return a+Math.hypot(w5.x2-w5.x1,w5.y2-w5.y1)},0);
+    if(total<=0){$("tlorisStatus").textContent="Trasa je prazna — nič ni preneseno v izračun.";return}
+    $("L").value=String(Math.round(total));
+    $("L").dispatchEvent(new Event("input",{bubbles:true})); // input → invalidateProduction + applySystem
+    $("tlorisStatus").textContent="Dolžina "+f(total)+" mm prenesena v polje L — pritisnite Generiraj.";
+    $("globalStatus").textContent="Tloris → izračun: L = "+f(total)+" mm ("+TLR.walls.length+" segmentov).";
+  };
+  document.addEventListener("keydown",function(e){
+    if($("expOverlay").classList.contains("on"))return;
+    var typing=/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName);
+    if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="z"&&!typing){e.preventDefault();tlrUndo()}
+    if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="y"&&!typing){e.preventDefault();tlrRedo()}
+    if(e.key==="Escape"&&TLR.anchor&&!$("expOverlay").classList.contains("on")){TLR.anchor=null;tlrRender()}
+  });
+  tlrRender();
+
+/* ---------- Field picker: show only what the user needs ---------- *//* ---------- Field picker: show only what the user needs ---------- */
+var FIELD_SECTIONS={photo:1,cal:2,detect:3,sheet:5,plan:6,export:7,tloris:8};
 var FIELD_ITEMS={
   system:[".sysbox"],
   main:["#L","#H","#D","#n","#sw","#st","#gap"],
@@ -2489,6 +2570,7 @@ function saveState(){
   var d={};fields.forEach(function(id){d[id]=V(id)});d.refMode=$("refMode").checked;
   /* pogl. 12: kalibracija se avtomatsko shrani (majhna) — fotografija NE (kvota ~5 MB; izrecno dokumentirano) */
   if(S.cal)d.cal=S.cal;if(S.calMode)d.calMode=S.calMode;if(S.calibrated)d.calibrated=1;
+  d.plan={walls:TLR.walls.slice(),anchor:TLR.anchor};
   try{localStorage.setItem(LSKEY,JSON.stringify(d))}catch(e){
     if(String(e).indexOf("QuotaExceeded")>=0&&$("globalStatus")){ $("globalStatus").textContent="Opozorilo: shramba brskalnika je polna — avtoshranjevanje preskočeno.";$("globalStatus").style.color="var(--wa)"; }
   }
@@ -2499,6 +2581,7 @@ function restoreState(){
     fields.forEach(function(id){if(d[id]!=null)$(id).value=d[id]});
     $("refMode").checked=!!d.refMode;
     if(d.cal){S.cal=d.cal;S.calMode=d.calMode||"linear";S.calibrated=!!d.calibrated}
+    if(d.plan){TLR.walls=(d.plan.walls||[]).slice();TLR.anchor=d.plan.anchor||null;tlrRender()}
   }catch(e){try{localStorage.removeItem(LSKEY)}catch(e2){}}
 }
 document.addEventListener("input",function(){invalidateProduction();clearTimeout(saveTimer);saveTimer=setTimeout(saveState,400)});
@@ -2588,7 +2671,7 @@ mn.addEventListener("drop",function(e){if(e.dataTransfer.files[0])loadPhoto(e.da
   var PANEL_GROUPS={
     photo:["photo"], cal:["cal"], detect:["detect"],
     dims:["system","main","zones","advanced"],
-    sheet:["sheet"], plan:["plan"], export:["export"]
+    sheet:["sheet"], plan:["plan"], export:["export"], tloris:["tloris"]
   };
   var PANEL_LABELS={photo:"Slika",cal:"Umeritev",detect:"Zaznavanje lamel",dims:"Mere in parametri",sheet:"List in opombe",plan:"Montaža in količine",export:"Izdelava"};
   function markPanelActive(key){
@@ -2625,6 +2708,7 @@ mn.addEventListener("drop",function(e){if(e.dataTransfer.files[0])loadPhoto(e.da
   [].slice.call(document.querySelectorAll('[data-goto]')).forEach(function(b){
     b.addEventListener('click',function(e){
       e.preventDefault();openPanel(b.getAttribute('data-goto'));closeMenus();
+      if(b.getAttribute('data-goto')==='tloris')tlrRender();
     });
   });
   document.addEventListener('keydown',function(e){
