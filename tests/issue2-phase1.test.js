@@ -184,7 +184,7 @@ async function lastText() {
   downloads.length = 0;
   $("dlCsv").click();
   t = await lastText();
-  check("kosovnica: Sidra vrstica", !!t && t.includes('"Sidra"'));
+  check("kosovnica: Sidra vrstica", !!t && t.includes('"Sidra ('));
   check("kosovnica: material WoodCore", !!t && t.includes("WoodCore WPC") && !t.includes('"rhombus"'));
   check("kosovnica: Masa lamel (ocena)", !!t && t.includes("Masa lamel (ocena") && !t.includes("SKUPNA MASA"));
 
@@ -204,7 +204,7 @@ async function lastText() {
   t = await lastText();
   let proj = null;
   try { proj = JSON.parse(t); } catch (e) {}
-  check("projekt: refMode shranjen", !!proj && proj.refMode === true);
+  check("projekt: refMode shranjen (ovojnica v1)", !!proj && proj.schema === "draftwright-project" && proj.data.refMode === true);
   $("refMode").checked = false;
   // round trip: naloži shranjeni projekt
   try {
