@@ -87,7 +87,7 @@ tests/                   jsdom testi (smoke + izvozni dialog)
 
 Aplikacija je statična — odprete `index.html` (ali direktno `tehnicka-risba-pro.html`) v brskalniku, ali objavite mapo kot statično stran (npr. Vercel, Netlify, GitHub Pages). **Brez build koraka.**
 
-## Znane omejitke
+## Znane omejitve
 
 - STEP model vsebuje posamezna telesa, ki se geometrijsko prekrivajo (brez bool operacij) — primeren kot parametrični pregled, ne za 3D tisk / CNC.
 - DXF deluje v koordinatnem prostoru lista (420×297 enot, razporeditev kot A3); pri drugih formatih se vsebina za tisk le proporcionalno pomanjša.
