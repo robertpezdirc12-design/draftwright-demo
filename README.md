@@ -50,7 +50,7 @@ Risba se ob izvozu vedno znova generira iz trenutnih polj, tako da izvoz vedno o
 | STEP | AP214, parametrični solid model (BREP) |
 | Kosovnica | CSV |
 | Montažni načrt | CSV |
-| Rezalni načrt | CSV — kerf optimizator (izkoristek, odpadek, neizrezljivi kosi) |
+| Rezalni načrt | CSV — kerf optimizator (DP za enake kose, FFD nesting za več dolžin — stopnice: lamela + ročaj v isti deski) |
 | Predračun | CSV — orientacijski, brez DDV |
 | Naročilnik | TXT |
 | Montažni checklist | TXT — sklopi A–E (dostava, montaža, geometrija, garancija, reklamacijska dokumentacija) + kontakt Roksal |
@@ -61,13 +61,14 @@ Risba se ob izvozu vedno znova generira iz trenutnih polj, tako da izvoz vedno o
 ### 6. Delovni načini
 - vodeni / strokovni način, izbira vidnih sklopov in polj
 - bližnjice: **Ctrl+G** generiraj · **Ctrl+S** shrani · **Ctrl+E** možnosti izvoza · **Alt+P** izbira plošče · **Ctrl+V** prilepi sliko · **+/−** povečava
-- samodejno shranjevanje stanja (localStorage)
+- dostopnost: `aria-live` status, `label for=` na 75+ poljih
+- samodejno shranjevanje stanja + kalibracije (localStorage; fotografija izrazito NE — kvota)
 
 ## Samoprevera
 
 Meni **Datoteka → Samoprevera (90 kombinacij)** generira 6 profilov × 5 uporab × 3 različice mer in preveri, da nastane veljaven SVG brez JS napak.
 
-Za avtomatske teste je v repozitoriju še [tests/](tests/) (jsdom): `smoke.test.js` (generiranje listov, validacije, izvozi), `export-dialog.test.js` (izvozni dialog — vsi formati, napredne nastavitve in robni primeri), `roksal-p1.test.js` (dilatacije, napušč, pregrade, palete barv, podlage) in `roksal-p2.test.js` (tehnični list, povpraševanje, prodajni pogoji), `issue2-phase1.test.js` (stale-state, orientacija reza, enote) in `vision.test.js` + `issue2-phase2.test.js` (realno pikselno zaznavanje, DXF sloji/kodiranje, STEP topologija). Požene jih CI ([.github/workflows/ci.yml](.github/workflows/ci.yml)):
+Za avtomatske teste je v repozitoriju še [tests/](tests/) (jsdom): `smoke.test.js` (generiranje listov, validacije, izvozi), `export-dialog.test.js` (izvozni dialog — vsi formati, napredne nastavitve in robni primeri), `roksal-p1.test.js` (dilatacije, napušč, pregrade, palete barv, podlage) in `roksal-p2.test.js` (tehnični list, povpraševanje, prodajni pogoji), `issue2-phase1.test.js` (stale-state, orientacija reza), `vision.test.js` (realno pikselno zaznavanje, @napi-rs/canvas), `issue2-phase2.test.js` (DXF sloji, STEP topologija) in `issue2-phase3.test.js` (stale-state, orientacija reza, enote) in `vision.test.js` + `issue2-phase2.test.js` (realno pikselno zaznavanje, DXF sloji/kodiranje, STEP topologija). Požene jih CI ([.github/workflows/ci.yml](.github/workflows/ci.yml)):
 
 ```bash
 npm install
