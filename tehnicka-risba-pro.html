@@ -331,9 +331,9 @@ body.viewmode .viewbar{display:flex}
 </div>
 
 <div class="viewbar" id="viewBar">
-  <span class="vb-title" id="vbTitle">Tehnična risba PRO</span>
+  <span class="vb-title" id="vbTitle">Tehnična risba PRO</span><span class="m" id="vbApprovalStatus" style="color:var(--ok);font-size:12px"></span>
   <button class="btn go" id="vbPdf" type="button">⬇ Prenesi PDF</button>
-  <button class="btn" id="vbEdit" type="button">✎ Uredi projekt</button>
+  <button class="btn" id="vbApprove" type="button">Potrdi projekt</button><button class="btn" id="vbEdit" type="button">✎ Uredi projekt</button>
 </div>
 
 <div class="grid">
@@ -773,6 +773,24 @@ Konstrukcija odporna na vremenske vplive.</textarea>
     </div>
   </div>
 </div>
+<div class="exp-overlay" id="apprOverlay">
+  <div class="exp-dialog" role="dialog" aria-modal="true" aria-label="Potrditev projekta">
+    <div class="exp-head">
+      <div><h1>Potrditev projekta</h1><p class="exp-sub">S to potrditvijo sprejemate tehnično rešitev, kot je prikazana na risbi.</p></div>
+      <button class="exp-x" id="apprClose" type="button" aria-label="Zapri" title="Zapri (Esc)">×</button>
+    </div>
+    <div class="exp-body">
+      <label style="display:block;margin-bottom:8px">Ime / podjetje <input type="text" id="apprName" style="width:100%;padding:7px 9px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--tx)"></label>
+      <div class="status" id="apprNote"></div>
+    </div>
+    <div class="exp-foot">
+      <div class="exp-actions">
+        <button class="exp-cancel" id="apprCancel" type="button">Nazaj</button>
+        <button class="exp-go" id="apprConfirm" type="button">Potrdi</button>
+      </div>
+    </div>
+  </div>
+</div>
 <div class="hooks" aria-hidden="true">
   <button id="modeGuided" type="button"></button>
   <button id="modeExpert" type="button"></button>
@@ -798,6 +816,7 @@ Konstrukcija odporna na vremenske vplive.</textarea>
 
 <script src="vendor/jspdf.umd.min.js" defer></script>
 <script src="vendor/svg2pdf.umd.min.js" defer></script>
+<script src="vendor/qr-core.js" defer></script>
 <script>
 
 (function(){
@@ -2778,7 +2797,8 @@ function exportPdf(sv,paper){
     {id:"wm",label:"Vodni žig na risbi",tip:"Prosojno diagonalno besedilo prek risbe. Velja za PDF in SVG; na DXF se ne izvaža (namen CNC).",on:false},
     {id:"geom",label:"DXF: samo geometrija",tip:"Izvoz risbe brez TEXT entitet — primerno za CNC obdelavo. Priloge niso prizadete.",on:false},
     {id:"date",label:"Datum v imenu datotek",tip:"K imenu vsake datoteke doda današnji datum (dd-mm-llll).",on:false},
-    {id:"meta",label:"Metapodatki v SVG",tip:"V SVG doda <title> in <desc> iz naslovnega bloka (projekt, merilo, format, datum, profil).",on:false}
+    {id:"meta",label:"Metapodatki v SVG",tip:"V SVG doda <title> in <desc> iz naslovnega bloka (projekt, merilo, format, datum, profil).",on:false},
+    {id:"qr",label:"QR povezava na risbi (ogled stranke)",tip:"Doda QR kodo s povezavo za ogled projekta — stranka jo skenira in lahko potrdi. Velja za PDF/SVG.",on:false}
   ];
   var EXP_PRESETS={
     full:{risba:1,kosovnica:1,cut:1,plan:1,quote:1,order:1,checklist:1,project:1,tehlist:1,povpras:1,tlorisSvg:0,skicaSvg:0},
@@ -2880,6 +2900,20 @@ function exportPdf(sv,paper){
       wt.textContent=String(o.wmText||"OSNUTEK").trim()||"OSNUTEK";
       g.appendChild(wt);clone.appendChild(g);
     }
+    /* QR povezava za ogled (stranka) — le v izvozu (PDF/SVG), ne v osnovni risbi */
+    if(o.qr&&typeof qrcode==="function"){
+      try{
+        var qr=qrcode(0,"M");qr.addData(prjLinkViewUrl());qr.make();
+        var qn=qr.getModuleCount(),qcell=Math.max(0.14,34/qn);
+        var pwN=parseFloat(pw)||420,phN=parseFloat(ph)||297;
+        var qx=pwN-10-qn*qcell,qy=phN-10-qn*qcell;
+        var qs='<g data-qr="1" transform="translate('+qx+' '+qy+')">';
+        for(var qr0=0;qr0<qn;qr0++)for(var qc=0;qc<qn;qc++)if(qr.isDark(qr0,qc))
+          qs+='<rect x="'+(qc*qcell)+'" y="'+(qr0*qcell)+'" width="'+qcell+'" height="'+qcell+'" fill="#111"/>';
+        qs+='</g>';
+        clone.insertAdjacentHTML("beforeend",qs);
+      }catch(e){}
+    }
     return new XMLSerializer().serializeToString(clone);
   }
   function expRun(){
@@ -2895,7 +2929,7 @@ function exportPdf(sv,paper){
       }
       if(fmt==="PDF"){
         jobs.push({n:"risba (PDF, vektorski)",f:function(){
-          var sv=svgVariant({paper:paper,watermark:!!wm,wmText:wm,meta:adv("meta").on});
+          var sv=svgVariant({paper:paper,watermark:!!wm,wmText:wm,meta:adv("meta").on,qr:!!adv("qr").on});
           if(!sv)throw new Error("ni risbe");
           return exportPdf(sv,paper).then(function(doc){
             doc.save(expBase()+".pdf");
@@ -2916,7 +2950,7 @@ function exportPdf(sv,paper){
         }});
       }else if(fmt==="SVG"){
         jobs.push({n:"risba (SVG)",f:function(){
-          var sv=svgVariant({paper:paper,watermark:!!wm,wmText:wm,meta:adv("meta").on});
+          var sv=svgVariant({paper:paper,watermark:!!wm,wmText:wm,meta:adv("meta").on,qr:!!adv("qr").on});
           if(!sv)throw new Error("ni risbe");
           saveBlob(base+".svg",sv,"image/svg+xml;charset=utf-8");
         }});
@@ -3513,9 +3547,24 @@ function prjLinkCopy(){
   else window.prompt("Povezava projekta (Ctrl+C):",url);
 }
 /* Faza 1: share view mode — povezava za ogled (stranka): samo risba + PDF, brez urejanja */
+/* Skrajšan payload za ogled (QR / povezava stranke): samo polja, potrebna za pregled —
+   dovolj majhen, da ga QR (≈2,9 kB) prenese. */
+function prjViewPayload(){
+  var d={};
+  ["L","H","D","n","sw","st","gap","w2","slabT","segList","koritoH","koritoD","koritoList",
+   "sysUse","sysProfile","sysColor","sysSurface","mountType","paper","scale","projType","rev","proj","drw",
+   "subType","topP","botP","np","postP","bolt","nbolt","bracket","anchor"].forEach(function(id){d[id]=V(id)});
+  d.refMode=$("refMode").checked;
+  d.plan={walls:TLR.walls.slice(),anchor:TLR.anchor};
+  d.sketch={elems:SK.elems.slice(),paper:SK.paper,orient:SK.orient,mreza:SK.mreza};
+  return JSON.stringify({schema:PROJ_SCHEMA,version:PROJ_VERSION,savedWith:"Tehnična risba PRO",data:d});
+}
+function prjLinkViewUrl(){
+  var b64=btoa(unescape(encodeURIComponent(prjViewPayload()))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+  return window.location.origin+window.location.pathname+"?view=1#p="+b64;
+}
 function prjLinkView(){
-  var b64=btoa(unescape(encodeURIComponent(prjSnapshot()))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
-  var url=window.location.origin+window.location.pathname+"?view=1#p="+b64;
+  var url=prjLinkViewUrl();
   var done=function(){if($("prjNote"))$("prjNote").textContent="Povezava za ogled kopirana — prejemnik vidi samo risbo + PDF.";toast("Povezava za ogled (stranka) kopirana","ok")};
   if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(url).then(done,function(){window.prompt("Povezava za ogled (Ctrl+C):",url)});
   else window.prompt("Povezava za ogled (Ctrl+C):",url);
@@ -3538,6 +3587,9 @@ function parseViewMode(){
       try{history.replaceState(null,"",window.location.pathname+window.location.hash)}catch(e){}
     };
     if(title)title.textContent=(V("proj")||"Naložen projekt")+" · "+(V("drw")||"");
+    var appr=(typeof approvalsAll==="function"?approvalsAll():[]).find(function(r){return r.drw===V("drw")});
+    var st2=$("vbApprovalStatus");
+    if(st2)st2.textContent=appr?("✓ Potrjeno: "+appr.name+" · "+new Date(appr.date).toLocaleDateString("sl-SI")):"";
     return true;
   }catch(e){
     /* view mode nikoli ne sme porušiti inicializacije aplikacije */
@@ -3813,6 +3865,30 @@ $("helpGen").onclick=function(){var g=$("gen");if(g)g.click()};
   b.addEventListener("click",function(){b.parentNode.classList.toggle("open")});
 });
 window.openHelp=openHelp;window.closeHelp=closeHelp;
+
+/* ---------- Odobritev stranke (view mode / QR) ---------- */
+var APPROV_KEY="draftwright-approvals";
+function approvalsAll(){try{return JSON.parse(localStorage.getItem(APPROV_KEY)||"[]")}catch(e){return[]}}
+function openApprove(){$("apprName").value="";$("apprNote").textContent="";$("apprOverlay").classList.add("on")}
+function closeApprove(){$("apprOverlay").classList.remove("on")}
+function submitApprove(){
+  var name=($("apprName").value||"").trim();
+  if(!name){$("apprNote").textContent="Vpišite ime / podjetje.";return}
+  var rec={id:Date.now(),proj:V("proj")||"",drw:V("drw")||"",name:name,date:new Date().toISOString()};
+  var list=approvalsAll();list.unshift(rec);
+  try{localStorage.setItem(APPROV_KEY,JSON.stringify(list))}catch(e){}
+  closeApprove();
+  var st=$("vbApprovalStatus");
+  if(st)st.textContent="✓ Potrjeno: "+name+" · "+new Date(rec.date).toLocaleDateString("sl-SI");
+  toast("Projekt potrjen: "+name,"ok");
+}
+$("vbApprove").onclick=openApprove;
+$("apprClose").onclick=closeApprove;
+$("apprCancel").onclick=closeApprove;
+$("apprConfirm").onclick=submitApprove;
+$("apprOverlay").addEventListener("click",function(e){if(e.target===this)closeApprove()});
+document.addEventListener("keydown",function(e){if($("apprOverlay").classList.contains("on")&&e.key==="Escape")closeApprove()});
+window.openApprove=openApprove;window.submitApprove=submitApprove;window.approvalsAll=approvalsAll;
 
 /* P3: PWA — namestljiva aplikacija, deluje brez signala (service worker, stale-while-revalidate).
    Registracija samo prek https (Vercel) oz. localhost; file:// in jsdom preskočita. */
