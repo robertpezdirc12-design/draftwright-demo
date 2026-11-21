@@ -2,7 +2,7 @@
    Strategija: stale-while-revalidate — iz predpomnilnika takoj, osvežitev v ozadju;
    brez omrežja se uporabi predpomnjena različica. Različico cache povečaj ob večjih spremembah. */
 var SW_CACHE = "risba-pro-v1";
-var SW_ASSETS = ["./", "./tehnicka-risba-pro.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./vendor/jspdf.umd.min.js", "./vendor/svg2pdf.umd.min.js", "./vendor/LiberationSans-Regular.ttf"];
+var SW_ASSETS = ["./", "./tehnicka-risba-pro.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./vendor/jspdf.umd.min.js", "./vendor/svg2pdf.umd.min.js", "./vendor/qr-core.js", "./vendor/LiberationSans-Regular.ttf"];
 
 self.addEventListener("install", function (e) {
   e.waitUntil(
