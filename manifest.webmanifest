@@ -1,0 +1,16 @@
+{
+  "name": "Tehnična risba PRO — WPC ograje",
+  "short_name": "Risba PRO",
+  "description": "Slika → tehnična risba → izvoz: WPC lamelne ograje za Roksal montažerje (deluje brez signala).",
+  "lang": "sl",
+  "start_url": "./tehnicka-risba-pro.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#141c24",
+  "theme_color": "#141c24",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
