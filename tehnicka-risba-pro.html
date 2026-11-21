@@ -4,7 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Tehnična risba PRO – fotografija do končnega lista</title>
-<link rel="icon" href="data:,">
+<meta name="theme-color" content="#141c24">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-512.png" sizes="512x512" type="image/png">
+<link rel="apple-touch-icon" href="icon-192.png">
 <style>
 :root{--bg:#141413;--panel:#1d1d1b;--p2:#262622;--line:#3b3b36;--tx:#e9e7dd;--mut:#a6a396;--ac:#d97757;--ok:#8aa86a;--wa:#e0a44c;--bad:#d06b5b;--bar:#181816}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
@@ -149,6 +152,16 @@ input.invalid,select.invalid{border-color:var(--bad)!important;box-shadow:0 0 0 
 .exp-go{background:var(--ac);color:#1a120e;border:1px solid var(--ac);border-radius:6px;padding:8px 14px;font:inherit;font-size:12.5px;font-weight:600;cursor:pointer}
 .exp-go:disabled{opacity:.45;cursor:not-allowed}
 @media(max-width:950px){.grid{grid-template-columns:1fr}aside{max-height:none;border-right:0;border-bottom:1px solid var(--line)}.brand small{display:none}.menubar{flex-wrap:wrap;height:auto;padding:6px 8px}}
+/* P3: mobilna priprava — plošča kot zgibni predal, večji dotiki, lepljiv Generiraj */
+@media(max-width:760px){
+  .btn,.mi{min-height:38px}
+  .mi{padding:10px 14px}
+  aside{position:fixed;top:0;left:0;bottom:0;width:min(92vw,380px);max-height:none;border-right:1px solid var(--line);border-bottom:0;overflow-y:auto;z-index:80;box-shadow:0 0 40px #000a;transition:transform .22s ease;transform:none}
+  body.aside-hidden aside{display:block;transform:translateX(-104%)}
+  .show-aside-handle{display:inline-flex;align-items:center;gap:6px;bottom:18px;z-index:90}
+  .exp-dialog{max-height:92vh;overflow-y:auto}
+  .primarybar{position:sticky;bottom:10px;z-index:50;box-shadow:0 8px 24px #000a}
+}
 </style>
 </head>
 <body>
@@ -1488,7 +1501,7 @@ function generate(){
     rows.push(["10","Konzolni nosilec korita","Jeklo","max(2, ceil(širina/600)+1) na korito — ocena",String(seKb.reduce(function(a,kt){return a+koritoNosilci(kt.w)},0))]);
   }
   s+=panel(12,226,238,48,"SEZNAM SESTAVNIH DELOV");
-  s+=tbl(14,230,[8,50,28,120,28],rows,["Št.","Naziv dela","Material","Dimenzije (mm)","Količ."],Math.min(4.9,44/(rows.length+1)));
+  s+=tbl(14,230,[8,50,28,120,28],rows,["Št.","Naziv dela","Material","Dimenzije (mm)","Količ."],rows.length>8?44/(rows.length+1):undefined);
 
   /* NOTES */
   s+=panel(256,226,152,48,"TEHNIČNI PODATKI IN OPOMBE");
@@ -3216,6 +3229,12 @@ document.addEventListener("keydown",function(e){if($("prjOverlay").classList.con
 window.prjRestoreFromHash=prjRestoreFromHash;window.restoreProjectString=restoreProjectString; /* P5: testno dostopni */
 prjRestoreFromHash();
 
+/* P3: PWA — namestljiva aplikacija, deluje brez signala (service worker, stale-while-revalidate).
+   Registracija samo prek https (Vercel) oz. localhost; file:// in jsdom preskočita. */
+if("serviceWorker" in navigator&&(window.location.protocol==="https:"||window.location.hostname==="localhost")){
+  navigator.serviceWorker.register("sw.js").catch(function(){});
+}
+
 /* ---------- UI/UX: stepper, zoom, quick actions, drop target ---------- */
 var zoom=100;
 function syncSteps(){
@@ -3351,7 +3370,7 @@ mn.addEventListener("drop",function(e){if(e.dataTransfer.files[0])loadPhoto(e.da
   });
 
   var tgl=$('toggleAside'); if(tgl) tgl.addEventListener('click', function(e){ e.preventDefault(); setAsideVisible(document.body.classList.contains('aside-hidden')); closeMenus(); });
-  var sh=$('showAside'); if(sh) sh.addEventListener('click', function(){ setAsideVisible(true); });
+  var sh=$('showAside'); if(sh) sh.addEventListener('click', function(){ setAsideVisible(document.body.classList.contains('aside-hidden')); }); /* P3: na mobilnem toggle (odpre/zapre predal) */
   try{ var as=localStorage.getItem('tehnicka-risba-pro-aside'); if(as==='hidden') setAsideVisible(false); else setAsideVisible(true); }catch(e){ setAsideVisible(true); }
 })();
 
