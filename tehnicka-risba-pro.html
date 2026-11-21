@@ -1040,6 +1040,8 @@ function checks(){
       if(use==="pregrada"&&pc.n.indexOf("KUBO")>=0&&H>2500)msgs.push("KUBO pregrada: brez vmesnih nosilcev (pritrditev zgoraj in spodaj) samo do višine 2500 mm — dodajte vmesne nosilce.");
     }
   }
+  /* P2 (Faza 3): korita — opozorila iz enotnega vira getKoritaData() */
+  getKoritaData().warnings.forEach(function(w){msgs.push(w)});
   var box=$("checks");box.className="warnbox"+(msgs.length?" on":"");box.innerHTML=msgs.map(function(m){return"• "+E(m)}).join("<br>");
   var zoneBad=msgs.some(function(m){return m.indexOf("srednje polje")>=0});
   $("n").classList.toggle("invalid",zoneBad);$("gap").classList.toggle("invalid",zoneBad);
@@ -1347,12 +1349,11 @@ function generate(){
   s+=rc(fx,fy-fh+botH-1.5,fw,1.5,"#ddd","#111");
   for(var i=0;i<N;i++){var yy=fy-topH-(i+1)*pitch+gap*fs/2;s+=rc(fx,yy,fw,Math.max(0.5,sh),"#e6e6e6","#111");for(var k=1;k<NP;k++)s+=ln(fx+fw*k/NP,yy,fx+fw*k/NP,yy+sh,0.15)}
   for(k=0;k<NP;k++)s+=rc(fx+fw*k/NP-1,fy-topH,2,topH,"#cfcfcf","#111");
-  /* P2: korita za rože — box nad lamelami na vrhu ograje (samo enojna ograja) */
-  var ktsF=koritoParse();
-  if(ktsF.length&&koritoHVal()>0){
-    ktsF.forEach(function(kt){
-      if(kt.x+kt.w>L)return;
-      var kx=fx+kt.x*fs,kw=kt.w*fs,kh=koritoHVal()*fs,kd=Math.max(1,koritoDVal()*fs);
+  /* P2: korita za rože — box nad lamelami na vrhu ograje (samo enojna ograja); enoten vir getKoritaData() */
+  var kdF=getKoritaData();
+  if(kdF.active){
+    kdF.items.forEach(function(kt){
+      var kx=fx+kt.x*fs,kw=kt.w*fs,kh=kdF.H*fs,kd=Math.max(1,kdF.D*fs);
       s+=rc(kx,fy-fh,kw,kh,"#dcdcdc","#111")+rc(kx+kd*0.25,fy-fh+1.2,kw-kd*0.5,kh-2.4,"none","#999");
       s+=dh(kx,kx+kw,fy-fh+kh-1.8,f(kt.w),fy-fh);
       s+=tx(kx+kw/2,fy-fh+kh/2+0.8,"KORITO ZA ROŽE ("+f(kt.w)+" mm)",Math.min(2.0,Math.max(1.4,kw*0.075)),"middle",500);
@@ -1415,10 +1416,11 @@ function generate(){
 
   /* SECTION A-A — realni vertikalni rez (F1): steber, lamele v prerezu (ROMB: trapec z 15° fazami),
      zgornji/spodnji profil, sidranje/podlaga po mountType/subType. Baloni = št. vrstic v BOM (1,2,3,6,8). */
-  s+=panel(12,172,140,50,"PREREZ A–A");
-  var seKt=(segs.length<2)?koritoParse():[];
+  var kdSe=getKoritaData(),seKt=(segs.length<2)?kdSe.items:[];
   var seS=Math.min(0.08,32/(H||1));
-  if(seKt.length&&koritoHVal()>0)seS=Math.min(seS,28/(H+koritoHVal())); /* korito nad ograjo mora ostati v panelu */
+  if(seKt.length&&kdSe.active)seS=Math.min(seS,28/(H+kdSe.H)); /* korito nad ograjo mora ostati v panelu */
+  /* P2 (Faza 3): merilo prereza vidno označeno — dinamično (z/brez korita) */
+  s+=panel(12,172,140,50,"PREREZ A–A · M 1:"+Math.round(1/seS));
   var seX=32,seY0=211,seW=pd[0]*seS,seD=Math.max(0.8,stn*seS);
   var seTop=topHmm*seS,seBot=botHmm*seS,seZ=seY0-H*seS,sePi=(H-topHmm-botHmm)*seS/N,seSh=(sw/(sw+gap))*sePi;
   var seRom=(WC[$("sysProfile").value]||WC.romb67).n.indexOf("ROMB")>=0,seTan=Math.tan(Math.PI/12);
@@ -1429,8 +1431,8 @@ function generate(){
   s+=rc(seX-seW/2-0.8,seZ,seW+seD+2.4,seTop,"#dcdcdc","#111");
   s+=rc(seX-seW/2-0.8,seY0-seBot,seW+seD+2.4,seBot,"#dcdcdc","#111");
   /* P2: cvetlično korito v prerezu — box nad zgornjim profilom, za stebrom, na konzolnem nosilcu */
-  if(seKt.length&&koritoHVal()>0){
-    var seKH=koritoHVal()*seS,seKD=Math.max(1.2,koritoDVal()*seS),seKX=seX-seW/2-0.8-seKD*0.6;
+  if(seKt.length&&kdSe.active){
+    var seKH=kdSe.H*seS,seKD=Math.max(1.2,kdSe.D*seS),seKX=seX-seW/2-0.8-seKD*0.6;
     s+=rc(seKX,seZ-seKH,seKD,seKH,"#dcdcdc","#111")+rc(seKX+seKD*0.15,seZ-seKH+0.5,seKD*0.7,seKH-1,"none","#999");
     s+=poly([[seKX+seKD*0.4,seZ],[seKX+seKD*0.4,seZ+seKH*0.3],[seX-seW/2-0.8,seZ]],"#cfcfcf","#111",0.2);
     s+=balloon(seKX-3.2,seZ-seKH+1.5,9)+ln(seKX-0.5,seZ-seKH+1.5,seKX+seKD*0.3,seZ-seKH*0.7,0.18);
@@ -1497,13 +1499,13 @@ function generate(){
     ["7","Pritrdilni vijak","Inox",V("bolt"),String(postCount()*Math.max(0,n("nbolt")))],
     ["8","Sidro","Inox",V("anchor"),String(postCount()*2)]
   ];
-  var seKb=(segs.length<2)?koritoParse():[];
-  if(seKb.length&&koritoHVal()>0){
-    rows.push(["9","Cvetlično korito","WPC/alu","globina "+f(koritoDVal())+" × višina "+f(koritoHVal())+" — širine: "+seKb.map(function(kt){return f(kt.w)}).join(", "),String(seKb.length)]);
+  var kdB=getKoritaData(),seKb=(segs.length<2)?kdB.items:[];
+  if(seKb.length&&kdB.active){
+    rows.push(["9","Cvetlično korito","WPC/alu (ocena — potrditi pri Roksalu)","globina "+f(kdB.D)+" × višina "+f(kdB.H)+" — širine: "+seKb.map(function(kt){return f(kt.w)}).join(", "),String(seKb.length)]);
     rows.push(["10","Konzolni nosilec korita","Jeklo","max(2, ceil(širina/600)+1) na korito — ocena",String(seKb.reduce(function(a,kt){return a+koritoNosilci(kt.w)},0))]);
   }
   s+=panel(12,226,238,48,"SEZNAM SESTAVNIH DELOV");
-  s+=tbl(14,230,[8,50,28,120,28],rows,["Št.","Naziv dela","Material","Dimenzije (mm)","Količ."],rows.length>8?44/(rows.length+1):undefined);
+  s+=tbl(14,230,[8,50,28,120,28],rows,["Št.","Naziv dela","Material","Dimenzije (mm)","Količ."],rows.length>8?Math.max(3.2,44/(rows.length+1)):undefined);
 
   /* NOTES */
   s+=panel(256,226,152,48,"TEHNIČNI PODATKI IN OPOMBE");
@@ -1700,6 +1702,15 @@ function stepString(){
     solids.push(solidBox(x-pp[0]/2,-pp[1]/2,0,x+pp[0]/2,pp[1]/2,H,"Post "+(k+1)+" front"));
     solids.push(solidBox(x-pp[0]/2,D-pp[1]/2,0,x+pp[0]/2,D+pp[1]/2,H,"Post "+(k+1)+" back"));
   }
+  /* P2 (Faza 3): cvetlična korita v 3D modelu — box na vrhu ograje (konzolni nosilec pod njim);
+     enoten vir getKoritaData(); korita so izključena ob segmentih (kot izris). */
+  var kdSt=getKoritaData();
+  if(kdSt.active&&segsParse().length<2){
+    kdSt.items.forEach(function(kt,ki){
+      solids.push(solidBox(kt.x,D,H,kt.x+kt.w,D+kdSt.D,H+kdSt.H,"Cvetlično korito "+(ki+1)));
+      solids.push(solidBox(kt.x+kt.w/2-30,D,H-60,kt.x+kt.w/2+30,D+kdSt.D,H,"Konzolni nosilec korita "+(ki+1)));
+    });
+  }
   }
   var appctx=add("APPLICATION_CONTEXT('core data for automotive mechanical design processes')");
   add("APPLICATION_PROTOCOL_DEFINITION('international standard','automotive_design',2000,"+appctx+")");
@@ -1737,8 +1748,8 @@ var DW_COMPONENTS={
   pritrdilni:{naziv:function(){return "Pritrdilni vijak ("+V("bolt")+")"},material:"Inox",dim:function(){return V("bolt")},qty:function(){return postCount()*Math.max(0,n("nbolt"))},izracun:function(){return V("nbolt")+" na nosilec × "+postCount()}},
   sidra:{naziv:function(){return "Sidra ("+V("anchor")+" — "+V("emb")+" mm)"},material:"Inox",dim:function(){return V("anchor")+" — "+V("emb")+" mm"},qty:function(){return 2*postCount()},izracun:"2 na nosilec"},
   vrata:{naziv:"Vrata WoodCore",material:"TBI — podatki proizvajalca",dim:"TBI",qty:function(){return "TBI"},izracun:"NI v BOM — potrebna specifikacija Roksala"},
-  korito:{naziv:"Cvetlično korito za rože",material:function(){return V("mat")||"WoodCore WPC"},dim:function(){return f(koritoDVal())+"x"+f(koritoHVal())+" — širine: "+(koritoParse().map(function(kt){return f(kt.w)}).join(", ")||"—")},qty:function(){return koritoParse().length},izracun:"1 na korito — po razponih (P2)"},
-  koritoNosilec:{naziv:"Konzolni nosilec korita",material:"Jeklo",dim:function(){return V("bracket")},qty:function(){return koritoParse().reduce(function(a,kt){return a+koritoNosilci(kt.w)},0)},izracun:"max(2, ceil(širina/600)+1) na korito — ocena, potrditi pri Roksalu"}
+  korito:{naziv:"Cvetlično korito za rože",material:"WPC/alu (ocena — potrditi pri Roksalu)",dim:function(){var k=getKoritaData();return f(k.D)+"x"+f(k.H)+" — širine: "+(k.items.map(function(kt){return f(kt.w)}).join(", ")||"—")},qty:function(){return getKoritaData().items.length},izracun:"1 na korito — po razponih (P2)"},
+  koritoNosilec:{naziv:"Konzolni nosilec korita",material:"Jeklo",dim:function(){return V("bracket")},qty:function(){return getKoritaData().items.reduce(function(a,kt){return a+koritoNosilci(kt.w)},0)},izracun:"max(2, ceil(širina/600)+1) na korito — ocena, potrditi pri Roksalu"}
 };
 function kosovnicaCsv(){
   var prof=WC[$("sysProfile").value]||WC.romb67;
@@ -1746,7 +1757,8 @@ function kosovnicaCsv(){
   var compKeys=["topProfile","lamela","botProfile"];
   if(prof.n.indexOf("KUBO")>=0)compKeys.push("aluCev");
   compKeys.push("nosilec","vijakiRF","pritrdilni","sidra");
-  if(koritoParse().length&&koritoHVal()>0&&segsParse().length<2)compKeys.push("korito","koritoNosilec");
+  var kdCsv=getKoritaData();
+  if(kdCsv.active&&segsParse().length<2)compKeys.push("korito","koritoNosilec");
   var bomfeff=String.fromCharCode(65279);
   var rows=[["Št.","Naziv","Material","Dimenzije (mm)","Količina","Izračun"]];
   var st=1;
@@ -2008,15 +2020,34 @@ function lamelaBreakdown(){
   return pr.join(" + ")||(f(cutLen())+"×"+cutCount());
 }
 /* P2: korita za rože — vrstica v koritoList = "širina;odmik od levega roba" (mm).
-   Višina/globina iz polj koritoH/koritoD (privzeti 310×220 po referenčni risbi uporabnika). */
-function koritoParse(){
-  var out=[];
-  (V("koritoList")||"").trim().split("\n").forEach(function(kl){
-    var kp=kl.split(";"),kw=parseFloat(kp[0]),kx=parseFloat(kp[1]);
-    if(kw>0&&kx>=0)out.push({w:kw,x:kx});
+   Višina/globina iz polj koritoH/koritoD (privzeti 310×220 po referenčni risbi uporabnika).
+   ENOTEN VIR (Faza 3 P2): vse uporabe — izris, prerez, BOM, kosovnica, montažni načrt,
+   naročilnik, checks() — kličejo getKoritaData(). Validacija:
+   - robustno razčlenjevanje: trim, prazne vrstice ignorirane, neveljavne vrstice → opozorilo
+   - meje: 0 ≤ odmik, odmik+širina ≤ L; preseganje → opozorilo + izključitev iz količin
+   - svetovalni meji: H ≥ 100 mm (stabilnost), D ≥ 150 mm (drenaža) — opozorilo, ne napaka
+   - H/D = 0 z vnešenimi koriti → opozorilo */
+function getKoritaData(){
+  var L=n("L"),out={items:[],warnings:[],H:Math.max(0,n("koritoH")||0),D:Math.max(0,n("koritoD")||0),active:false};
+  String(V("koritoList")||"").split("\n").forEach(function(kl,li){
+    var line=String(kl||"").trim();
+    if(!line)return;
+    var kp=line.split(";");
+    var kw=parseFloat(String(kp[0]||"").trim()),kx=parseFloat(String(kp[1]||"").trim());
+    if(!(kw>0&&kx>=0)){out.warnings.push("Vrstica "+(li+1)+" korit je neveljavna — pričakovano »širina;odmik« (mm).");return}
+    if(kx+kw>L){out.warnings.push("Korito "+f(kw)+" mm na odmiku "+f(kx)+" mm presega dolžino ograje "+f(L)+" mm — izpuščeno iz količin.");return}
+    out.items.push({w:kw,x:kx});
   });
+  if(out.items.length){
+    if(!(out.H>0))out.warnings.push("Vnešena so korita, a višina korita je 0 — nastavite višino (privzeto 310 mm).");
+    if(!(out.D>0))out.warnings.push("Vnešena so korita, a globina korita je 0 — nastavite globino (privzeto 220 mm).");
+    if(out.H>0&&out.H<100)out.warnings.push("Višina korita "+f(out.H)+" mm je pod priporočilom (≥100 mm za stabilnost).");
+    if(out.D>0&&out.D<150)out.warnings.push("Globina korita "+f(out.D)+" mm je pod priporočilom (≥150 mm za drenažo).");
+    out.active=out.H>0&&out.D>0;
+  }
   return out;
 }
+function koritoParse(){return getKoritaData().items}
 function koritoHVal(){return Math.max(0,n("koritoH")||0)}
 function koritoDVal(){return Math.max(0,n("koritoD")||0)}
 function koritoNosilci(w){return Math.max(2,Math.ceil(w/600)+1)} /* ocena: robova + vsakih 600 mm — potrditi pri Roksalu */
@@ -2239,7 +2270,7 @@ function buildOrder(){
     "- Nosilci: "+np+" kos ("+lim.label+" ≤ "+lim.v+" mm)",
     "- Vijaki RF: "+(2*cutData.count+2*np)+" kos; pritrdilni ("+V("bolt")+"): "+(np*Math.max(0,n("nbolt")))+" kos",
     "- Sidra: "+(2*np)+" kos, globina "+V("emb")+" mm, podlaga "+V("sub"),
-    (koritoParse().length&&koritoHVal()>0&&segsParse().length<2)?"- Cvetlična korita: "+koritoParse().length+" kos (globina "+f(koritoDVal())+" × višina "+f(koritoHVal())+" mm; širine: "+koritoParse().map(function(kt){return f(kt.w)}).join(", ")+") — konzolni nosilci: "+(koritoParse().reduce(function(a,kt){return a+koritoNosilci(kt.w)},0))+" kos":"",
+    (function(){var k=getKoritaData();return k.active&&segsParse().length<2?"- Cvetlična korita: "+k.items.length+" kos (globina "+f(k.D)+" × višina "+f(k.H)+" mm; širine: "+k.items.map(function(kt){return f(kt.w)}).join(", ")+") — konzolni nosilci: "+(k.items.reduce(function(a,kt){return a+koritoNosilci(kt.w)},0))+" kos":""})(),
     (p.n.indexOf("KUBO")>=0)?"- Alu cev 20×60×2 (obvezna — na prostem eloksirana): "+((V("sysUse")==="fasada")?(Math.ceil(n("H")/1000)+1)+" kos":"2 kos")+"":"",
     "",
     "PRODAJNI POGOJI (Roksal d.o.o., splošni pogoji v5.0):",
@@ -2473,9 +2504,9 @@ function buildPlan(){
     ["Vijaki RF","2 na lamelo + 2 na nosilec",(2*N+2*np)+" kos"],
     ["Pritrdilni vijaki",V("bolt")+" — "+V("nbolt")+" na nosilec",(np*Math.max(0,n("nbolt")))+" kos"]
   ];
-  var ktsPl=(segsParse().length<2)?koritoParse():[];
-  if(ktsPl.length&&koritoHVal()>0){
-    rows.push(["Cvetlično korito","globina "+f(koritoDVal())+" × višina "+f(koritoHVal())+" mm",ktsPl.length+" kos"]);
+  var kdPl=getKoritaData(),ktsPl=(segsParse().length<2)?kdPl.items:[];
+  if(ktsPl.length&&kdPl.active){
+    rows.push(["Cvetlično korito","globina "+f(kdPl.D)+" × višina "+f(kdPl.H)+" mm (ocena — potrditi pri Roksalu)",ktsPl.length+" kos"]);
     rows.push(["Konzolni nosilec korita","max(2, ceil(širina/600)+1) na korito — ocena",(ktsPl.reduce(function(a,kt){return a+koritoNosilci(kt.w)},0))+" kos"]);
   }
   if(use==="stopniscna"){

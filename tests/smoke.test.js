@@ -91,7 +91,38 @@ function check(name, ok, info) {
   window.URL.createObjectURL = ocCsv;
   const csvP2 = csvBlob ? await csvBlob.text() : "";
   check("P2 kosovnica: korito + nosilci", csvP2.includes("Cvetlično korito za rože") && csvP2.includes("Konzolni nosilec korita"));
+  // 1jb) P2 (Faza 3): STEP 3D vključuje korita in konzolne nosilce
+  let stepBlob = null;
+  window.URL.createObjectURL = (b) => { stepBlob = b; return "blob:test"; };
+  $("dlStep").click();
+  window.URL.createObjectURL = ocCsv;
+  const stepTxt = stepBlob ? await stepBlob.text() : "";
+  check("P2 STEP: korita + nosilci v 3D modelu", stepTxt.startsWith("ISO-10303-21") && stepTxt.includes("Cvetlično korito") && stepTxt.includes("Konzolni nosilec korita"));
+
+  // 1k) P2 (Faza 3): robustno razčlenjevanje — presledki, prazne vrstice
+  $("koritoList").value = "1100; 300\n\n1400;1900"; fire($("koritoList"), "input");
+  $("gen").click(); svg = document.querySelector("#prev svg");
+  check("P2 korita: robustno razčlenjevanje (presledki, prazne vrstice)", !!svg && ["KORITO ZA ROŽE (1100 mm)", "KORITO ZA ROŽE (1400 mm)"].every((k) => svg.textContent.includes(k)));
+
+  // 1l) P2 (Faza 3): validacija meja — L=2000, 1400@1900 presega → opozorilo + izključitev
+  $("L").value = "2000"; fire($("L"), "input");
+  $("koritoList").value = "1100;300\n1400;1900"; fire($("koritoList"), "input");
+  $("gen").click();
+  const warnTxt = $("checks").textContent || "";
+  svg = document.querySelector("#prev svg");
+  check("P2 korita: opozorilo ob preseganju meja", warnTxt.includes("presega dolžino ograje"), warnTxt.slice(0, 80));
+  check("P2 korita: presegajoče izpuščeno iz BOM", !!svg && svg.textContent.includes("Cvetlično korito") && svg.textContent.includes("širine: 1100") && !svg.textContent.includes("širine: 1100, 1400"));
+  check("P2 korita: presegajoče se ne izriše", !!svg && svg.textContent.includes("KORITO ZA ROŽE (1100 mm)") && !svg.textContent.includes("KORITO ZA ROŽE (1400 mm)"));
+
+  // 1m) P2 (Faza 3): merilo prereza vidno označeno (z koritom kor prilagojeno)
+  check("P2 korita: merilo prereza vidno označeno", !!svg && /PREREZ A–A · M 1:\d+/.test(svg.textContent));
+
+  // 1n) P2 (Faza 3): prazna korita → brez korit/BOM vrstic
+  $("L").value = "4200"; fire($("L"), "input");
   $("koritoList").value = ""; fire($("koritoList"), "input");
+  $("gen").click(); svg = document.querySelector("#prev svg");
+  check("P2 korita: prazno polje → brez korit in BOM vrstic", !!svg && !svg.textContent.includes("Cvetlično korito") && !svg.textContent.includes("KORITO ZA ROŽE"));
+
   $("slabT").value = "0"; fire($("slabT"), "input");
   $("segList").value = ""; fire($("segList"), "input");
   $("w2").value = "0"; fire($("w2"), "input");

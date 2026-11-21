@@ -26,8 +26,18 @@
 ### 3. Generiranje risbe
 - sprednji pogled, stranski pogled, tloris, izometrični pogled, prerezi in detajli pritrjevanja
 - dimenzije s puščicami, baloni kosovnice, osi nosilcev z razmiki
-- naslovni blok: projekt, merilo, format, revizija, datum, risba št., izdelal
+- naslovni blok: projekt, merilo, format, revizija, datum, risba št., izdelal, objekt, tip, material, barva
 - trije tipi lista: klasični, referenčni (WoodCore cona + mere), stopniščni
+- **segmenti** (za dvonadstropne ograje): polje »Segmenti za sprednji pogled« — ena vrstica `naziv;širina;višina` (do 3 na list), vsak z lastnimi merami, lamelami in nosilci po Roksal omejitvi; opcijsko balkonska plošča (debelina v mm)
+- **L-povratek** v tlorisu: polje »Povratek W2« > 0 → tloris z fasadnim trakom, kotnim stebrom in mero W2
+- merilo prereza A–A je vidno označeno v naslovu panela (dinamično prilagojeno, kadar so vklopljena korita)
+
+### 3a. Korita za rože (P2)
+- **Vnos**: polje »Korita za rože« — ena vrstica na korito: `širina;odmik od levega roba` (npr. `1100;300`); višina (privzeto 310 mm) in globina (privzeto 220 mm) v lastnih poljih. Prazno polje = brez korit.
+- **Izris**: boxi korit nad lamelami v sprednjem pogledu (z mero širine in oznako), korito v prerezu A–A z balonoma 9/10 (korito + konzolni nosilec).
+- **Količine**: BOM vrstici 9/10 (ocena nosilcev: robova + vsakih 600 mm — jasno označena za potrditev pri Roksalu); korita se prenesejo v kosovnico, montažni načrt, naročilnik in STEP 3D model.
+- **Validacija**: korita izven meja (odmik + širina > L) se izključijo iz količin z opozorilom; svetovalni meji H ≥ 100 mm in D ≥ 150 mm; robustno razčlenjevanje (presledki, prazne vrstice, neveljavne vrstice → opozorilo).
+- **Omejitev**: korita so opcijska in veljajo za glavno ograjo (brez segmentov).
 
 ### 4. Izvoz — dialog »Možnosti izvoza« (Ctrl+E)
 
