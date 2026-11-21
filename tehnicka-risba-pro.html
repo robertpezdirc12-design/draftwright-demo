@@ -651,6 +651,8 @@ Konstrukcija odporna na vremenske vplive.</textarea>
   <button id="prtQuick" type="button"></button>
 </div>
 
+<script src="vendor/jspdf.umd.min.js" defer></script>
+<script src="vendor/svg2pdf.umd.min.js" defer></script>
 <script>
 
 (function(){
@@ -2507,6 +2509,45 @@ $("dlPlan").onclick=function(){
   saveBlob(V("drw")+"-montaza.csv",planCsv(),"text/csv;charset=utf-8");
 };
 
+/* ---------- P4: vektorski PDF (jsPDF + svg2pdf) — enak izpis na vseh napravah, brez tiskalnega okna.
+   Knjižnici so lokalne (vendor/) in v predpomnilniku SW → deluje tudi brez signala.
+   Pisava Liberation Sans (TTF, SIL OFL) — slovenske črke (č š ž) pravilno v vektorskem besedilu. ---------- */
+var pdfFontPromise=null;
+function pdfFontB64(){
+  if(!pdfFontPromise)pdfFontPromise=fetch("vendor/LiberationSans-Regular.ttf").then(function(r){
+    if(!r.ok)throw new Error("pisava ni dosegljiva ("+r.status+")");
+    return r.arrayBuffer();
+  }).then(function(b){
+    var u=new Uint8Array(b),s="",CH=0x8000;
+    for(var i=0;i<u.length;i+=CH)s+=String.fromCharCode.apply(null,u.subarray(i,i+CH));
+    return btoa(s);
+  });
+  return pdfFontPromise;
+}
+window.exportPdf=exportPdf; /* P4: testno dostopni */
+function exportPdf(sv,paper){
+  if(typeof jspdf==="undefined"||typeof svg2pdf==="undefined")return Promise.reject(new Error("PDF knjižnice se še nalagajo — poskusite znova ali uporabite tisk (brskalnik)"));
+  var pw=paper==="A3"?420:paper==="A4"?297:594,ph=paper==="A3"?297:paper==="A4"?210:420;
+  var doc=new jspdf.jsPDF({orientation:pw>ph?"landscape":"portrait",unit:"mm",format:[pw,ph],compress:true});
+  return pdfFontB64().then(function(b64){
+    doc.addFileToVFS("LiberationSans.ttf",b64);
+    /* vse kombinacije, ki jih svg2pdf zahteva glede na font-weight (500/600 v naslovih) —
+       brez registracije bi teža 500/600 padla na standardno WinAnsi pisavo (č/š/ž pokvarjene) */
+    ["Arial","Helvetica"].forEach(function(fn){
+      doc.addFont("LiberationSans.ttf",fn,"normal");
+      doc.addFont("LiberationSans.ttf",fn,"bold");
+      doc.addFont("LiberationSans.ttf",fn,"italic");
+      doc.addFont("LiberationSans.ttf",fn,"bolditalic");
+      doc.addFont("LiberationSans.ttf",fn,"400normal");
+      doc.addFont("LiberationSans.ttf",fn,"500normal");
+      doc.addFont("LiberationSans.ttf",fn,"600normal");
+      doc.addFont("LiberationSans.ttf",fn,"700normal");
+    });
+    var el=new DOMParser().parseFromString(sv,"image/svg+xml").documentElement;
+    return doc.svg(el,{x:0,y:0,width:pw,height:ph});
+  }).then(function(){return doc});
+}
+
 /* ---------- Izvozni dialog — poenotene možnosti izvoza (Ctrl+E) ---------- */
 (function(){
   var EXP={open:false,format:"PDF",preset:"full"};
@@ -2643,13 +2684,25 @@ $("dlPlan").onclick=function(){
         if(!svgEl()){$("globalStatus").textContent="Izvoz prekinjen — risbe ni mogoče generirati (preverite mere).";$("globalStatus").style.color="var(--bad)";closeExport();return}
       }
       if(fmt==="PDF"){
-        jobs.push({n:"risba (PDF / tisk)",f:function(){
+        jobs.push({n:"risba (PDF, vektorski)",f:function(){
           var sv=svgVariant({paper:paper,watermark:!!wm,wmText:wm,meta:adv("meta").on});
           if(!sv)throw new Error("ni risbe");
-          var w=window.open("","_blank");
-          if(!w)throw new Error("pojavni okvir je blokiran — dovoli pojavne okvirje ali uporabi SVG");
-          w.document.write(printHtml(sv,paper));w.document.close();
-          setTimeout(function(){w.focus();w.print()},400);
+          return exportPdf(sv,paper).then(function(doc){
+            doc.save(expBase()+".pdf");
+            $("globalStatus").textContent="Vektorski PDF shranjen ("+paper+") — vektorsko besedilo in grafične primitive, brez tiskalnega okna.";
+          }).catch(function(e){
+            /* P4: padec → preklopi na brskalniški tisk (pošteno sporočilo; tudi tisk ne sme zlomiti zadeve) */
+            try{
+              var w=window.open("","_blank");
+              if(!w)throw e;
+              w.document.write(printHtml(sv,paper));w.document.close();
+              setTimeout(function(){w.focus();w.print()},400);
+              $("globalStatus").textContent="Vektorski PDF ni uspel ("+e.message+") — odprt je tisk (brskalnik).";
+            }catch(e2){
+              /* tisk je tudi blokiran → job je neuspešen (next() ga prijavi med napake) */
+              throw new Error("vektorski PDF ni uspel ("+e.message+"); tisk blokiran — uporabite SVG izvoz ali tisk iz menija");
+            }
+          });
         }});
       }else if(fmt==="SVG"){
         jobs.push({n:"risba (SVG)",f:function(){
@@ -2730,7 +2783,17 @@ $("dlPlan").onclick=function(){
         closeExport();return}
       var j=jobs[idx];
       $("globalStatus").textContent="Izvažam… "+j.n+" ("+(idx+1)+"/"+jobs.length+")";
-      try{j.f()}catch(err){failed.push(j.n+((err&&err.message)?": "+err.message:""));$("globalStatus").textContent="Napaka pri "+j.n+": "+err.message}
+      var markFail=function(err){
+        failed.push(j.n+((err&&err.message)?": "+err.message:""));
+        $("globalStatus").textContent="Napaka pri "+j.n+": "+(err&&err.message?err.message:err);
+      };
+      try{
+        var r=j.f();
+        if(r&&typeof r.then==="function"){ /* P4: asinhron job (vektorski PDF) — počakaj promise */
+          Promise.resolve(r).then(function(){idx++;setTimeout(next,400)},function(err){markFail(err);idx++;setTimeout(next,400)});
+          return;
+        }
+      }catch(err){markFail(err)}
       idx++;setTimeout(next,400);
     })();
   }
