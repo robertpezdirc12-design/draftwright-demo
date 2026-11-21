@@ -244,6 +244,24 @@ function check(name, ok, info) {
   check("pan: toggle izklopi", !$("panBtn").classList.contains("on"));
   check("fullscreen: gumb obstaja", !!$("fsBtn"));
 
+  // 18) Faza 2: 3D pogled — zbirni model + rotacija + modal
+  const sols = window.collectSolids();
+  check("3D: collectSolids vrne telesa (≥10)", Array.isArray(sols) && sols.length >= 10, sols.length + " teles");
+  const iso = window.renderIso3D(35, 25);
+  check("3D: renderIso3D vrne SVG s poligoni", iso.includes("<svg") && iso.includes("<polygon") && (iso.match(/<polygon/g) || []).length >= 24, (iso.match(/<polygon/g) || []).length + " poligonov");
+  $("isoBtn").click();
+  check("3D: modal odprt + info vrstica", $("isoOverlay").classList.contains("on") && $("isoInfo").textContent.includes("Azimut 35°"));
+  document.querySelector('[data-iso="top"]').click();
+  check("3D: gumb Top spremeni elevacijo (90°)", $("isoInfo").textContent.includes("Elevacija 90°"));
+  $("isoClose").click();
+  check("3D: modal se zapre", !$("isoOverlay").classList.contains("on"));
+
+  // 19) Faza 2: miniature shranjenih projektov — prjSave ne crash-a; thumbnail fallback v jsdom
+  $("prjName").value = "Miniatura test";
+  $("prjSave").click();
+  const prjListHtml = $("prjList").innerHTML;
+  check("miniature: prjSave shrani + vrstica vsebuje miniaturo (fallback)", prjListHtml.includes("Miniatura test") && prjListHtml.includes("prj-thumb"));
+
   console.log(`\n  Rezultat: ${pass} OK, ${fail} FAIL${errors.length ? ", JS napake: " + errors.join(" | ") : ", brez JS napak"}`);
   process.exit(fail || errors.length ? 1 : 0);
 })().catch((e) => { console.error("TEST CRASH:", e); process.exit(1); });
