@@ -216,6 +216,13 @@ const near = (v, ref, pct) => Math.abs(v - ref) / ref <= pct;
   check("J ROMB: sw → nominalna 67 iz Roksal registra", r.sw === 67, "sw=" + r.sw);
   check("J ROMB: fuga iz koraka ≈ 20", Math.abs(r.gap - 20) <= 2.5, "gap=" + r.gap + ", " + r.status.slice(0, 90));
 
+  // K) Faza 3 (AI): samodejni predlog profila — sintetika 67/20 (ROMB-67 nominal) → gumb + predlog
+  r = await loadAndDetect({ swMM: 67, gapMM: 20, nN: 8 });
+  const sugBtn = $("applySuggestedProf");
+  check("K AI: štetje n = 8 (osnova)", r.n === 8, "n=" + r.n);
+  check("K AI: predlagan profil ROMB-67 + viden gumb", !!sugBtn && sugBtn.style.display !== "none" && sugBtn.textContent.includes("ROMB-67"), (sugBtn ? sugBtn.textContent.slice(0, 50) : "brez gumba"));
+  check("K AI: status omenja predlog", r.status.includes("Možen profil"), r.status.slice(0, 90));
+
   console.log(`\n  Rezultat: ${pass} OK, ${fail} FAIL${errors.length ? ", JS napake: " + errors.join(" | ") : ", brez JS napak"}`);
   process.exit(fail || errors.length ? 1 : 0);
 })().catch((e) => { console.error("TEST CRASH:", e); process.exit(1); });
