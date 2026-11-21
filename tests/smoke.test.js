@@ -78,6 +78,21 @@ function check(name, ok, info) {
   $("gen").click(); svg = document.querySelector("#prev svg");
   check("P1 BOM na risbi: razčlen dolžin + vsi segmenti", !!svg && svg.textContent.includes("vsi segmenti + povratek") && svg.textContent.includes("6200×") && svg.textContent.includes("7800×"),
     svg ? (svg.textContent.split("Lamela ROMB-67")[1] || "?").slice(0, 46) : "brez SVG");
+  // 1j) P2: korita za rože — sprednji pogled, prerez (balona 9/10), BOM, kosovnica
+  $("segList").value = ""; fire($("segList"), "input");
+  $("w2").value = "0"; fire($("w2"), "input");
+  $("koritoList").value = "1100;300\n1400;1900"; fire($("koritoList"), "input");
+  $("gen").click(); svg = document.querySelector("#prev svg");
+  check("P2 korita: izrisana v pogledu z merami", !!svg && ["KORITO ZA ROŽE (1100 mm)", "KORITO ZA ROŽE (1400 mm)"].every((k) => svg.textContent.includes(k)));
+  check("P2 korita: BOM vrstici 9/10", !!svg && svg.textContent.includes("Cvetlično korito") && svg.textContent.includes("Konzolni nosilec korita"));
+  csvBlob = null;
+  window.URL.createObjectURL = (b) => { csvBlob = b; return "blob:test"; };
+  $("dlCsv").click();
+  window.URL.createObjectURL = ocCsv;
+  const csvP2 = csvBlob ? await csvBlob.text() : "";
+  check("P2 kosovnica: korito + nosilci", csvP2.includes("Cvetlično korito za rože") && csvP2.includes("Konzolni nosilec korita"));
+  $("koritoList").value = ""; fire($("koritoList"), "input");
+  $("slabT").value = "0"; fire($("slabT"), "input");
   $("segList").value = ""; fire($("segList"), "input");
   $("w2").value = "0"; fire($("w2"), "input");
   $("slabT").value = "0"; fire($("slabT"), "input");
