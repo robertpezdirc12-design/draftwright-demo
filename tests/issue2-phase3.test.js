@@ -72,7 +72,7 @@ function check(name, ok, info) {
   $("refMode").checked = true;
   $("save").click();
   let proj = JSON.parse(await blobQueue[blobQueue.length - 1].text());
-  check("projekt: ovojnica v2 (schema+version)", proj.schema === "draftwright-project" && proj.version === 2);
+  check("projekt: ovojnica v2 (schema+version)", proj.schema === "draftwright-project" && proj.version === 3);
   check("projekt: refMode v data", proj.data.refMode === true);
   // legacy (v0): ravna struktura brez ovojnice se naloži
   const legacy = JSON.stringify({ L: "2500", n: "9", refMode: true, calMode: "plane" });

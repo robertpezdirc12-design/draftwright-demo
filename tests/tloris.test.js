@@ -85,7 +85,7 @@ const wallCount = () => [...$("tlorisSvg").querySelectorAll("line")].filter((l) 
   // F) shema v2: projekt vsebuje plan.walls
   $("save").click();
   const proj = JSON.parse(await blobQueue[blobQueue.length - 1].text());
-  check("F: ovojnica v2", proj.schema === "draftwright-project" && proj.version === 2);
+  check("F: ovojnica v2 (verzija sledi shemi)", proj.schema === "draftwright-project" && proj.version >= 2);
   check("F: plan.walls = 2 stene", Array.isArray(proj.data.plan?.walls) && proj.data.plan.walls.length === 2);
 
   // G) migracija: legacy v1 (brez plan) → naloži, trasa prazna; v2 → obnovi stene
