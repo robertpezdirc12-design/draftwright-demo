@@ -115,6 +115,7 @@ Aplikacija je statična — odprete `index.html` (ali direktno `tehnicka-risba-p
 - STEP model vsebuje posamezna telesa, ki se geometrijsko prekrivajo (brez bool operacij) — primeren kot parametrični pregled, ne za 3D tisk / CNC.
 - DXF deluje v koordinatnem prostoru lista (420×297 enot, razporeditev kot A3); pri drugih formatih se vsebina za tisk le proporcionalno pomanjša.
 - Samodejno zaznavanje lamel je orientacijsko — rezultat vedno preverite ročno.
+- Samodejna določitev dolžine L iz fotografije (2-točkovna kalibracija) je lahko nezanesljiva — L vpisite ročno ali uporabite tloris; višina H in št. lamel sta zanesljivi.
 - Predračun je orientacijski in **ni ponudba**; risba **ni statični izračun** — nosilnost in sidranje preveri strokovnjak.
 
 ## Licenca
