@@ -324,6 +324,7 @@ body.viewmode .viewbar{display:flex}
   <div class="spacer"></div>
   <span id="fieldCount" style="font-size:11px;color:var(--mut);margin-right:6px">4/10</span>
   <button type="button" id="themeBtn" title="Preklopi temo (svetla/temna)" style="background:transparent;border:1px solid var(--line);border-radius:6px;padding:5px 9px;color:var(--tx);cursor:pointer;font-size:13px">☀️</button>
+  <button type="button" id="langBtn" title="Jezik / Language (SL/EN)" style="background:transparent;border:1px solid var(--line);border-radius:6px;padding:5px 9px;color:var(--tx);cursor:pointer;font-size:12px;font-weight:600">EN</button>
   <button class="primarybar" type="button" data-call="gen">Generiraj risbo</button>
 </div>
 
@@ -335,10 +336,10 @@ body.viewmode .viewbar{display:flex}
 
 <div class="grid">
 <aside>
-<div class="steps" id="steps"><span data-step="1">1 Slika</span><span data-step="2">2 Umeritev</span><span data-step="3">3 Mere</span><span data-step="4">4 Risba</span></div>
+<div class="steps" id="steps"><span data-i18n="st1" data-step="1">1 Slika</span><span data-i18n="st2" data-step="2">2 Umeritev</span><span data-i18n="st3" data-step="3">3 Mere</span><span data-i18n="st4" data-step="4">4 Risba</span></div>
 
 <section data-panel="photo">
-<h2><i>1</i>Slika</h2>
+<h2 data-i18n="h_photo"><i>1</i>Slika</h2>
 <input type="file" id="file" accept="image/*">
 <div class="photo" id="photoBox"><img id="img" alt="foto"><svg id="ov" xmlns="http://www.w3.org/2000/svg"></svg></div>
 <p class="hint">Prilepite z <span class="kbd">Ctrl+V</span>, povlecite ali izberite datoteko. Za merjenje naj bo v kadru merilo ali znan predmet.</p>
@@ -346,7 +347,7 @@ body.viewmode .viewbar{display:flex}
 </section>
 
 <section data-panel="cal">
-<h2><i>2</i>Umeritev</h2>
+<h2 data-i18n="h_cal"><i>2</i>Umeritev</h2>
 <div class="btns"><button class="btn on" id="mLinear">2 točki</button><button class="btn" id="mPlane">4 točke (perspektiva)</button></div>
 <div class="btns" style="margin-top:8px"><button class="btn" id="pickCal">Izberi referenčne točke</button><button class="btn" id="clearCal">Počisti</button></div>
 <div class="row" style="margin-top:8px">
@@ -359,7 +360,7 @@ body.viewmode .viewbar{display:flex}
 </section>
 
 <section data-panel="detect">
-<h2><i>3</i>Samodejno zaznavanje lamel</h2>
+<h2 data-i18n="h_detect"><i>3</i>Samodejno zaznavanje lamel</h2>
 <div class="btns"><button class="btn" id="detect">Zaznaj lamele s slike</button></div>
 <div class="row" style="margin-top:8px">
 <div><label for="sens">Prag robov (višji = manj zaznav)</label><input class="range" type="range" id="sens" min="1" max="30" value="12">></div>
@@ -370,7 +371,7 @@ body.viewmode .viewbar{display:flex}
 </section>
 
 <section data-panel="dims">
-<h2><i>4</i>Mere in parametri</h2>
+<h2 data-i18n="h_dims"><i>4</i>Mere in parametri</h2>
 <div class="sysbox">
 <div class="st">WoodCore sistem (Roksal)</div>
 <div class="row">
@@ -435,7 +436,7 @@ body.viewmode .viewbar{display:flex}
 </section>
 
 <section data-panel="sheet">
-<h2><i>5</i>List in opombe</h2>
+<h2 data-i18n="h_sheet"><i>5</i>List in opombe</h2>
 <div class="row">
 <div><label for="paper">Format</label><select id="paper">><option value="A3">A3 420×297</option><option value="A4">A4 297×210</option><option value="A2">A2 594×420</option></select></div>
 <div><label for="scale">Merilo</label><input type="text" id="scale" value="1:20">></div>
@@ -464,7 +465,7 @@ Konstrukcija odporna na vremenske vplive.</textarea>
 </section>
 
 <section data-panel="plan">
-<h2><i>6</i>Montaža in količine</h2>
+<h2 data-i18n="h_plan"><i>6</i>Montaža in količine</h2>
 <div class="btns"><button class="btn" id="makePlan">Pripravi montažni načrt</button><button class="btn" id="buildCut">Rezalni načrt (kerf)</button><button class="btn" id="buildQuote">Predračun</button><button class="btn" id="buildChecklist">Montažni checklist</button></div>
 <div class="row3" style="margin-top:8px">
 <div><label for="stockLen">Tovariške dolžine desk (mm, loči z ;)</label><input id="stockLen" value="5800; 4000; 2200">></div>
@@ -502,7 +503,7 @@ Konstrukcija odporna na vremenske vplive.</textarea>
 </section>
 
 <section data-panel="export">
-<h2><i>7</i>Izdelava</h2>
+<h2 data-i18n="h_export"><i>7</i>Izdelava</h2>
 <p class="hint" style="margin-top:0">Sklope odpirate iz zgornje vrstice <b>Plošča ▾</b> — kliknite samo tistega, ki ga potrebujete. Polja izbivate tam pod <b>Vidni sklopi in polja…</b>, celoten izvoz (risba + priloge) pripravite prek <b>Datoteka → Izvozi…</b> (Ctrl+E); posamezne hitre izvoze najdete v istem meniju.</p>
 <div class="btns" style="margin-top:10px">
   <button class="btn go" id="gen">Generiraj risbo</button>
@@ -513,7 +514,7 @@ Konstrukcija odporna na vremenske vplive.</textarea>
 </section>
 
 <section data-panel="tloris">
-<h2><i>8</i>Tloris (interaktivno)</h2>
+<h2 data-i18n="h_tloris"><i>8</i>Tloris (interaktivno)</h2>
 <p class="hint" style="margin-top:0">Kliknite po mreži za oglišča trase — 1 piksel = 10 mm (platno 6000×4000 mm). <span class="kbd">Escape</span> zaključi traso. Nosilci se izpeljejo po Roksal limitih za izbrano uporabo/profil.</p>
 <svg id="tlorisSvg" viewBox="0 0 600 400" style="width:100%;background:#0d0d0d;border:1px solid var(--line);border-radius:8px;cursor:crosshair;display:block"></svg>
 <div class="btns" style="margin-top:8px">
@@ -527,7 +528,7 @@ Konstrukcija odporna na vremenske vplive.</textarea>
 </section>
 
 <section data-panel="skica">
-<h2><i>9</i>Terenska skica (prazen list)</h2>
+<h2 data-i18n="h_skica"><i>9</i>Terenska skica (prazen list)</h2>
 <p class="hint" style="margin-top:0">Popolnoma prazen list (A4/A3, obe orientaciji) — brez mreže, okvirja in predloge po privzetku. Vsa kotiranje je <b>ročni vnos</b> in ni povezano z izmerjenimi vrednostmi. Tisk v dejanski velikosti prek <b>Tisk (A4/A3)</b>.</p>
 <div class="btns">
   <span><label style="display:inline">Orodje</label></span>
@@ -3682,6 +3683,66 @@ document.addEventListener("keydown",function(e){if($("isoOverlay").classList.con
   window.addEventListener("pointerup",function(){if(d.on){d.on=false;svg.style.cursor="grab"}});
 })();
 window.isoOpen=isoOpen;window.renderIso3D=renderIso3D;window.collectSolids=collectSolids;
+
+/* ---------- Faza 3 (i18n): EN prevod UI — risba/testi ostanejo SL (namerno) ---------- */
+var LANG_EN={
+  h_photo:"Photo",h_cal:"Calibration",h_detect:"Automatic slat detection",h_dims:"Dimensions & parameters",
+  h_sheet:"Sheet & notes",h_plan:"Installation & quantities",h_export:"Export / build",h_tloris:"Plan view (interactive)",h_skica:"Field sketch (blank sheet)",
+  st1:"1 Photo",st2:"2 Calibration",st3:"3 Dimensions",st4:"4 Drawing",
+  "Generiraj risbo":"Generate drawing","Povečaj":"Zoom in","Pomanjšaj":"Zoom out","Prileži":"Fit",
+  "Prikaži primer":"Show example","Primeri…":"Examples…","Naloži primer risbe":"Load example drawing",
+  "Odpri projekt…":"Open project…","Shrani projekt…":"Save project…","Shranjeni projekti…":"Saved projects…",
+  "Kopiraj povezavo projekta":"Copy project link","Kopiraj povezavo za ogled (stranka)":"Copy view link (client)",
+  "Izvozi… — možnosti izvoza":"Export…","PDF / tisk":"PDF / print","Izvozi SVG":"Export SVG","Izvozi DXF":"Export DXF","Izvozi STEP":"Export STEP",
+  "Izvozi kosovnico (CSV)":"Export BOM (CSV)","Izvozi montažni načrt (CSV)":"Export installation plan (CSV)",
+  "Izvozi rezalni načrt (CSV)":"Export cut plan (CSV)","Izvozi predračun (CSV)":"Export quote (CSV)",
+  "Izvozi naročilnik (TXT)":"Export order (TXT)","Izvozi montažni checklist (TXT)":"Export checklist (TXT)",
+  "Izvozi tehnični list materiala (TXT)":"Export material data sheet (TXT)","Izvozi povpraševanje Roksal (TXT)":"Export Roksal enquiry (TXT)",
+  "Izračunaj rezalni načrt (kerf)":"Calculate cut plan (kerf)","Pripravi montažni checklist":"Prepare installation checklist",
+  "Pripravi montažni načrt":"Prepare installation plan","Samoprevera (126 kombinacij)":"Self-test (126 combinations)",
+  "Plošča ▾":"Panels ▾","Prednastavitve sistema":"System presets","Odpri sklop":"Open section","Vidnost":"Visibility","Vidni sklopi in polja…":"Visible sections & fields…",
+  "Možnosti izvoza":"Export options","Prednastavitve":"Presets","Celotna dokumentacija":"Full documentation",
+  "Za delavnico":"For workshop","Za naročilo":"For order","Samo risba":"Drawing only",
+  "Prekliči":"Cancel","Izvozi":"Export",
+  "Shranjeni projekti":"Saved projects","Shrani trenutni projekt":"Save current project","Deljenje":"Sharing",
+  "Primeri risb":"Drawing examples","Prenesi PDF":"Download PDF","Uredi projekt":"Edit project",
+  "Front":"Front","Rear":"Rear","Left":"Left","Right":"Right","Top":"Top","Reset":"Reset",
+  "Prilepite z":"Paste with"
+};
+function lngGet(){try{return localStorage.getItem("draftwright-lang")||"sl"}catch(e){return"sl"}}
+function applyLang(lang){
+  document.documentElement.setAttribute("lang",lang==="en"?"en":"sl");
+  [].slice.call(document.querySelectorAll("[data-i18n]")).forEach(function(el){
+    var k=el.getAttribute("data-i18n"),v=LANG_EN[k];
+    if(lang==="en"&&v){
+      if(!el.__i18nOrig)el.__i18nOrig=el.innerHTML;
+      var iEl=el.querySelector("i");
+      el.innerHTML=iEl?"<i>"+iEl.textContent+"</i>"+v:v;
+    }else if(lang==="sl"&&el.__i18nOrig){el.innerHTML=el.__i18nOrig;delete el.__i18nOrig}
+  });
+  if(lang==="en"){
+    [].slice.call(document.querySelectorAll("button,.mi,.label,span,div,p")).forEach(function(el){
+      if(el.children.length||el.querySelector("svg")||el.querySelector("input")||el.querySelector("select"))return;
+      var t=(el.textContent||"").trim();
+      if(!t||t.length>60)return;
+      var v=LANG_EN[t];
+      if(v&&!el.__i18nOrig){el.__i18nOrig=document.createTextNode(el.textContent);el.textContent=v}
+    });
+  }else{
+    [].slice.call(document.querySelectorAll("*")).forEach(function(el){
+      if(el.__i18nOrig){el.textContent=el.__i18nOrig.nodeValue;delete el.__i18nOrig}
+    });
+  }
+  var lb=$("langBtn");if(lb)lb.textContent=(lang==="en"?"SL":"EN");
+}
+applyLang(lngGet());
+$("langBtn").onclick=function(){
+  var nxt=lngGet()==="en"?"sl":"en";
+  try{localStorage.setItem("draftwright-lang",nxt)}catch(e){}
+  applyLang(nxt);
+  toast(nxt==="en"?"Interface switched to English":"Vmesnik preklopljen v slovenščino","ok");
+};
+window.applyLang=applyLang;
 
 /* P3: PWA — namestljiva aplikacija, deluje brez signala (service worker, stale-while-revalidate).
    Registracija samo prek https (Vercel) oz. localhost; file:// in jsdom preskočita. */

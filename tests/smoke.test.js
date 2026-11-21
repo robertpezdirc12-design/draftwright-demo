@@ -262,6 +262,14 @@ function check(name, ok, info) {
   const prjListHtml = $("prjList").innerHTML;
   check("miniature: prjSave shrani + vrstica vsebuje miniaturo (fallback)", prjListHtml.includes("Miniatura test") && prjListHtml.includes("prj-thumb"));
 
+  // 20) Faza 3 (i18n): preklop EN/SL — UI se prevede, risba ostane SL
+  $("langBtn").click();
+  check("i18n: html lang=en + h2 Slika→Photo + stepper 1 Photo", document.documentElement.getAttribute("lang") === "en" && document.querySelector('[data-panel="photo"] h2').textContent.includes("Photo") && $("steps").textContent.includes("1 Photo"));
+  check("i18n: gumb Generiraj risbo → Generate drawing", $("gen").textContent.includes("Generate drawing"));
+  $("langBtn").click();
+  check("i18n: povratek v SL (h2 Slika)", document.documentElement.getAttribute("lang") === "sl" && document.querySelector('[data-panel="photo"] h2').textContent.includes("Slika"));
+  check("i18n: risba ostane SL (ni vpliva na SVG)", !!document.querySelector("#prev svg") && document.querySelector("#prev svg").textContent.includes("SPREDNJI POGLED"));
+
   console.log(`\n  Rezultat: ${pass} OK, ${fail} FAIL${errors.length ? ", JS napake: " + errors.join(" | ") : ", brez JS napak"}`);
   process.exit(fail || errors.length ? 1 : 0);
 })().catch((e) => { console.error("TEST CRASH:", e); process.exit(1); });
