@@ -62,6 +62,7 @@ Risba se ob izvozu vedno znova generira iz trenutnih polj, tako da izvoz vedno o
 - vodeni / strokovni način, izbira vidnih sklopov in polj
 - bližnjice: **Ctrl+G** generiraj · **Ctrl+S** shrani · **Ctrl+E** možnosti izvoza · **Alt+P** izbira plošče · **Ctrl+V** prilepi sliko · **+/−** povečava
 - dostopnost: `aria-live` status, `label for=` na 77 poljih
+- **terenska skica** (sklop 9, Issue #6): popolnoma prazen A4/A3 list (obe orientaciji), prostoročno risanje, elementi (črta/pravokotnik/krog/puščica/besedilo/kotiranje z ročnim vnosom — jasno ločeno od izmerjenih, izo kocka), radirka, premik, Undo/Redo, mreža po želji, tisk v dejanski velikosti, shranjevanje v projektu (shema v3)
 - **interaktivni tloris** (sklop 8): risanje trase po mreži (1 px = 10 mm), dolžine/nosilci po segmentih (Roksal limiti), Undo/Redo (Ctrl+Z/Y), »Uporabi v izračun« → L; trasa v projektu (shema v2) in autosave
 - samodejno shranjevanje stanja + kalibracije (localStorage; fotografija izrazito NE — kvota)
 
@@ -69,7 +70,7 @@ Risba se ob izvozu vedno znova generira iz trenutnih polj, tako da izvoz vedno o
 
 Meni **Datoteka → Samoprevera (90 kombinacij)** generira 6 profilov × 5 uporab × 3 različice mer in preveri, da nastane veljaven SVG brez JS napak.
 
-Za avtomatske teste je v repozitoriju še [tests/](tests/) (jsdom): `smoke.test.js` (generiranje listov, validacije, izvozi), `export-dialog.test.js` (izvozni dialog — vsi formati, napredne nastavitve in robni primeri), `roksal-p1.test.js` (dilatacije, napušč, pregrade, palete barv, podlage) in `roksal-p2.test.js` (tehnični list, povpraševanje, prodajni pogoji), `issue2-phase1.test.js` (stale-state, orientacija reza), `vision.test.js` (realno pikselno zaznavanje, @napi-rs/canvas), `issue2-phase2.test.js` (DXF sloji, STEP topologija) in `issue2-phase3.test.js` (stale-state, orientacija reza, enote) in `vision.test.js` + `issue2-phase2.test.js` (realno pikselno zaznavanje, DXF sloji/kodiranje, STEP topologija). Požene jih CI ([.github/workflows/ci.yml](.github/workflows/ci.yml)):
+Za avtomatske teste je v repozitoriju še [tests/](tests/) (jsdom): `smoke.test.js` (generiranje listov, validacije, izvozi), `export-dialog.test.js` (izvozni dialog — vsi formati, napredne nastavitve in robni primeri), `roksal-p1.test.js` (dilatacije, napušč, pregrade, palete barv, podlage) in `roksal-p2.test.js` (tehnični list, povpraševanje, prodajni pogoji), `issue2-phase1.test.js` (stale-state, orientacija reza), `vision.test.js` (realno pikselno zaznavanje, @napi-rs/canvas), `issue2-phase2.test.js` (DXF sloji, STEP topologija) in `issue2-phase3.test.js`, `tloris.test.js` in `skica.test.js` (stale-state, orientacija reza, enote) in `vision.test.js` + `issue2-phase2.test.js` (realno pikselno zaznavanje, DXF sloji/kodiranje, STEP topologija). Požene jih CI ([.github/workflows/ci.yml](.github/workflows/ci.yml)):
 
 ```bash
 npm install

@@ -204,7 +204,7 @@ async function lastText() {
   t = await lastText();
   let proj = null;
   try { proj = JSON.parse(t); } catch (e) {}
-  check("projekt: refMode shranjen (ovojnica v1)", !!proj && proj.schema === "draftwright-project" && proj.data.refMode === true);
+  check("projekt: refMode shranjen (ovojnica)", !!proj && proj.schema === "draftwright-project" && proj.data.refMode === true);
   $("refMode").checked = false;
   // round trip: naloži shranjeni projekt
   try {
