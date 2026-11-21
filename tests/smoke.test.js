@@ -44,6 +44,17 @@ function check(name, ok, info) {
   // 1b) regresija: naslov detajla lamele sledi dejanskemu profilu (ROMB-67 67×26 mm; prej trdo kodiran "U 80×20×2")
   check("detajl lamele: naslov sledi profilu (ROMB-67 67×26 mm)", svg && svg.textContent.includes("DETAIL LAMELE · ROMB-67 67×26 mm"),
     svg ? "naslov: " + ((svg.textContent.split("DETAIL LAMELE")[1] || "?").slice(0, 26)) : "brez SVG");
+  // 1c) F3: naslovni blok 2 vrstici — OBJEKT/TIP/MATERIAL/BARVA
+  check("naslovni blok: OBJEKT/TIP/MATERIAL/BARVA", !!svg && ["OBJEKT", "TIP", "MATERIAL", "BARVA", "PREČNA OGRAJA"].every((k) => svg.textContent.includes(k)));
+  // 1d) F2: detajl ROMB z 15° fazami + mere profila
+  check("detajl ROMB: fazi 15° + mere 67/26", !!svg && svg.textContent.includes("15°"));
+  // 1e) F1: prerez = realni rez — baloni = vrstice BOM + podlaga/pritrditev (privzeto na ploščo)
+  check("prerez: baloni=BOM + PODLAGA/PRITRDILO", !!svg && svg.textContent.includes("Baloni = št. vrstic") && svg.textContent.includes("PODLAGA") && svg.textContent.includes("PRITRDILO"));
+  // 1f) F1: bočna pritrditev — sidrna plošča v prerezu
+  $("mountType").value = "bočno na ploščo"; fire($("mountType"), "change");
+  $("gen").click(); svg = document.querySelector("#prev svg");
+  check("prerez bočno: SIDRNA PLOŠČA", !!svg && svg.textContent.includes("SIDRNA PLOŠČA"));
+  $("mountType").value = "na ploščo"; fire($("mountType"), "change");
 
   // 2) pokoncna -> referencni list
   $("sysUse").value = "pokoncna"; fire($("sysUse"), "change");

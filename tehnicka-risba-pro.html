@@ -1275,28 +1275,58 @@ function generate(){
   s+=ibox(0,-6,H-topHmm,L,stn,H,"#9a9a9a");s+=ibox(0,-6,0,L,stn,botHmm,"#9a9a9a");
   s+=ibox(0,-8,0,4,0,H,"#8f8f8f");s+=ibox(L-8,-8,0,L-4,0,H,"#8f8f8f");
 
-  /* SECTION with balloons */
+  /* SECTION A-A — realni vertikalni rez (F1): steber, lamele v prerezu (ROMB: trapec z 15° fazami),
+     zgornji/spodnji profil, sidranje/podlaga po mountType/subType. Baloni = št. vrstic v BOM (1,2,3,6,8). */
   s+=panel(12,172,140,50,"PREREZ A–A");
-  s+=rc(17,178,7,39,"none","#111")+hatch(17,178,7,39);
-  var qx=27,qy=211;
-  s+=center(qx,qy,qx+112,qy);
-  for(i=0;i<8;i++){var y3=qy-i*4.2-3;s+='<path d="M'+(qx+3)+' '+y3+' L'+(qx+8)+' '+(y3-1.8)+' L'+(qx+13)+' '+y3+' L'+(qx+8)+' '+(y3+1.8)+' Z" fill="#ddd" stroke="#111" stroke-width="0.22"/>'}
-  s+=rc(qx+1,qy-2,11,4,"none","#111")+rc(qx+96,qy-2,11,4,"none","#111");
-  s+=dh(qx+3,qx+13,qy+9,"120",qy-4);
-  s+=balloon(120,184,1)+ln(117.5,185,qx+40,187,0.18);
-  s+=balloon(120,193,2)+ln(117.5,194,qx+60,195,0.18);
-  s+=balloon(120,202,3)+ln(117.5,203,qx+95,204,0.18);
-  s+=balloon(46,218,4)+ln(46,215.5,qx+4,qy+2,0.18);
-  s+=balloon(120,214,5)+ln(117.5,214,qx+100,qy-1,0.18);
+  var seS=Math.min(0.08,32/(H||1)),seX=32,seY0=211,seW=pd[0]*seS,seD=Math.max(0.8,stn*seS);
+  var seTop=topHmm*seS,seBot=botHmm*seS,seZ=seY0-H*seS,sePi=(H-topHmm-botHmm)*seS/N,seSh=(sw/(sw+gap))*sePi;
+  var seRom=(WC[$("sysProfile").value]||WC.romb67).n.indexOf("ROMB")>=0,seTan=Math.tan(Math.PI/12);
+  s+=rc(seX-seW/2,seZ,seW,H*seS,"#cfcfcf","#111"); /* steber */
+  for(i=0;i<N;i++){var seYy=seY0-seBot-(i+1)*sePi+gap*seS/2+seSh/2,seX0=seX+seW/2,seH2=Math.max(0.25,seSh-2*seD*seTan);
+    if(seRom)s+=poly([[seX0,seYy-seSh/2],[seX0,seYy+seSh/2],[seX0+seD,seYy+seH2/2],[seX0+seD,seYy-seH2/2]],"#e6e6e6","#111",0.22);
+    else s+=rc(seX0,seYy-seSh/2,seD,seSh,"#e6e6e6","#111");}
+  s+=rc(seX-seW/2-0.8,seZ,seW+seD+2.4,seTop,"#dcdcdc","#111");
+  s+=rc(seX-seW/2-0.8,seY0-seBot,seW+seD+2.4,seBot,"#dcdcdc","#111");
+  var seMt=V("mountType"),seLab="";
+  if(seMt==="v tla"){s+=rc(seX-16,seY0,32,8,"none","#999")+hatch(seX-16,seY0,32,8)+rc(seX-seW/2,seY0,seW,5,"#cfcfcf","#111");seLab="V TLA / TEMELJ ("+E(V("subType"))+")"}
+  else if(seMt==="bočno na ploščo"){s+=rc(seX+seW/2+1,seY0,18,8,"none","#999")+hatch(seX+seW/2+1,seY0,18,8)+rc(seX+seW/2-0.6,seY0-2.4,10,2.8,"#dcdcdc","#111");seLab="SIDRNA PLOŠČA · "+E(V("anchor"))}
+  else if(seMt==="kovinska konstrukcija"){s+=rc(seX-seW/2-3,seY0-2,seW+6,2.4,"#cfcfcf","#111");seLab="OBSTOJEČA KONSTRUKCIJA · "+E(V("anchor"))}
+  else{s+=rc(seX-16,seY0+1.6,32,6.4,"none","#999")+hatch(seX-16,seY0+1.6,32,6.4)+rc(seX-seW/2-2,seY0,seW+4,1.6,"#dcdcdc","#111");s+='<circle cx="'+(seX-seW/2-1)+'" cy="'+(seY0+3.4)+'" r="0.5" fill="#111"/><circle cx="'+(seX+seW/2+1)+'" cy="'+(seY0+3.4)+'" r="0.5" fill="#111"/>';seLab="PODLAGA: "+E(V("subType"))+" · PRITRDILO: "+E(V("anchor"))}
+  s+=dv(seZ,seY0,seX+seD+8,f(H),seX+seW/2+seD);
+  s+=tx(14,221,"Baloni = št. vrstic v SEZNAMU SESTAVNIH DELOV",2.1,"start")+tx(150,221,seLab,2.1,"end");
+  var seMy=seY0-H*seS*0.45;
+  s+=balloon(seX+seD+14,seZ+2,1)+ln(seX+seD+11.3,seZ+2,seX+seW/2+seD+1,seZ+seTop/2,0.18);
+  s+=balloon(seX+seD+14,seMy,2)+ln(seX+seD+11.3,seMy,seX+seW/2+seD*0.6,seMy,0.18);
+  s+=balloon(seX+seD+14,seY0-seBot+0.8,3)+ln(seX+seD+11.3,seY0-seBot+0.8,seX+seW/2+seD+1,seY0-seBot+0.4,0.18);
+  s+=balloon(seX-seW/2-9,seMy,6)+ln(seX-seW/2-6.3,seMy,seX-seW/2,seMy,0.18);
+  s+=balloon(seX+seD+14,seY0+4.4,8)+ln(seX+seD+11.3,seY0+4.4,seX+seW/2+2,seY0+1.6,0.18);
 
   /* SLAT DETAIL - U profile (naslov sledi dejanskemu profilu, ne trdo kodiran U 80×20×2) */
   var profP=WC[$("sysProfile").value]||null;
   s+=panel(158,172,114,50,"DETAIL LAMELE · "+(profP?profP.n+" "+f(sw)+"×"+f(stn)+" mm":"U "+f(sw)+"×"+f(stn)+"×2"));
-  var ux=214,uy=198,uh=16,uw=14;
-  s+=poly([[ux-uw,uy-uh],[ux+uw,uy-uh],[ux+uw,uy+uh],[ux-uw,uy+uh],[ux-uw,uy+uh-2.5],[ux+uw-2.5,uy+uh-2.5],[ux+uw-2.5,uy-uh+2.5],[ux-uw,uy-uh+2.5]],"#dcdcdc","#111",0.3);
-  s+=center(ux-uw-4,uy,ux+uw+5,uy);s+=center(ux,uy-uh-4,ux,uy+uh+4);
-  s+=dh(ux-uw,ux+uw,uy+uh+8,f(stn),uy+uh)+dv(uy-uh,uy+uh,ux+uw+9,f(sw),ux+uw);
-  s+=tx(162,214,"notranji polmer r = 2 mm",2.3,"start");
+  var ux=210,uy=197,dP=profP||WC.romb67;
+  var ang15=Math.tan(Math.PI/12),dS=Math.min(0.35,22/dP.w),dW=dP.w*dS,dT=dP.t*dS;
+  var dIsR=dP.n.indexOf("ROMB")>=0,dIsK=dP.n.indexOf("KUBO")>=0,dIsS=dP.n.indexOf("POLNA")>=0||dP.n.indexOf("DESKA")>=0;
+  if(dIsR){ /* ROMB: vidna ploskev w navpično, fazi 15° nazaj v globino t → trapec */
+    var dBk=Math.max(0.3,dW-2*dT*ang15);
+    s+=poly([[ux,uy-dW/2],[ux,uy+dW/2],[ux+dT,uy+dBk/2],[ux+dT,uy-dBk/2]],"#dcdcdc","#111",0.3);
+    s+=ln(ux+dT*0.55,uy-dW/2+dT*ang15*0.55,ux+dT*0.55+4,uy-dW/2+dT*ang15*0.55-2.6,0.2)+tx(ux+dT*0.55+4.4,uy-dW/2+dT*ang15*0.55-3,"15°",2.2,"start");
+    s+=center(ux-5,uy,ux+dT+6,uy);
+    s+=dh(ux,ux+dT,uy+dW/2+7,f(dP.t),uy+dW/2)+dv(uy-dW/2,uy+dW/2,ux+dT+9,f(dP.w),ux+dT);
+  }else if(dIsK){ /* KUBO: zaprt kvadratni tubus */
+    s+=rc(ux-dW/2,uy-dW/2,dW,dW,"#dcdcdc","#111")+rc(ux-dW/2+1.4,uy-dW/2+1.4,dW-2.8,dW-2.8,"none","#111");
+    s+=center(ux-5,uy,ux+dW/2+6,uy)+center(ux,uy-dW/2-4,ux,uy+dW/2+5);
+    s+=dh(ux-dW/2,ux+dW/2,uy+dW/2+7,f(dP.w),uy+dW/2)+dv(uy-dW/2,uy+dW/2,ux+dW/2+9,f(dP.t),ux+dW/2);
+  }else if(dIsS){ /* polna deska/palica */
+    s+=rc(ux-dT/2,uy-dW/2,dT,dW,"#dcdcdc","#111");
+    s+=center(ux-5,uy,ux+dT/2+6,uy);
+    s+=dh(ux-dT/2,ux+dT/2,uy+dW/2+7,f(dP.t),uy+dW/2)+dv(uy-dW/2,uy+dW/2,ux+dT/2+9,f(dP.w),ux+dT/2);
+  }else{ /* pravokotna cev / U */
+    s+=rc(ux-dW/2,uy-dW/2,dW,dW,"#dcdcdc","#111")+rc(ux-dW/2+1.4,uy-dW/2+1.4,dW-2.8,dW-2.8,"none","#111");
+    s+=center(ux-5,uy,ux+dW/2+6,uy)+center(ux,uy-dW/2-4,ux,uy+dW/2+5);
+    s+=dh(ux-dW/2,ux+dW/2,uy+dW/2+7,f(dP.w),uy+dW/2)+dv(uy-dW/2,uy+dW/2,ux+dW/2+9,f(dP.t),ux+dW/2);
+    s+=tx(162,214,"notranji polmer r = 2 mm",2.3,"start");
+  }
 
   /* FASTENER DETAIL */
   s+=panel(278,172,130,50,"DETAIL PRITRJEVANJA");
@@ -1326,16 +1356,21 @@ function generate(){
   var nt=V("notes").split("\n").filter(function(x){return x.trim()});nt.push("Barva: "+V("ral"));nt.push("Masa konstrukcije: "+f(m)+" kg");
   var yy=234;nt.slice(0,7).forEach(function(line,idx){s+=tx(259,yy,(idx+1)+". "+line,2.25);yy+=4.2});
 
-  /* TITLE STRIP */
-  var ty=278;
-  s+=rc(12,ty,396,8,"none","#111");
-  [12,110,180,230,270,330,408].forEach(function(x){if(x>12&&x<408)s+=ln(x,ty,x,ty+8,0.25)});
-  s+=tx(14,ty+3,"PROJEKT",1.9,"start",500,"#444")+tx(14,ty+6.6,E(V("proj")),2.4,"start");
-  s+=tx(112,ty+3,"RISBA / REV",1.9,"start",500,"#444")+tx(112,ty+6.6,E(V("drw"))+" / "+E(V("rev")),2.3,"start");
-  s+=tx(182,ty+3,"MERILO",1.9,"start",500,"#444")+tx(182,ty+6.6,E(V("scale")),2.3,"start");
-  s+=tx(232,ty+3,"FORMAT",1.9,"start",500,"#444")+tx(232,ty+6.6,paper,2.3,"start");
-  s+=tx(272,ty+3,"DATUM",1.9,"start",500,"#444")+tx(272,ty+6.6,E(V("date")),2.3,"start");
-  s+=tx(332,ty+3,"RISAL / KONT.",1.9,"start",500,"#444")+tx(332,ty+6.6,E(V("aut")||"—")+" / "+E(V("chk")||"—"),2.2,"start");
+  /* TITLE BLOCK — 2 vrstici (F3): PROJEKT/RISBA·REV/MERILO/FORMAT/DATUM/RISAL + OBJEKT/TIP/MATERIAL/BARVA */
+  var ty=274;
+  s+=rc(12,ty,396,12,"none","#111")+ln(12,ty+6,408,ty+6,0.25);
+  [110,180,230,270,330].forEach(function(x){s+=ln(x,ty,x,ty+6,0.25)});
+  [110,230,330].forEach(function(x){s+=ln(x,ty+6,x,ty+12,0.25)});
+  s+=tx(14,ty+2.6,"PROJEKT",1.7,"start",500,"#444")+tx(14,ty+5.2,E(V("proj")),2.2,"start");
+  s+=tx(112,ty+2.6,"RISBA / REV",1.7,"start",500,"#444")+tx(112,ty+5.2,E(V("drw"))+" / "+E(V("rev")),2.1,"start");
+  s+=tx(182,ty+2.6,"MERILO",1.7,"start",500,"#444")+tx(182,ty+5.2,E(V("scale")),2.1,"start");
+  s+=tx(232,ty+2.6,"FORMAT",1.7,"start",500,"#444")+tx(232,ty+5.2,paper,2.1,"start");
+  s+=tx(272,ty+2.6,"DATUM",1.7,"start",500,"#444")+tx(272,ty+5.2,E(V("date")),2.1,"start");
+  s+=tx(332,ty+2.6,"RISAL / KONT.",1.7,"start",500,"#444")+tx(332,ty+5.2,E(V("aut")||"—")+" / "+E(V("chk")||"—"),2.0,"start");
+  s+=tx(14,ty+8.6,"OBJEKT",1.7,"start",500,"#444")+tx(14,ty+11.2,E(V("objekt")||"—"),2.2,"start");
+  s+=tx(112,ty+8.6,"TIP",1.7,"start",500,"#444")+tx(112,ty+11.2,(USE_NAMES[V("sysUse")]||V("sysUse")).toUpperCase(),2.2,"start",500);
+  s+=tx(232,ty+8.6,"MATERIAL",1.7,"start",500,"#444")+tx(232,ty+11.2,E(V("mat")),2.2,"start");
+  s+=tx(332,ty+8.6,"BARVA",1.7,"start",500,"#444")+tx(332,ty+11.2,E(V("ral")),2.2,"start");
 
   s+='</svg>';
   $("prev").className="sheet";$("prev").innerHTML=s;
