@@ -216,6 +216,34 @@ function check(name, ok, info) {
   t = $("globalStatus").textContent;
   check("vgrajena samoprevera 126/126", t.includes("126 kombinacij") && t.includes("0 napak") && t.includes("0 JS napak"), t);
 
+  // 14) Faza 0.5: tema — toggle, localStorage, sprememba atributa
+  const htmlEl = document.documentElement;
+  htmlEl.setAttribute("data-theme", "dark");
+  window.localStorage.removeItem("draftwright-theme");
+  $("themeBtn").click();
+  check("tema: preklop na svetlo + shranjeno", htmlEl.getAttribute("data-theme") === "light" && window.localStorage.getItem("draftwright-theme") === "light");
+  $("themeBtn").click();
+  check("tema: preklop nazaj na temno", htmlEl.getAttribute("data-theme") === "dark");
+
+  // 15) Faza 0.5: toast obvestila (zadnji dodani — predhodni iz preklopov teme)
+  window.toast("Test toast");
+  const toastEls = $("toastZone").querySelectorAll(".toast");
+  const toastEl = toastEls[toastEls.length - 1];
+  check("toast: prikaže sporočilo (zadnji)", !!toastEl && toastEl.textContent.includes("Test toast"));
+
+  // 16) Faza 0.5: galerija primerov
+  window.openTemplates();
+  check("galerija: modal odprt + 8 kartic", $("tmplOverlay").classList.contains("on") && $("tmplGrid").querySelectorAll(".tmpl-card").length === 8);
+  window.applyTemplate("precna");
+  check("galerija: primer naložen (L=4000) + modal zaprt + risba generirana", $("L").value === "4000" && !$("tmplOverlay").classList.contains("on") && !!document.querySelector("#prev svg"));
+
+  // 17) Faza 0.5: pan toggle + fullscreen gumb obstajata
+  $("panBtn").click();
+  check("pan: toggle aktivira način", $("panBtn").classList.contains("on"));
+  $("panBtn").click();
+  check("pan: toggle izklopi", !$("panBtn").classList.contains("on"));
+  check("fullscreen: gumb obstaja", !!$("fsBtn"));
+
   console.log(`\n  Rezultat: ${pass} OK, ${fail} FAIL${errors.length ? ", JS napake: " + errors.join(" | ") : ", brez JS napak"}`);
   process.exit(fail || errors.length ? 1 : 0);
 })().catch((e) => { console.error("TEST CRASH:", e); process.exit(1); });

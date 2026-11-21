@@ -8,8 +8,16 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-512.png" sizes="512x512" type="image/png">
 <link rel="apple-touch-icon" href="icon-192.png">
+<script>(function(){try{var t=localStorage.getItem("draftwright-theme");if(!t)t=matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";document.documentElement.setAttribute("data-theme",t)}catch(e){}})();</script>
 <style>
 :root{--bg:#141413;--panel:#1d1d1b;--p2:#262622;--line:#3b3b36;--tx:#e9e7dd;--mut:#a6a396;--ac:#d97757;--ok:#8aa86a;--wa:#e0a44c;--bad:#d06b5b;--bar:#181816}
+/* Faza 0.5: light tema — sistemsko (prefers-color-scheme) ali ročno prek gumba */
+[data-theme="light"]{--bg:#f4f3ef;--panel:#ffffff;--p2:#ecebe6;--line:#d6d4cc;--tx:#1c1b18;--mut:#6f6d66;--ac:#c05a36;--ok:#55793f;--wa:#9a6f16;--bad:#ae4636;--bar:#e9e7e1}
+[data-theme="light"] .menu .drop{background:#ffffff}
+[data-theme="light"] .drop .mi.active{background:#f4e6de;color:var(--ac)}
+[data-theme="light"] .sheet{box-shadow:0 12px 40px #0002a}
+[data-theme="light"] .fieldmenu{background:#fff}
+[data-theme="light"] .show-aside-handle{background:var(--panel)}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
 /* Menu bar */
 .menubar{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:4px;padding:0 10px;height:40px;background:var(--bar);border-bottom:1px solid var(--line)}
@@ -101,6 +109,23 @@ input.invalid,select.invalid{border-color:var(--bad)!important;box-shadow:0 0 0 
 .exp-overlay{position:fixed;inset:0;z-index:100;background:#000b;display:none;align-items:flex-start;justify-content:center;overflow:auto;padding:36px 14px}
 .exp-overlay.on{display:flex}
 .exp-dialog{background:var(--panel);color:var(--tx);border:1px solid var(--line);border-radius:14px;box-shadow:0 24px 60px #000d;width:100%;max-width:640px;overflow:hidden}
+/* Faza 0.5: toast obvestila — zgoraj desno, samodejno izginejo */
+#toastZone{position:fixed;top:52px;right:14px;z-index:200;display:flex;flex-direction:column;gap:8px;max-width:340px;pointer-events:none}
+.toast{background:var(--panel);color:var(--tx);border:1px solid var(--line);border-left:4px solid var(--ac);border-radius:10px;padding:10px 14px;font-size:13px;box-shadow:0 10px 30px #0008;animation:toastIn .25s ease;pointer-events:auto}
+.toast.ok{border-left-color:var(--ok)}
+.toast.err{border-left-color:var(--bad)}
+.toast.out{opacity:0;transform:translateX(16px);transition:.35s}
+@keyframes toastIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:none}}
+/* Faza 0.5: Pan in fullscreen gumba v predogledni vrstici */
+#panBtn.on{background:var(--p2);color:var(--ac);border-color:var(--ac)}
+.sheet.panning{cursor:grabbing}
+/* Faza 0.5: galerija primerov */
+.tmpl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.tmpl-card{background:var(--p2);border:1px solid var(--line);border-radius:10px;padding:12px;cursor:pointer;text-align:left;font:inherit;color:var(--tx);display:flex;flex-direction:column;gap:4px;transition:border-color .15s}
+.tmpl-card:hover{border-color:var(--ac)}
+.tmpl-card b{font-size:13px}
+.tmpl-card span{font-size:11.5px;color:var(--mut)}
+.tmpl-icon{font-size:22px}
 .exp-head{padding:16px 18px 12px;border-bottom:1px solid var(--line);display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
 .exp-head h1{font-size:16px;font-weight:600;margin:0 0 3px}
 .exp-sub{color:var(--mut);font-size:12px;margin:0}
@@ -209,6 +234,7 @@ input.invalid,select.invalid{border-color:var(--bad)!important;box-shadow:0 0 0 
     <button type="button">Datoteka</button>
     <div class="drop">
       <button class="mi" data-call="showExample">Naloži primer risbe</button>
+      <button class="mi" data-call="openTemplates">Primeri… <span class="k">galerija</span></button>
       <div class="sep"></div>
       <button class="mi" data-call="loadBtn">Odpri projekt…</button>
       <button class="mi" data-call="save">Shrani projekt… <span class="k">Ctrl+S</span></button>
@@ -282,6 +308,7 @@ input.invalid,select.invalid{border-color:var(--bad)!important;box-shadow:0 0 0 
   </div>
   <div class="spacer"></div>
   <span id="fieldCount" style="font-size:11px;color:var(--mut);margin-right:6px">4/10</span>
+  <button type="button" id="themeBtn" title="Preklopi temo (svetla/temna)" style="background:transparent;border:1px solid var(--line);border-radius:6px;padding:5px 9px;color:var(--tx);cursor:pointer;font-size:13px">☀️</button>
   <button class="primarybar" type="button" data-call="gen">Generiraj risbo</button>
 </div>
 
@@ -518,11 +545,15 @@ Konstrukcija odporna na vremenske vplive.</textarea>
 <span id="zoomVal">100%</span>
 <button class="btn" id="zoomIn" title="Povečaj" aria-label="Povečaj">+</button>
 <button class="btn" id="zoomFit">Prileži</button>
+<button class="btn" id="panBtn" title="Pan (vleči pri povečavi>100 %)">🖐 Pan</button>
+<button class="btn" id="fsBtn" title="Celozaslonski predogled">⛶</button>
 <button class="btn" id="showExample">Prikaži primer</button>
 </div></div>
 <div class="sheet"><div id="prev" class="empty"><b>Pripravljen</b>Prilepite sliko, izmerite ali vpišite mere in pritisnite Generiraj.<br><button class="btn" id="emptyExample" style="margin-top:12px">Prikaži primer risbe</button></div></div>
 </main>
 </div>
+
+<div id="toastZone" aria-live="polite"></div>
 
 <button id="showAside" class="show-aside-handle" type="button" title="Prikaži stransko ploščo">☰ Plošča</button>
 <div class="exp-overlay" id="expOverlay">
@@ -630,6 +661,20 @@ Konstrukcija odporna na vremenske vplive.</textarea>
     </div>
   </div>
 </div>
+<div class="exp-overlay" id="tmplOverlay">
+  <div class="exp-dialog" role="dialog" aria-modal="true" aria-label="Primeri risb">
+    <div class="exp-head">
+      <div><h1>Primeri risb</h1><p class="exp-sub">Izberite primer — naloži polja, mere in nastavitve ter generira risbo.</p></div>
+      <button class="exp-x" id="tmplClose" type="button" aria-label="Zapri" title="Zapri (Esc)">×</button>
+    </div>
+    <div class="exp-body">
+      <div class="tmpl-grid" id="tmplGrid"></div>
+    </div>
+    <div class="exp-foot">
+      <div class="exp-note" id="tmplNote"></div>
+    </div>
+  </div>
+</div>
 <div class="hooks" aria-hidden="true">
   <button id="modeGuided" type="button"></button>
   <button id="modeExpert" type="button"></button>
@@ -646,6 +691,7 @@ Konstrukcija odporna na vremenske vplive.</textarea>
   <button id="exportDialog" type="button"></button>
   <button id="prjDialogBtn" type="button"></button>
   <button id="prjLinkBtn" type="button"></button>
+  <button id="tmplDialogBtn" type="button"></button>
   <button id="genQuick" type="button"></button>
   <button id="dlSvgQuick" type="button"></button>
   <button id="prtQuick" type="button"></button>
@@ -746,7 +792,7 @@ $("applyCal").onclick=function(){
       var b=parseFloat(V("refB"));if(!(b>0))throw new Error("Vpišite resnično višino.");
       S.cal={corners:S.raw,h:homography(S.raw,[{x:0,y:0},{x:a,y:0},{x:a,y:b},{x:0,y:b}])}
     }
-    S.calibrated=true;S.rectCache=null;st("Umeritev uspešna: "+f(a)+" mm referenca.","");drawOverlay();
+    S.calibrated=true;S.rectCache=null;st("Umeritev uspešna: "+f(a)+" mm referenca.","");drawOverlay();toast("Umeritev uspešna: "+f(a)+" mm referenca","ok");
   }catch(err){st(err.message,"bad")}
 };
 
@@ -2807,9 +2853,11 @@ function exportPdf(sv,paper){
         if(failed.length){
           $("globalStatus").textContent="Izvoz končan z napakami: "+wordDatoteka(jobs.length-failed.length)+" uspešnih, neuspešnih "+failed.length+" ("+failed.join("; ")+").";
           $("globalStatus").style.color="var(--bad)";
+          toast("Izvoz: "+failed.length+" neuspešnih ("+failed[0]+")","err");
         }else{
           $("globalStatus").textContent="Izvoz končan: "+wordDatoteka(jobs.length)+(wmApplied?" (z vodnim žigom)":"")+".";
           $("globalStatus").style.color="";
+          toast("Izvoz končan: "+wordDatoteka(jobs.length)+(wmApplied?" (z vodnim žigom)":""),"ok");
         }
         closeExport();return}
       var j=jobs[idx];
@@ -3285,7 +3333,7 @@ function prjSave(){
   var snap=prjSnapshot(),list=prjAll();
   var d=new Date();
   list.unshift({id:Date.now(),name:name,date:d.toLocaleDateString("sl-SI")+" "+("0"+d.getHours()).slice(-2)+":"+("0"+d.getMinutes()).slice(-2),size:snap.length,data:snap});
-  if(prjWrite(list)){$("prjName").value="";prjRenderList();$("prjNote").textContent="Projekt »"+name+"« shranjen ("+list.length+" shranjenih).";$("globalStatus").textContent="Projekt »"+name+"« shranjen v brskalnik.";}
+  if(prjWrite(list)){$("prjName").value="";prjRenderList();$("prjNote").textContent="Projekt »"+name+"« shranjen ("+list.length+" shranjenih).";$("globalStatus").textContent="Projekt »"+name+"« shranjen v brskalnik.";toast("Projekt »"+name+"« shranjen","ok");}
 }
 function prjOpenAt(i){
   var p=prjAll()[i];if(!p)return;
@@ -3322,6 +3370,85 @@ $("prjOverlay").addEventListener("click",function(e){if(e.target===this)closePrj
 document.addEventListener("keydown",function(e){if($("prjOverlay").classList.contains("on")&&e.key==="Escape")closePrj()});
 window.prjRestoreFromHash=prjRestoreFromHash;window.restoreProjectString=restoreProjectString; /* P5: testno dostopni */
 prjRestoreFromHash();
+
+/* ---------- Faza 0.5: toast obvestila, tema, pan/fullscreen/wheel, galerija primerov ---------- */
+function toast(msg,type){
+  var z=$("toastZone");if(!z)return;
+  var el=document.createElement("div");el.className="toast"+(type?" "+type:"");
+  el.textContent=msg;z.appendChild(el);
+  setTimeout(function(){el.classList.add("out");setTimeout(function(){el.remove()},380)},3200);
+}
+(function(){ /* tema — gumb + sistemska detekcija (flag v localStorage) */
+  var th=$("themeBtn"),root=document.documentElement;
+  function upd(){if(th)th.textContent=(root.getAttribute("data-theme")||"dark")==="light"?"🌙":"☀️"}
+  if(th){th.onclick=function(){
+    var cur=root.getAttribute("data-theme")||"dark",nxt=cur==="light"?"dark":"light";
+    root.setAttribute("data-theme",nxt);
+    try{localStorage.setItem("draftwright-theme",nxt)}catch(e){}
+    upd();toast(nxt==="light"?"Svetla tema":"Temna tema","ok");
+  };}
+  upd();
+})();
+(function(){ /* predogled: ctrl+wheel zoom, Pan toggle (samo >100 %), fullscreen */
+  var sheet=document.querySelector(".sheet"),pan={on:false,active:false},pb=$("panBtn");
+  function setPan(v){pan.active=v;if(pb)pb.classList.toggle("on",v);if(sheet)sheet.classList.toggle("panning",v&&zoom>100)}
+  if(pb)pb.onclick=function(){setPan(!pan.active)};
+  if(sheet){
+    sheet.addEventListener("pointerdown",function(e){
+      if(pan.active&&zoom>100){pan.on=true;pan.x=e.clientX;pan.y=e.clientY;pan.l=sheet.scrollLeft;pan.t=sheet.scrollTop;e.preventDefault();}
+    });
+    sheet.addEventListener("wheel",function(e){
+      if(e.ctrlKey||e.metaKey){e.preventDefault();setZoom(zoom+(e.deltaY<0?10:-10));}
+    },{passive:false});
+  }
+  window.addEventListener("pointermove",function(e){if(!pan.on)return;sheet.scrollLeft=pan.l-(e.clientX-pan.x);sheet.scrollTop=pan.t-(e.clientY-pan.y);});
+  window.addEventListener("pointerup",function(){pan.on=false});
+  var fsb=$("fsBtn");
+  if(fsb)fsb.onclick=function(){
+    if(document.fullscreenElement){if(document.exitFullscreen)document.exitFullscreen();}
+    else{var el=document.querySelector(".sheet");if(el&&el.requestFullscreen)el.requestFullscreen().catch(function(){});else toast("Fullscreen ni podprt v tem brskalniku","err");}
+  };
+})();
+/* Galerija primerov — naloži polja iz predloge, jih počisti in generira risbo */
+var TEMPLATES={
+  precna:{icon:"🚧",name:"Prečna ograja",desc:"ROMB-67 · L=4000, H=1200",set:{use:"precna",profile:"romb67",L:"4000",H:"1200",D:"1200",n:"11",gap:"27"}},
+  pokoncna:{icon:"🚪",name:"Pokončna ograja",desc:"POLNA-57 · navpične lamele",set:{use:"pokoncna",profile:"polna57",L:"4000",H:"1200",D:"1200",n:"40",gap:"20"}},
+  fasada:{icon:"🏢",name:"Fasada",desc:"KUBO-80 · alu cev",set:{use:"fasada",profile:"kubo80",L:"4000",H:"1200",D:"1200",n:"20",gap:"30"}},
+  terasa:{icon:"⛱️",name:"Terasa",desc:"DESKA-150 · letve 33–35 cm",set:{use:"terasa",profile:"deska150",L:"5000",H:"1200",D:"2000",n:"15",gap:"8"}},
+  stopnice:{icon:"🪜",name:"Stopniščna ograja",desc:"naklon 17/28 · ročaj",set:{use:"stopniscna",profile:"romb67",L:"4200",H:"1000",D:"1200",stN:"12",stRise:"17",stGoing:"28",stW:"1000"}},
+  dvonadstropna:{icon:"🏗️",name:"Dvonadstropna",desc:"segmenti 6200+7800 · plošča 180",set:{use:"precna",profile:"romb67",L:"7800",H:"1050",D:"2100",segList:"1. NADSTROPJE;6200;1030\nPRITLIČJE;7800;1050",slabT:"180"}},
+  lpovratek:{icon:"↩️",name:"L-povratek",desc:"kotni steber · W2=2100",set:{use:"precna",profile:"romb67",L:"7800",H:"1050",D:"2100",w2:"2100"}},
+  korita:{icon:"🌺",name:"Korita za rože",desc:"2× korito (1100+1400)",set:{use:"precna",profile:"romb67",L:"4200",H:"1050",D:"1200",koritoList:"1100;300\n1400;1900"}}
+};
+function openTemplates(){if($("expOverlay").classList.contains("on"))return;$("tmplNote").textContent="";renderTmplGrid();$("tmplOverlay").classList.add("on")}
+function closeTemplates(){$("tmplOverlay").classList.remove("on")}
+function renderTmplGrid(){
+  var g=$("tmplGrid");if(!g)return;
+  g.innerHTML=Object.keys(TEMPLATES).map(function(k){
+    var t=TEMPLATES[k];
+    return '<button class="tmpl-card" data-tmpl="'+k+'" type="button"><span class="tmpl-icon">'+t.icon+'</span><b>'+E(t.name)+'</b><span>'+E(t.desc)+'</span></button>';
+  }).join("");
+  [].slice.call(g.querySelectorAll("[data-tmpl]")).forEach(function(b){
+    b.addEventListener("click",function(){applyTemplate(b.getAttribute("data-tmpl"))});
+  });
+}
+function applyTemplate(k){
+  var t=TEMPLATES[k];if(!t)return;
+  function ev(id,type){var el=$(id);if(!el)return;el.dispatchEvent(new Event(type,{bubbles:true}))}
+  ["segList","koritoList","w2","slabT","L","H","D","n","sw","st","gap","stN","stRise","stGoing","stW"].forEach(function(id){
+    var el=$(id);if(!el)return;
+    if(t.set[id]!=null){el.value=t.set[id];ev(id,["sysUse","sysProfile","mountType"].indexOf(id)>=0?"change":"input");}
+    else if(id==="segList"||id==="koritoList"){el.value="";ev(id,"input");}
+    else if(id==="w2"||id==="slabT"){el.value="0";ev(id,"input");}
+  });
+  closeTemplates();
+  $("gen").click();
+  toast("Primer »"+t.name+"« naložen in generiran","ok");
+}
+$("tmplClose").onclick=closeTemplates;
+$("tmplOverlay").addEventListener("click",function(e){if(e.target===this)closeTemplates()});
+document.addEventListener("keydown",function(e){if($("tmplOverlay").classList.contains("on")&&e.key==="Escape")closeTemplates()});
+window.openTemplates=openTemplates;window.applyTemplate=applyTemplate;window.toast=toast;
 
 /* P3: PWA — namestljiva aplikacija, deluje brez signala (service worker, stale-while-revalidate).
    Registracija samo prek https (Vercel) oz. localhost; file:// in jsdom preskočita. */
