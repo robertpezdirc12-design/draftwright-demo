@@ -164,6 +164,32 @@ const near = (v, ref, pct) => Math.abs(v - ref) / ref <= pct;
   r = await loadAndDetect({});
   check("G: zaznava nastavi n v vnosno polje", $("n").value === String(TRUTH.n));
 
+  // H) PERSPEKTIVA + 4-točkovna kalibracija → REKTIFIKACIJA (prej: n −37 %, H −43,5 %)
+  //    vogali trapeza (šir 0,18): TL(158,215) TR(958,215) BR(1042,685) BL(242,685)
+  const buf2 = synthPNG({ perspective: 0.18 });
+  const ev2 = new window.Event("paste", { bubbles: true, cancelable: true });
+  ev2.clipboardData = { items: [{ type: "image/png", getAsFile: () => new window.File([buf2], "p.png", { type: "image/png" }) }] };
+  document.dispatchEvent(ev2);
+  for (let i = 0; i < 150 && !$("photoBox").classList.contains("on"); i++) await new Promise((r2) => setTimeout(r2, 30));
+  const ov2 = $("ov");
+  ov2.getBoundingClientRect = () => ({ left: 0, top: 0, width: 1200, height: 900 });
+  $("mPlane").click();
+  $("pickCal").click();
+  const corners = [[158, 215], [958, 215], [1042, 685], [242, 685]];
+  corners.forEach(([x, y]) => ov2.dispatchEvent(new window.MouseEvent("click", { clientX: x, clientY: y, bubbles: true })));
+  const ra2 = $("refA"); ra2.value = "3200"; fire(ra2, "input");
+  const rb2 = $("refB"); rb2.value = "1880"; fire(rb2, "input");
+  $("applyCal").click();
+  check("H: kalibracija uspešna (4 točke)", $("calStatus").textContent.includes("uspešna"), $("calStatus").textContent);
+  $("detect").click();
+  await new Promise((r2) => setTimeout(r2, 30));
+  r = { n: Number($("n").value), H: Number($("H").value), sw: Number($("sw").value), gap: Number($("gap").value), status: $("detStatus").textContent };
+  check("H: rektificirano — n = 8", r.n === TRUTH.n, "n=" + r.n);
+  check("H: rektificirano — H ±5 % (1880; prej −43,5 %)", near(r.H, TRUTH.H, 0.05), "H=" + r.H);
+  check("H: rektificirano — sw ±20 % (200)", near(r.sw, TRUTH.sw, 0.2), "sw=" + r.sw);
+  check("H: rektificirano — gap ±25 % (40)", r.gap > 0 && near(r.gap, TRUTH.gap, 0.25), "gap=" + r.gap);
+  check("H: status omenja rektifikacijo", r.status.includes("rektificiranem"), r.status.slice(0, 90));
+
   console.log(`\n  Rezultat: ${pass} OK, ${fail} FAIL${errors.length ? ", JS napake: " + errors.join(" | ") : ", brez JS napak"}`);
   process.exit(fail || errors.length ? 1 : 0);
 })().catch((e) => { console.error("TEST CRASH:", e); process.exit(1); });
