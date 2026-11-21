@@ -342,6 +342,7 @@ body.viewmode .viewbar{display:flex}
 <input type="file" id="file" accept="image/*">
 <div class="photo" id="photoBox"><img id="img" alt="foto"><svg id="ov" xmlns="http://www.w3.org/2000/svg"></svg></div>
 <p class="hint">Prilepite z <span class="kbd">Ctrl+V</span>, povlecite ali izberite datoteko. Za merjenje naj bo v kadru merilo ali znan predmet.</p>
+<button class="btn" id="applySuggestedProf" style="display:none;margin-top:8px;width:100%"></button>
 </section>
 
 <section data-panel="cal">
@@ -888,6 +889,8 @@ function stats(arr){
 function applyDetection(){
   invalidateProduction();
   if(!S.det||S.det.lines.length<2)return;
+  S.det.suggestedProfile=null;
+  var sb=$("applySuggestedProf");if(sb)sb.style.display="none";
   var sc=S.det.sc,cx=S.det.cx,lines=S.det.lines,ov=S.detOverride||{};
   lines.sort(function(a,b){return a.y0-b.y0});
   /* Faza 2.5 (Issue #2 §5 P0): lamelne širine/število iz RUNOV svetlostnega profila po
@@ -921,6 +924,34 @@ function applyDetection(){
           if(gn>=3&&gn<=60){
             $("sw").value=String(wp.w);$("gap").value=String(gn);
             S.det.nomNote="ROMB fazi 15°: vidni pas "+(Math.round(prof.slatMed*mmPerPx*10)/10)+" → nominalno "+wp.w+" mm, fuga "+gn+" mm iz koraka";
+          }
+        }
+      }
+      /* Faza 3 (AI): samodejni predlog profila — izmerjena širina lamele se primerja z Roksal
+         registrom (WC); najbližji profil znotraj ±25 % → predlog + gumb za en-klik uporabo.
+         To je POMOČ (ne samodejna zamenjava) — uporabnik potrdi; izmerjena širina je lahko
+         popačena zaradi ROMB faz ali kota (pošteno prikazano v % odstopanja). */
+      if(prof.slatMed>0&&!ov.sw){
+        var wMM=Math.round(prof.slatMed*mmPerPx*10)/10;
+        var bestK=null,bestP=null,bestErr=Infinity;
+        Object.keys(WC).forEach(function(k){
+          var p=WC[k],pw=p.w||0;
+          if(!pw)return;
+          var err=Math.abs(pw-wMM)/pw;
+          if(err<bestErr){bestErr=err;bestK=k;bestP=p}
+        });
+        if(bestK&&bestP&&bestErr<=0.25){
+          S.det.suggestedProfile={key:bestK,name:bestP.n,w:bestP.w,measured:wMM,err:Math.round(bestErr*100)};
+          var sb2=$("applySuggestedProf");
+          if(sb2){
+            sb2.style.display="inline-block";
+            sb2.textContent="Uporabi predlagani profil: "+bestP.n+" (izmerjeno "+f(wMM)+" mm)";
+            sb2.onclick=function(){
+              $("sysProfile").value=bestK;
+              $("sysProfile").dispatchEvent(new Event("change",{bubbles:true}));
+              sb2.style.display="none";
+              toast("Profil "+bestP.n+" uporabljen — preverite mere","ok");
+            };
           }
         }
       }
@@ -1062,6 +1093,7 @@ $("detect").onclick=function(){
   if(rectK>0)msg+=" Zaznava na rektificiranem pregledu (perspektiva odstranjena).";
   msg+=" Širina/reža izmerjeni iz svetlostnega profila — preverite ročno.";
   if(S.det.nomNote)msg+=" "+S.det.nomNote+".";
+  if(S.det.suggestedProfile)msg+=" Možen profil: "+S.det.suggestedProfile.name+" (izmerjeno "+S.det.suggestedProfile.measured+" mm, odstopanje ±"+S.det.suggestedProfile.err+"%) — kliknite gumb v plošči Slika.";
   if(Math.abs(best.ang)>=4)msg+=" Izrazit naklon: pri perspektivi priporočamo ročno merjenje.";
   if(!S.calibrated)msg+=" Za milimetre umerite sliko.";
   dt(msg,S.det.confidence<45?"warn":"");
