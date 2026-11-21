@@ -524,6 +524,7 @@ Konstrukcija odporna na vremenske vplive.</textarea>
   <button class="btn" id="tlorisRedo" type="button">Redo <span class="kbd">Ctrl+Y</span></button>
   <button class="btn" id="tlorisClear" type="button">Počisti</button>
   <button class="btn go" id="tlorisApply" type="button">Uporabi v izračun</button>
+  <button class="btn" id="tlrFs" type="button" title="Celozaslonsko urejanje">⛶</button>
   <button class="btn" id="btnTlorisSvg" type="button">Izvozi tloris (SVG)</button>
 </div>
 <div class="status" id="tlorisStatus">Trasa prazna — kliknite za prvo oglišče.</div>
@@ -550,6 +551,7 @@ Konstrukcija odporna na vremenske vplive.</textarea>
   <button class="btn" id="skRedo" type="button">Redo</button>
   <button class="btn" id="skDup" type="button">Podvoji izbrano</button>
   <button class="btn" id="skClear" type="button">Počisti list</button>
+  <button class="btn" id="skFs" type="button" title="Celozaslonsko urejanje">⛶</button>
   <button class="btn" id="skPrint" type="button">Tisk (A4/A3)</button>
   <span style="flex:1"></span>
   <label style="display:inline;margin-right:6px">Barva <select id="skColor" style="width:auto"><option value="#111111">Črna</option><option value="#c0392b">Rdeča</option><option value="#2471a3">Modra</option></select></label>
@@ -787,6 +789,31 @@ Konstrukcija odporna na vremenske vplive.</textarea>
       <div class="exp-actions">
         <button class="exp-cancel" id="apprCancel" type="button">Nazaj</button>
         <button class="exp-go" id="apprConfirm" type="button">Potrdi</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="exp-overlay" id="photoZoomOverlay">
+  <div class="exp-dialog" style="max-width:1100px;background:#111;padding:0">
+    <div class="exp-head" style="background:#111">
+      <div><h1 style="color:#eee">Povečana fotografija</h1></div>
+      <button class="exp-x" id="photoZoomClose" type="button" aria-label="Zapri" title="Zapri (Esc)">×</button>
+    </div>
+    <div style="padding:12px"><img id="photoZoomImg" alt="foto (povečana)" style="width:100%;border-radius:10px;display:block"></div>
+  </div>
+</div>
+<div class="exp-overlay" id="resultOverlay">
+  <div class="exp-dialog" style="max-width:920px;display:flex;flex-direction:column;max-height:92vh">
+    <div class="exp-head">
+      <div><h1 id="resultTitle">Rezultat</h1></div>
+      <button class="exp-x" id="resultClose" type="button" aria-label="Zapri" title="Zapri (Esc)">×</button>
+    </div>
+    <div class="exp-body" style="overflow:auto;white-space:pre-wrap" id="resultBody"></div>
+    <div class="exp-foot">
+      <div class="exp-note" style="color:var(--mut)">Kliknite »Natisni« za tisk / PDF.</div>
+      <div class="exp-actions">
+        <button class="exp-cancel" id="resultCloseBtn" type="button">Zapri</button>
+        <button class="exp-go" id="resultPrint" type="button">🖨 Natisni</button>
       </div>
     </div>
   </div>
@@ -2658,8 +2685,8 @@ function buildChecklist(){
   $("globalStatus").textContent="Montažni checklist pripravljen — "+L.length+" vrstic.";
   return checklistText;
 }
-$("buildCut").onclick=buildCut;
-$("buildQuote").onclick=buildQuote;
+$("buildCut").onclick=function(){buildCut();showResult("cutOut","Rezalni načrt")};
+$("buildQuote").onclick=function(){buildQuote();showResult("quoteOut","Orientacijski predračun")};
 function cutCsv(){
   return "\ufeff"+"Vir;Deska (mm);Kosov;Št. kosov;Ostanek (mm)\n"+
     cutData.rows.map(function(r){return '"'+r.join('";"')+'"'}).join("\n")+
@@ -2679,7 +2706,7 @@ $("menuDlQuote").onclick=function(){
   if(!quoteData)buildQuote();
   saveBlob(V("drw")+"-predracun.csv",quoteCsv(),"text/csv;charset=utf-8");
 };
-$("buildChecklist").onclick=buildChecklist;
+$("buildChecklist").onclick=function(){buildChecklist();showResult("checklistOut","Montažni checklist")};
 $("menuBuildChecklist").onclick=buildChecklist;
 $("menuDlChecklist").onclick=function(){
   if(!checklistText)buildChecklist();
@@ -2728,7 +2755,7 @@ function buildPlan(){
   planData=rows;
   $("planOut").innerHTML='<table style="width:100%;font-size:11px;border-collapse:collapse">'+rows.map(function(r){return '<tr><td style="padding:2px 4px;border-bottom:1px solid var(--line)">'+E(r[0])+'</td><td style="padding:2px 4px;border-bottom:1px solid var(--line)">'+E(r[1])+'</td><td style="padding:2px 4px;border-bottom:1px solid var(--line);text-align:right;color:var(--tx)">'+E(r[2])+'</td></tr>'}).join('')+'</table><p style="margin-top:6px">Barva: '+E(V("sysColor"))+' · površina: '+E(V("sysSurface"))+' · montaža nad +5 °C. Količine so orientacijske — preverite jih pri naročilu. Orodje: baterijski vrtalnik (ročni izvijač ni primeren), Widia/HM rezila, brusni papir granulacija 40, grezilo; aksesoarji po profilu — distančniki + začetni distančnik in zaključna letev 45×55 (terasa), čepi levi/desni (romb), fasadni klipi (romb fasada), WEPOS WPC impregnacija (pohištvo).</p>';
 }
-$("makePlan").onclick=buildPlan;
+$("makePlan").onclick=function(){buildPlan();showResult("planOut","Montažni načrt")};
 function planCsv(){
   return "\ufeff"+"Postavka;Specifikacija;Količina\n"+planData.map(function(r){return '"'+r.join('";"')+'"'}).join("\n");
 }
@@ -3849,6 +3876,43 @@ $("langBtn").onclick=function(){
   toast(nxt==="en"?"Interface switched to English":"Vmesnik preklopljen v slovenščino","ok");
 };
 window.applyLang=applyLang;
+
+/* ---------- Rezultati v modalu (predračun/plan/rezalni/checklist) + foto zoom + fullscreen ---------- */
+function showResult(elId,title){
+  var src=$(elId);if(!src)return;
+  $("resultBody").innerHTML=src.innerHTML;
+  $("resultTitle").textContent=title||"Rezultat";
+  $("resultOverlay").classList.add("on");
+}
+function closeResult(){$("resultOverlay").classList.remove("on")}
+$("resultClose").onclick=closeResult;
+$("resultCloseBtn").onclick=closeResult;
+$("resultOverlay").addEventListener("click",function(e){if(e.target===this)closeResult()});
+$("resultPrint").onclick=function(){
+  var w=window.open("","_blank");
+  if(!w)return;
+  w.document.write('<!doctype html><meta charset="utf-8"><style>body{font-family:system-ui,sans-serif;padding:20px}table{border-collapse:collapse;width:100%}td,th{border:1px solid #ccc;padding:6px}</style>'+$("resultBody").innerHTML);
+  w.document.close();setTimeout(function(){w.focus();w.print()},300);
+};
+document.addEventListener("keydown",function(e){if($("resultOverlay").classList.contains("on")&&e.key==="Escape")closeResult()});
+window.showResult=showResult;window.closeResult=closeResult;
+
+/* Foto: klik na sliko → povečan pogled */
+$("img").addEventListener("click",function(){
+  $("photoZoomImg").src=$("img").src;
+  $("photoZoomOverlay").classList.add("on");
+});
+$("photoZoomClose").onclick=function(){$("photoZoomOverlay").classList.remove("on")};
+$("photoZoomOverlay").addEventListener("click",function(e){if(e.target===this)$("photoZoomOverlay").classList.remove("on")});
+document.addEventListener("keydown",function(e){if($("photoZoomOverlay").classList.contains("on")&&e.key==="Escape")$("photoZoomOverlay").classList.remove("on")});
+
+/* Fullscreen urejanje: tloris in skica čez cel ekran */
+function fsPanel(sel){
+  var s=document.querySelector(sel);
+  if(s&&s.requestFullscreen)s.requestFullscreen().catch(function(){});
+}
+$("tlrFs").onclick=function(){fsPanel('[data-panel="tloris"]')};
+$("skFs").onclick=function(){fsPanel('[data-panel="skica"]')};
 
 /* ---------- Pomoč za laike: "Kako začeti" (4 interaktivni koraki) ---------- */
 function openHelp(){if($("expOverlay").classList.contains("on"))return;$("helpNote").textContent="";$("helpOverlay").classList.add("on")}
