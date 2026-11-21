@@ -1131,6 +1131,8 @@ function checks(){
     if(!ref&&N*(sw+gap)>n("zoneMid")*1.05)msgs.push("Vsota širin navpičnih lamel in rež ("+f(N*(sw+gap))+" mm) presega srednje polje ("+f(n("zoneMid"))+" mm).");
   }else if(use0==="terasa"){
     if(N*(sw+gap)>n("D")*1.05)msgs.push("Vsota globin lamel in rež ("+f(N*(sw+gap))+" mm) presega globino D ("+f(n("D"))+" mm).");
+  }else if(use0==="stopniscna"){
+    /* stopnice: lamele sledijo naklonu — vsota čez H ni uporabna (lažni alarm) */
   }else if(!ref&&N*(sw+gap)>H*1.05){
     msgs.push("Vsota lamel in rež ("+f(N*(sw+gap))+" mm) presega višino H ("+f(H)+" mm).");
   }
@@ -1964,7 +1966,7 @@ var WC={
     drill:"predvrtanje Ø vijak +1 mm, vijak 30 mm od roba",
     palette:["Amazon wood","Ash wood","Burma teak","Oak wood"].concat(PAL_RUSTIK)},
   deska150:{n:"DESKA-150",w:150,t:25,len:4000,max:130,fix:"vidno spredaj — predvrtanje +1 mm",
-    allowed:["precna","terasa","pregrada"],post:{precna:1400},
+    allowed:["precna","terasa","pregrada"],post:{precna:1300}, /* uradni max razpon 130 cm (roksal.com) */
     drill:"predvrtanje Ø vijak +1 mm, vijačenje v sredino rebra",
     palette:PAL_KLASIK.concat(PAL_RUSTIK)},
   polna57:{n:"POLNA-57/32",w:57,t:32,len:5800,max:150,fix:"skrito zadaj — RF vijaki skozi cev",
@@ -3557,13 +3559,13 @@ function toast(msg,type){
 /* Galerija primerov — naloži polja iz predloge, jih počisti in generira risbo */
 var TEMPLATES={
   precna:{icon:"🚧",name:"Prečna ograja",desc:"ROMB-67 · L=4000, H=1200",set:{use:"precna",profile:"romb67",L:"4000",H:"1200",D:"1200",n:"11",gap:"27"}},
-  pokoncna:{icon:"🚪",name:"Pokončna ograja",desc:"POLNA-57 · navpične lamele",set:{use:"pokoncna",profile:"polna57",L:"4000",H:"1200",D:"1200",n:"40",gap:"20"}},
-  fasada:{icon:"🏢",name:"Fasada",desc:"KUBO-80 · alu cev",set:{use:"fasada",profile:"kubo80",L:"4000",H:"1200",D:"1200",n:"20",gap:"30"}},
+  pokoncna:{icon:"🚪",name:"Pokončna ograja",desc:"POLNA-57 · navpične lamele",set:{use:"pokoncna",profile:"polna57",L:"4000",H:"1200",D:"1200",n:"10",gap:"20"}},
+  fasada:{icon:"🏢",name:"Fasada",desc:"KUBO-80 · alu cev",set:{use:"fasada",profile:"kubo80",L:"4000",H:"1200",D:"1200",n:"10",gap:"30"}},
   terasa:{icon:"⛱️",name:"Terasa",desc:"DESKA-150 · letve 33–35 cm",set:{use:"terasa",profile:"deska150",L:"5000",H:"1200",D:"2000",n:"15",gap:"8"}},
-  stopnice:{icon:"🪜",name:"Stopniščna ograja",desc:"naklon 17/28 · ročaj",set:{use:"stopniscna",profile:"romb67",L:"4200",H:"1000",D:"1200",stN:"12",stRise:"17",stGoing:"28",stW:"1000"}},
-  dvonadstropna:{icon:"🏗️",name:"Dvonadstropna",desc:"segmenti 6200+7800 · plošča 180",set:{use:"precna",profile:"romb67",L:"7800",H:"1050",D:"2100",segList:"1. NADSTROPJE;6200;1030\nPRITLIČJE;7800;1050",slabT:"180"}},
-  lpovratek:{icon:"↩️",name:"L-povratek",desc:"kotni steber · W2=2100",set:{use:"precna",profile:"romb67",L:"7800",H:"1050",D:"2100",w2:"2100"}},
-  korita:{icon:"🌺",name:"Korita za rože",desc:"2× korito (1100+1400)",set:{use:"precna",profile:"romb67",L:"4200",H:"1050",D:"1200",koritoList:"1100;300\n1400;1900"}}
+  stopnice:{icon:"🪜",name:"Stopniščna ograja",desc:"naklon 17/28 · ročaj",set:{use:"stopniscna",profile:"romb67",L:"4200",H:"1000",D:"1200",n:"6",gap:"10",stN:"12",stRise:"17",stGoing:"28",stW:"1000"}},
+  dvonadstropna:{icon:"🏗️",name:"Dvonadstropna",desc:"segmenti 6200+7800 · plošča 180",set:{use:"precna",profile:"romb67",L:"7800",H:"1050",D:"2100",n:"12",gap:"20",segList:"1. NADSTROPJE;6200;1030\nPRITLIČJE;7800;1050",slabT:"180"}},
+  lpovratek:{icon:"↩️",name:"L-povratek",desc:"kotni steber · W2=2100",set:{use:"precna",profile:"romb67",L:"7800",H:"1050",D:"2100",n:"12",gap:"20",w2:"2100"}},
+  korita:{icon:"🌺",name:"Korita za rože",desc:"2× korito (1100+1400)",set:{use:"precna",profile:"romb67",L:"4200",H:"1050",D:"1200",n:"12",gap:"20",koritoList:"1100;300\n1400;1900"}}
 };
 function openTemplates(){if($("expOverlay").classList.contains("on"))return;$("tmplNote").textContent="";renderTmplGrid();$("tmplOverlay").classList.add("on")}
 function closeTemplates(){$("tmplOverlay").classList.remove("on")}
