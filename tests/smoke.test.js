@@ -64,6 +64,20 @@ function check(name, ok, info) {
   $("w2").value = "2100"; fire($("w2"), "input");
   $("gen").click(); svg = document.querySelector("#prev svg");
   check("tloris: L-povratek + fasada + kotni steber + W2", !!svg && ["L-POVRATEK", "FASADA OBJEKTA", "W2 = 2100", "KOTNI STEBER"].every((k) => svg.textContent.includes(k)));
+  // 1i) P1: BOM po segmentih — rezalni načrt, kosovnica in BOM vključujejo vse dolžine
+  $("buildCut").click();
+  const cutTxt = $("cutOut").textContent || "";
+  check("P1 rezalni načrt: dolžine segmentov + povratek", ["3800", "6200", "7800", "2100"].every((k) => cutTxt.includes(k)), cutTxt.slice(0, 88));
+  let csvBlob = null;
+  const ocCsv = window.URL.createObjectURL;
+  window.URL.createObjectURL = (b) => { csvBlob = b; return "blob:test"; };
+  $("dlCsv").click();
+  window.URL.createObjectURL = ocCsv;
+  const csvP1 = csvBlob ? await csvBlob.text() : "";
+  check("P1 kosovnica: vrstice po segmentih + povratku", ["— 1. NADSTROPJE", "— PRITLIČJE", "— L-povratek"].every((k) => csvP1.includes(k)));
+  $("gen").click(); svg = document.querySelector("#prev svg");
+  check("P1 BOM na risbi: razčlen dolžin + vsi segmenti", !!svg && svg.textContent.includes("vsi segmenti + povratek") && svg.textContent.includes("6200×") && svg.textContent.includes("7800×"),
+    svg ? (svg.textContent.split("Lamela ROMB-67")[1] || "?").slice(0, 46) : "brez SVG");
   $("segList").value = ""; fire($("segList"), "input");
   $("w2").value = "0"; fire($("w2"), "input");
   $("slabT").value = "0"; fire($("slabT"), "input");
@@ -95,7 +109,7 @@ function check(name, ok, info) {
   $("n").value = "21"; fire($("n"), "input");
   $("gen").click();
   t = ($("prev").textContent || "").replace(/\s+/g, "");
-  check("BOM kolicina = N", t.includes("80x20x2x380021") && !t.includes("80x20x2x380018"));
+  check("BOM kolicina = N", t.includes("3800×21") && !t.includes("3800×18"));
 
   // 6) rezalni nacrt + predracun
   $("n").value = "16"; fire($("n"), "input");
