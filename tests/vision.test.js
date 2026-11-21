@@ -27,6 +27,7 @@ function drawFence(canvas, opts) {
   const fw = TRUTH.W * ppm, fh = TRUTH.H * ppm;
   const x0 = Math.round((W - fw) / 2), y0 = Math.round((H - fh) / 2);
   const rot = (o.rotationDeg || 0) * Math.PI / 180;
+  const nN = o.nN || TRUTH.n, swM = o.swMM || TRUTH.sw, gapM = o.gapMM || TRUTH.gap;
   ctx.save();
   ctx.translate(x0 + fw / 2, y0 + fh / 2);
   if (rot) ctx.rotate(rot);
@@ -36,13 +37,13 @@ function drawFence(canvas, opts) {
   }
   // lamele + reže
   let y = -fh / 2;
-  for (let i = 0; i < TRUTH.n; i++) {
+  for (let i = 0; i < nN; i++) {
     ctx.fillStyle = i % 2 ? "#5a5a5a" : "#6a6a6a"; // temne lamele
-    ctx.fillRect(-fw / 2, y, fw, TRUTH.sw * ppm);
-    y += TRUTH.sw * ppm;
+    ctx.fillRect(-fw / 2, y, fw, swM * ppm);
+    y += swM * ppm;
     ctx.fillStyle = "#d9d9d9"; // reža (svetla)
-    ctx.fillRect(-fw / 2, y, fw, Math.min(TRUTH.gap * ppm, fh / 2 - y));
-    y += TRUTH.gap * ppm;
+    ctx.fillRect(-fw / 2, y, fw, Math.min(gapM * ppm, fh / 2 - y));
+    y += gapM * ppm;
   }
   ctx.restore();
   // referenčni segment 1000 mm — onesnaževalo (vodoravna črta s konici, nad ograjo)
@@ -57,6 +58,12 @@ function drawFence(canvas, opts) {
 function synthPNG(opts) {
   const c = createCanvas(1200, 900);
   drawFence(c, opts);
+  if (opts && opts.occluder) {
+    // Faza 3 (F6): suha veja čez sredinski stolpec — srednja svetlost (med lamelo in ozadjem)
+    const ctx2 = c.getContext("2d");
+    ctx2.fillStyle = "#8a7a5a";
+    ctx2.fillRect(560, 170, 90, 580);
+  }
   if (o_noise(opts)) {
     const ctx = c.getContext("2d");
     const d = ctx.getImageData(0, 0, c.width, c.height);
@@ -104,6 +111,7 @@ function check(name, ok, info) {
 }
 async function loadAndDetect(opts) {
   const buf = synthPNG(opts);
+  const prevSrc = $("img").src;
   const dataUrl = "data:image/png;base64," + buf.toString("base64");
   const ev = new window.Event("paste", { bubbles: true, cancelable: true });
   ev.clipboardData = { items: [{ type: "image/png", getAsFile: () => new window.File([buf], "s.png", { type: "image/png" }) }] };
@@ -112,7 +120,14 @@ async function loadAndDetect(opts) {
   for (let i = 0; i < 150 && !$("photoBox").classList.contains("on"); i++) {
     await new Promise((r) => setTimeout(r, 30));
   }
+  // Faza 3 (F6): photoBox je lahko že "on" od prejšnje slike — čakaj, da je NOVA slika dejansko
+  // dekodirana ($("img").src se nastavi šele v im.onload)
+  for (let i = 0; i < 150 && $("img").src === prevSrc; i++) {
+    await new Promise((r) => setTimeout(r, 30));
+  }
+  await new Promise((r) => setTimeout(r, 40));
   // kalibracija na referenčnem segmentu (20,20)→(270,20) = 1000 mm (nariše ga drawFence)
+  $("mLinear").click(); // H pusti plane način — vsilimo linearnega (2 točki)
   const ov = $("ov");
   ov.getBoundingClientRect = () => ({ left: 0, top: 0, width: 1200, height: 900 });
   const clickOv = (x, y) => ov.dispatchEvent(new window.MouseEvent("click", { clientX: x, clientY: y, bubbles: true }));
@@ -189,6 +204,17 @@ const near = (v, ref, pct) => Math.abs(v - ref) / ref <= pct;
   check("H: rektificirano — sw ±20 % (200)", near(r.sw, TRUTH.sw, 0.2), "sw=" + r.sw);
   check("H: rektificirano — gap ±25 % (40)", r.gap > 0 && near(r.gap, TRUTH.gap, 0.25), "gap=" + r.gap);
   check("H: status omenja rektifikacijo", r.status.includes("rektificiranem"), r.status.slice(0, 90));
+
+  // I) Faza 3 (F6): ovire — suha veja čez sredinski stolpec; večstolpčna mediana še vedno šteje 8
+  r = await loadAndDetect({ occluder: true });
+  check("I ovire: veja čez sredinski stolpec — n = 8 (večstolpčno)", r.n === TRUTH.n, "n=" + r.n + ", " + r.status.slice(0, 60));
+
+  // J) Faza 3 (F6): ROMB fazi 15° — vidni pas 70 mm / fuga 17 mm (korak 87 ohranjen; kamera
+  //    pod kotom skrije faze) → pretvorba v nominalno sw=67 iz registra + fuga 20 iz koraka
+  r = await loadAndDetect({ swMM: 70, gapMM: 17, nN: 11 });
+  check("J ROMB: štetje n = 11 (korak kotno neodvisen)", r.n === 11, "n=" + r.n);
+  check("J ROMB: sw → nominalna 67 iz Roksal registra", r.sw === 67, "sw=" + r.sw);
+  check("J ROMB: fuga iz koraka ≈ 20", Math.abs(r.gap - 20) <= 2.5, "gap=" + r.gap + ", " + r.status.slice(0, 90));
 
   console.log(`\n  Rezultat: ${pass} OK, ${fail} FAIL${errors.length ? ", JS napake: " + errors.join(" | ") : ", brez JS napak"}`);
   process.exit(fail || errors.length ? 1 : 0);
