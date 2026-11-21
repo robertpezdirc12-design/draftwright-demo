@@ -103,8 +103,8 @@ function check(name, ok, info) {
   // 6) izvozni dialog: 9 vsebin vključno z novima izvozoma
   $("exportDialog").click();
   const items = [...document.querySelectorAll("#expItems [data-exp-item]")].map((el) => el.getAttribute("data-exp-item"));
-  check("dialog: 10 vsebin z tehlist+povpras", items.length === 10 && items.includes("tehlist") && items.includes("povpras"), items.join(", "));
-  check("dialog: povzetek 10/10", $("expSumVsebina").textContent === "Vključeno 10/10", $("expSumVsebina").textContent);
+  check("dialog: 12 vsebin z tehlist+povpras+tloris+skica", items.length === 12 && items.includes("tehlist") && items.includes("povpras") && items.includes("tlorisSvg") && items.includes("skicaSvg"), items.join(", "));
+  check("dialog: povzetek 10/12", $("expSumVsebina").textContent === "Vključeno 10/12", $("expSumVsebina").textContent);
   const narociloChip = document.querySelector('[data-exp-preset="narocilo"]');
   narociloChip.click();
   check("preset narocilo vključuje povpraševanje", $("expItems").querySelector('[data-exp-item="povpras"]').checked === true);

@@ -76,9 +76,9 @@ async function runExportAndWait() {
 
   // 1) odpiranje prek menijskega data-call (hook gumb exportDialog)
   openDlg();
-  check("odpiranje dialoga (menu)", overlayOn() && document.querySelectorAll("#expItems [data-exp-item]").length === 10,
+  check("odpiranje dialoga (menu)", overlayOn() && document.querySelectorAll("#expItems [data-exp-item]").length === 12,
     document.querySelectorAll("#expItems [data-exp-item]").length + " vsebin");
-  check("privzeti povzetek vsebine", $("expSumVsebina").textContent === "Vključeno 10/10", $("expSumVsebina").textContent);
+  check("privzeti povzetek vsebine", $("expSumVsebina").textContent === "Vključeno 10/12", $("expSumVsebina").textContent);
   check("privzeti footer", /PDF \/ tisk · risba \+ 9 prilog/.test($("expNote").textContent), $("expNote").textContent);
   check("format lista usklajen s poljem", $("expPaper").value === $("paper").value);
 
@@ -95,7 +95,7 @@ async function runExportAndWait() {
   check("prednastavitev »Za naročilo«: risba izključena", !itemCb("risba").checked && itemCb("order").checked && itemCb("quote").checked && itemCb("cut").checked);
   check("format onemogočen brez risbe", $("expSegs").querySelector(".exp-seg").disabled && $("expFmtOff").style.display === "inline");
   document.querySelector('[data-exp-preset="minimalno"]').click();
-  check("prednastavitev »Samo risba«", itemCb("risba").checked && !itemCb("kosovnica").checked && $("expSumVsebina").textContent === "Vključeno 1/10");
+  check("prednastavitev »Samo risba«", itemCb("risba").checked && !itemCb("kosovnica").checked && $("expSumVsebina").textContent === "Vključeno 1/12");
 
   // 5) ročna sprememba počisti aktivnost prednastavitve
   itemCb("kosovnica").checked = true; fire(itemCb("kosovnica"), "change");

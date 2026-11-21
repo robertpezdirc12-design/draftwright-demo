@@ -99,6 +99,14 @@ function wallCountImpl() { return [...svg().querySelectorAll("line")].filter((l)
   const circR = svg().querySelectorAll("circle")[0];
   check("redo: krog znak prestavljen (98)", circR && circR.getAttribute("cx") === "98");
 
+  // ---- podvajanje izbranega elementa (+10 mm odmik, undo) ----
+  tool("premakni"); pdown(98, 178); pup();
+  $("skDup").click();
+  const dups = svg().querySelectorAll("circle");
+  check("podvoji izbrano: krog ×2 (+10 mm odmik)", dups.length === 2 && dups[1].getAttribute("cx") === String(Number(dups[0].getAttribute("cx")) + 10), dups.length + " krogi");
+  $("skUndo").click();
+  check("podvoji: undo odstrani kopijo", svg().querySelectorAll("circle").length === 1);
+
   // ---- barva/debelina ----
   $("skColor").value = "#c0392b"; fire($("skColor"), "change");
   tool("line"); pdown(40, 260); pmove(90, 260); pup();

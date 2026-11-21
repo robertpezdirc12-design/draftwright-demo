@@ -451,6 +451,7 @@ Konstrukcija odporna na vremenske vplive.</textarea>
   <button class="btn" id="tlorisRedo" type="button">Redo <span class="kbd">Ctrl+Y</span></button>
   <button class="btn" id="tlorisClear" type="button">Počisti</button>
   <button class="btn go" id="tlorisApply" type="button">Uporabi v izračun</button>
+  <button class="btn" id="btnTlorisSvg" type="button">Izvozi tloris (SVG)</button>
 </div>
 <div class="status" id="tlorisStatus">Trasa prazna — kliknite za prvo oglišče.</div>
 </section>
@@ -474,6 +475,7 @@ Konstrukcija odporna na vremenske vplive.</textarea>
 <div class="btns" style="margin-top:6px">
   <button class="btn" id="skUndo" type="button">Undo</button>
   <button class="btn" id="skRedo" type="button">Redo</button>
+  <button class="btn" id="skDup" type="button">Podvoji izbrano</button>
   <button class="btn" id="skClear" type="button">Počisti list</button>
   <button class="btn" id="skPrint" type="button">Tisk (A4/A3)</button>
   <span style="flex:1"></span>
@@ -2266,7 +2268,9 @@ $("dlPlan").onclick=function(){
     {id:"checklist",label:"Montažni checklist",tag:"TXT",tip:"Prevzemna kontrola po sklopih A–E: dostava, pred montažo, geometrija, zaključek, reklamacijska dokumentacija.",on:true},
     {id:"project",label:"Projekt (celotno stanje)",tag:"JSON",tip:"Vsa polja, umeritev in slika — za poznejše odpiranje projekta v aplikaciji.",on:true},
     {id:"tehlist",label:"Tehnični list materiala",tag:"TXT",tip:"Tehnični podatki WoodCore iz garancijskega PDF (vlaga, trdota HRR, modul upogibanja, sila vijaka …) — zahteva in izmerjeno.",on:true},
-    {id:"povpras",label:"Povpraševanje Roksal",tag:"TXT",tip:"Pripravljeno povpraševanje v strukturi Roksal obrazca: kontakt, način dobave, mere, profil, barva, podlaga. Fotografije/skice (≤ 25 MB) na info@roksal.com.",on:true}
+    {id:"povpras",label:"Povpraševanje Roksal",tag:"TXT",tip:"Pripravljeno povpraševanje v strukturi Roksal obrazca: kontakt, način dobave, mere, profil, barva, podlaga. Fotografije/skice (≤ 25 MB) na info@roksal.com.",on:true},
+    {id:"tlorisSvg",label:"Tloris ograje (SVG)",tag:"SVG",tip:"Interaktivni tloris trase (walls) z nosilci po Roksal limitih — top-down pogled za teren.",on:false},
+    {id:"skicaSvg",label:"Terenska skica",tag:"SVG",tip:"Skica s prostoročnimi potezami in elementi (A4/A3) — ročni pripomoček, brez izračunov.",on:false}
   ];
   var EXP_ADV=[
     {id:"wm",label:"Vodni žig na risbi",tip:"Prosojno diagonalno besedilo prek risbe. Velja za PDF in SVG; na DXF se ne izvaža (namen CNC).",on:false},
@@ -2275,10 +2279,10 @@ $("dlPlan").onclick=function(){
     {id:"meta",label:"Metapodatki v SVG",tip:"V SVG doda <title> in <desc> iz naslovnega bloka (projekt, merilo, format, datum, profil).",on:false}
   ];
   var EXP_PRESETS={
-    full:{risba:1,kosovnica:1,cut:1,plan:1,quote:1,order:1,checklist:1,project:1,tehlist:1,povpras:1},
-    delavnica:{risba:1,kosovnica:1,cut:1,plan:1,quote:0,order:0,checklist:0,project:0,tehlist:0,povpras:0},
-    narocilo:{risba:0,kosovnica:0,cut:1,plan:0,quote:1,order:1,checklist:0,project:0,tehlist:0,povpras:1},
-    minimalno:{risba:1,kosovnica:0,cut:0,plan:0,quote:0,order:0,checklist:0,project:0,tehlist:0,povpras:0}
+    full:{risba:1,kosovnica:1,cut:1,plan:1,quote:1,order:1,checklist:1,project:1,tehlist:1,povpras:1,tlorisSvg:0,skicaSvg:0},
+    delavnica:{risba:1,kosovnica:1,cut:1,plan:1,quote:0,order:0,checklist:0,project:0,tehlist:0,povpras:0,tlorisSvg:0,skicaSvg:0},
+    narocilo:{risba:0,kosovnica:0,cut:1,plan:0,quote:1,order:1,checklist:0,project:0,tehlist:0,povpras:1,tlorisSvg:0,skicaSvg:0},
+    minimalno:{risba:1,kosovnica:0,cut:0,plan:0,quote:0,order:0,checklist:0,project:0,tehlist:0,povpras:0,tlorisSvg:0,skicaSvg:0}
   };
   function item(id){for(var i=0;i<EXP_ITEMS.length;i++)if(EXP_ITEMS[i].id===id)return EXP_ITEMS[i];return null}
   function adv(id){for(var i=0;i<EXP_ADV.length;i++)if(EXP_ADV[i].id===id)return EXP_ADV[i];return null}
@@ -2415,6 +2419,49 @@ $("dlPlan").onclick=function(){
     if(item("checklist").on)jobs.push({n:"montažni checklist (TXT)",f:function(){saveBlob(base+"-montazni-checklist.txt",buildChecklist(),"text/plain;charset=utf-8")}});
     if(item("project").on)jobs.push({n:"projekt (JSON)",f:function(){saveBlob(base+"-project.json",projectJson(),"application/json")}});
     if(item("tehlist").on)jobs.push({n:"tehnični list (TXT)",f:function(){saveBlob(base+"-tehnicni-list.txt",techListTxt(),"text/plain;charset=utf-8")}});
+    if(item("tlorisSvg").on)jobs.push({n:"tloris (SVG)",f:function(){
+      if(!TLR.walls.length)throw new Error("tloris je prazen — narišite traso");
+      var s='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="600mm" height="400mm">';
+      s+='<rect width="600" height="400" fill="#fff"/>';
+      for(var gx=10;gx<600;gx+=10)s+='<line x1="'+gx+'" y1="0" x2="'+gx+'" y2="400" stroke="#e5e5e5" stroke-width="0.5"/>';
+      for(var gy=10;gy<400;gy+=10)s+='<line x1="0" y1="'+gy+'" x2="600" y2="'+gy+'" stroke="#e5e5e5" stroke-width="0.5"/>';
+      TLR.walls.forEach(function(w6){
+        var x1=w6.x1/TL_PX2MM,y1=w6.y1/TL_PX2MM,x2=w6.x2/TL_PX2MM,y2=w6.y2/TL_PX2MM;
+        var len6=Math.hypot(w6.x2-w6.x1,w6.y2-w6.y1),np6=tlrPosts(len6);
+        s+='<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="#111" stroke-width="3"/>';
+        for(var k6=0;k6<np6;k6++){var t6=np6>1?k6/(np6-1):0;
+          s+='<rect x="'+(x1+(x2-x1)*t6-2)+'" y="'+(y1+(y2-y1)*t6-2)+'" width="4" height="4" fill="#111"/>';}
+        s+='<text x="'+((x1+x2)/2)+'" y="'+((y1+y2)/2-4)+'" font-size="9" font-family="Arial" fill="#111" text-anchor="middle">'+f(len6*TL_PX2MM)+' mm · '+np6+' nos.</text>';
+      });
+      s+='<text x="10" y="12" font-size="10" font-family="Arial" fill="#111">TLORIS OGRAJE — '+E(V("proj"))+' · '+E(V("drw"))+' · '+E(V("date"))+'</text>';
+      s+='</svg>';
+      saveBlob(base+"-tloris.svg",s,"image/svg+xml;charset=utf-8");
+    }});
+    if(item("skicaSvg").on)jobs.push({n:"skica (SVG)",f:function(){
+      var pgS=skPage();
+      var s='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+pgS[0]+' '+pgS[1]+'" width="'+pgS[0]+'mm" height="'+pgS[1]+'mm">';
+      s+='<rect width="'+pgS[0]+'" height="'+pgS[1]+'" fill="#fff"/>';
+      SK.elems.forEach(function(e2){
+        var col=e2.color,w2=e2.width;
+        if(e2.t==="free")s+='<polyline points="'+e2.pts.map(function(p2){return p2.x+","+p2.y}).join(" ")+'" fill="none" stroke="'+col+'" stroke-width="'+w2+'"/>';
+        else if(e2.t==="line")s+='<line x1="'+e2.x1+'" y1="'+e2.y1+'" x2="'+e2.x2+'" y2="'+e2.y2+'" stroke="'+col+'" stroke-width="'+w2+'"/>';
+        else if(e2.t==="rect")s+='<rect x="'+Math.min(e2.x1,e2.x2)+'" y="'+Math.min(e2.y1,e2.y2)+'" width="'+Math.abs(e2.x2-e2.x1)+'" height="'+Math.abs(e2.y2-e2.y1)+'" fill="none" stroke="'+col+'" stroke-width="'+w2+'"/>';
+        else if(e2.t==="circle")s+='<circle cx="'+e2.cx+'" cy="'+e2.cy+'" r="'+e2.r+'" fill="none" stroke="'+col+'" stroke-width="'+w2+'"/>';
+        else if(e2.t==="text")s+='<text x="'+e2.x+'" y="'+e2.y+'" font-size="'+(w2*4+7)+'" font-family="Arial" fill="'+col+'">'+E(e2.txt)+'</text>';
+        else if(e2.t==="dim")s+='<line x1="'+e2.x1+'" y1="'+e2.y1+'" x2="'+e2.x2+'" y2="'+e2.y2+'" stroke="'+col+'" stroke-width="0.7"/><text x="'+((e2.x1+e2.x2)/2)+'" y="'+((e2.y1+e2.y2)/2-3)+'" font-size="8" font-family="Arial" fill="'+col+'" text-anchor="middle">M(ročno): '+E(e2.label)+'</text>';
+        else if(e2.t==="iso"){
+          var s4=e2.s||40,h4=s4*0.5,d4=s4*0.6;
+          s+='<polygon points="'+e2.x+','+(e2.y+d4)+' '+(e2.x+s4/2)+','+e2.y+' '+(e2.x+s4)+','+(e2.y+d4)+' '+(e2.x+s4/2)+','+(e2.y+d4*2)+'" fill="none" stroke="'+col+'" stroke-width="'+w2+'"/>';
+          s+='<line x1="'+e2.x+'" y1="'+(e2.y+d4)+'" x2="'+e2.x+'" y2="'+(e2.y+d4+s4*0.5)+'" stroke="'+col+'" stroke-width="'+w2+'"/>';
+          s+='<line x1="'+(e2.x+s4/2)+'" y1="'+(e2.y+d4*2)+'" x2="'+(e2.x+s4/2)+'" y2="'+(e2.y+d4*2+s4*0.5)+'" stroke="'+col+'" stroke-width="'+w2+'"/>';
+          s+='<line x1="'+(e2.x+s4)+'" y1="'+(e2.y+d4)+'" x2="'+(e2.x+s4)+'" y2="'+(e2.y+d4+s4*0.5)+'" stroke="'+col+'" stroke-width="'+w2+'"/>';
+          s+='<line x1="'+e2.x+'" y1="'+(e2.y+d4+s4*0.5)+'" x2="'+(e2.x+s4/2)+'" y2="'+(e2.y+d4*2+s4*0.5)+'" stroke="'+col+'" stroke-width="'+w2+'"/>';
+          s+='<line x1="'+(e2.x+s4/2)+'" y1="'+(e2.y+d4*2+s4*0.5)+'" x2="'+(e2.x+s4)+'" y2="'+(e2.y+d4+s4*0.5)+'" stroke="'+col+'" stroke-width="'+w2+'"/>';
+        }
+      });
+      s+='</svg>';
+      saveBlob(base+"-skica.svg",s,"image/svg+xml;charset=utf-8");
+    }});
     if(item("povpras").on)jobs.push({n:"povpraševanje Roksal (TXT)",f:function(){saveBlob(base+"-povprasevanje.txt",povprasevanjeTxt(),"text/plain;charset=utf-8")}});
     if(!jobs.length){closeExport();return}
     var wmApplied=!!wm&&risba&&(EXP.format==="PDF"||EXP.format==="SVG");
@@ -2520,6 +2567,25 @@ function tlrRedo(){if(!TLR.redo.length)return;TLR.undo.push(JSON.stringify({w:TL
   $("tlorisUndo").onclick=tlrUndo;
   $("tlorisRedo").onclick=tlrRedo;
   $("tlorisClear").onclick=function(){if(!TLR.walls.length&&!TLR.anchor)return;tlrPushUndo();TLR.walls=[];TLR.anchor=null;tlrRender()};
+  $("btnTlorisSvg").onclick=function(){
+    if(!TLR.walls.length){$("tlorisStatus").textContent="Trasa je prazna — nič za izvoz.";return}
+    var s='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="600mm" height="400mm">';
+    s+='<rect width="600" height="400" fill="#fff"/>';
+    for(var gx=10;gx<600;gx+=10)s+='<line x1="'+gx+'" y1="0" x2="'+gx+'" y2="400" stroke="#e5e5e5" stroke-width="0.5"/>';
+    for(var gy=10;gy<400;gy+=10)s+='<line x1="0" y1="'+gy+'" x2="600" y2="'+gy+'" stroke="#e5e5e5" stroke-width="0.5"/>';
+    TLR.walls.forEach(function(w6,ix6){
+      var x1=w6.x1/TL_PX2MM,y1=w6.y1/TL_PX2MM,x2=w6.x2/TL_PX2MM,y2=w6.y2/TL_PX2MM;
+      var len6=Math.hypot(w6.x2-w6.x1,w6.y2-w6.y1),np6=tlrPosts(len6);
+      s+='<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="#111" stroke-width="3"/>';
+      for(var k6=0;k6<np6;k6++){var t6=np6>1?k6/(np6-1):0;
+        s+='<rect x="'+(x1+(x2-x1)*t6-2)+'" y="'+(y1+(y2-y1)*t6-2)+'" width="4" height="4" fill="#111"/>';}
+      s+='<text x="'+((x1+x2)/2)+'" y="'+((y1+y2)/2-4)+'" font-size="9" font-family="Arial" fill="#111" text-anchor="middle">'+f(len6*TL_PX2MM)+' mm · '+np6+' nos.</text>';
+    });
+    s+='<text x="10" y="12" font-size="10" font-family="Arial" fill="#111">TLORIS OGRAJE — '+E(V("proj"))+' · '+E(V("drw"))+' · '+E(V("date"))+'</text>';
+    s+='</svg>';
+    saveBlob(V("drw")+"-tloris.svg",s,"image/svg+xml;charset=utf-8");
+    $("tlorisStatus").textContent="Tloris izvožen: "+V("drw")+"-tloris.svg";
+  };
   $("tlorisApply").onclick=function(){
     var total=TLR.walls.reduce(function(a,w5){return a+Math.hypot(w5.x2-w5.x1,w5.y2-w5.y1)},0);
     if(total<=0){$("tlorisStatus").textContent="Trasa je prazna — nič ni preneseno v izračun.";return}
@@ -2695,6 +2761,15 @@ function skHit(x,y){
 })();
 $("skUndo").onclick=function(){if(!SK.undo.length)return;SK.redo.push(JSON.stringify({e:SK.elems,p:SK.paper,o:SK.orient,m:SK.mreza}));var st=JSON.parse(SK.undo.pop());SK.elems=st.e;SK.paper=st.p;SK.orient=st.o;SK.mreza=st.m;$("skPaper").value=SK.paper;$("skOrient").value=SK.orient;$("skGrid").checked=SK.mreza;skRender()};
 $("skRedo").onclick=function(){if(!SK.redo.length)return;SK.undo.push(JSON.stringify({e:SK.elems,p:SK.paper,o:SK.orient,m:SK.mreza}));var st=JSON.parse(SK.redo.pop());SK.elems=st.e;SK.paper=st.p;SK.orient=st.o;SK.mreza=st.m;$("skPaper").value=SK.paper;$("skOrient").value=SK.orient;$("skGrid").checked=SK.mreza;skRender()};
+$("skDup").onclick=function(){
+  if(SK.selected<0||!SK.elems[SK.selected]){$("skStatus").textContent="Podvoji: najprej kliknite element z orodjem Premakni (izbere najbližjega).";return}
+  skPushUndo();
+  var cp=JSON.parse(JSON.stringify(SK.elems[SK.selected]));
+  if(cp.t==="free")cp.pts=cp.pts.map(function(p2){return{x:p2.x+10,y:p2.y+10}});
+  else if(cp.cx!=null){cp.cx+=10;cp.cy+=10}else{cp.x1+=10;cp.y1+=10;cp.x2+=10;cp.y2+=10;if(cp.x!=null){cp.x+=10;cp.y+=10}}
+  SK.elems.push(cp);SK.selected=SK.elems.length-1;skRender();
+  $("skStatus").textContent="Element podvojen (offset +10 mm).";
+};
 $("skClear").onclick=function(){if(!SK.elems.length)return;skPushUndo();SK.elems=[];SK.selected=-1;skRender()};
 $("skPrint").onclick=function(){
   SK.selected=-1;skRender();
