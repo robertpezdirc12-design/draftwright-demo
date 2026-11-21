@@ -30,6 +30,7 @@ const { document } = window;
 const $ = (id) => document.getElementById(id);
 const fire = (el, type) => el.dispatchEvent(new window.Event(type, { bubbles: true }));
 const setField = (id, v) => { $(id).value = String(v); fire($(id), "input"); };
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 let pass = 0, fail = 0;
 function check(name, ok, info) {
@@ -93,6 +94,38 @@ function check(name, ok, info) {
   try { window.restoreProjectString(JSON.stringify({ schema: "druga-shema", data: {} })); }
   catch (e) { threw = e.message; }
   check("restoreProjectString: napačna shema javi napako", threw.includes("nepodprta shema"));
+
+  // 11) Faza 1: share view mode — povezava za ogled + vklop/izklop načina
+  prompted = null;
+  window.prompt = (msg, val) => { prompted = val; return val; };
+  $("prjLinkView").click();
+  const viewUrl = prompted || "";
+  check("view: povezava vsebuje ?view=1#p=<base64url>", viewUrl.includes("?view=1#p=") && !/[+/=]/.test(viewUrl.slice(viewUrl.indexOf("#p=") + 3)), Math.round(viewUrl.length / 1024) + " kB");
+  window.history.pushState(null, "", "https://draftwright-demo.vercel.app/?view=1");
+  check("view: parseViewMode vklopi način (body.viewmode)", window.parseViewMode() === true && document.body.classList.contains("viewmode") && !!$("vbPdf") && !!$("vbEdit"));
+  window.history.pushState(null, "", "https://draftwright-demo.vercel.app/?x=1");
+  check("view: brez ?view se način ne vklopi (čisti URL)", window.parseViewMode() === false);
+  document.body.classList.remove("viewmode");
+
+  // 12) Faza 1: regresija — nalaganje z ?view=1#p=<hash> ob inicializaciji NE sme povzročiti JS napake
+  //    (prej: $("emptyExample") izgine po restore/generate → crash "Cannot set properties of null")
+  const viewHtml = fs.readFileSync(path.join(__dirname, "..", "tehnicka-risba-pro.html"), "utf8");
+  const viewErrs = [];
+  const domView = new JSDOM(viewHtml, {
+    runScripts: "dangerously", pretendToBeVisual: true,
+    url: "https://draftwright-demo.vercel.app/?view=1#p=eyJ0ZXN0IjoxfQ",
+    beforeParse(window) {
+      window.HTMLCanvasElement.prototype.getContext = function () {
+        return { drawImage() {}, getImageData(x, y, w, h) { return { data: new Uint8ClampedArray(w * h * 4) }; } };
+      };
+      window.URL.revokeObjectURL = () => {};
+      window.HTMLAnchorElement.prototype.click = function () {};
+      window.addEventListener("error", (e) => viewErrs.push(String(e.message || e.error)));
+    },
+  });
+  await sleep(120);
+  check("view: nalaganje z ?view=1#p= brez JS napak", viewErrs.length === 0, viewErrs[0] || "brez napak");
+  check("view: body.viewmode aktiven + uuid gumba", domView.window.document.body.classList.contains("viewmode") && !!domView.window.document.getElementById("vbPdf"));
 
   console.log(`\n  Rezultat: ${pass} OK, ${fail} FAIL${errors.length ? ", JS napake: " + errors.join(" | ") : ", brez JS napak"}`);
   process.exit(fail || errors.length ? 1 : 0);
