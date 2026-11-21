@@ -126,6 +126,9 @@ input.invalid,select.invalid{border-color:var(--bad)!important;box-shadow:0 0 0 
 .tmpl-card b{font-size:13px}
 .tmpl-card span{font-size:11.5px;color:var(--mut)}
 .tmpl-icon{font-size:22px}
+/* Faza 2: miniature shranjenih projektov */
+.prj-thumb{width:64px;height:45px;border-radius:6px;object-fit:cover;border:1px solid var(--line);flex:0 0 auto;background:var(--p2)}
+.prj-thumb.ph{display:inline-flex;align-items:center;justify-content:center;font-size:20px}
 .exp-head{padding:16px 18px 12px;border-bottom:1px solid var(--line);display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
 .exp-head h1{font-size:16px;font-weight:600;margin:0 0 3px}
 .exp-sub{color:var(--mut);font-size:12px;margin:0}
@@ -565,6 +568,7 @@ Konstrukcija odporna na vremenske vplive.</textarea>
 <button class="btn" id="zoomFit">Prileži</button>
 <button class="btn" id="panBtn" title="Pan (vleči pri povečavi>100 %)">🖐 Pan</button>
 <button class="btn" id="fsBtn" title="Celozaslonski predogled">⛶</button>
+<button class="btn" id="isoBtn" title="3D pogled — vrtenje">🧊 3D</button>
 <button class="btn" id="showExample">Prikaži primer</button>
 </div></div>
 <div class="sheet"><div id="prev" class="empty"><b>Pripravljen</b>Prilepite sliko, izmerite ali vpišite mere in pritisnite Generiraj.<br><button class="btn" id="emptyExample" style="margin-top:12px">Prikaži primer risbe</button></div></div>
@@ -691,6 +695,28 @@ Konstrukcija odporna na vremenske vplive.</textarea>
     </div>
     <div class="exp-foot">
       <div class="exp-note" id="tmplNote"></div>
+    </div>
+  </div>
+</div>
+<div class="exp-overlay" id="isoOverlay">
+  <div class="exp-dialog" role="dialog" aria-modal="true" aria-label="3D pogled">
+    <div class="exp-head">
+      <div><h1>Izometrični pogled — vrtenje</h1><p class="exp-sub">Povlecite po modelu za vrtenje; gumbi za hitre kote. Model iz trenutnih mer (lamele, stebri, profili, korita).</p></div>
+      <button class="exp-x" id="isoClose" type="button" aria-label="Zapri" title="Zapri (Esc)">×</button>
+    </div>
+    <div class="exp-body">
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
+        <button class="btn" data-iso="front" type="button">Front</button>
+        <button class="btn" data-iso="rear" type="button">Rear</button>
+        <button class="btn" data-iso="left" type="button">Left</button>
+        <button class="btn" data-iso="right" type="button">Right</button>
+        <button class="btn" data-iso="top" type="button">Top</button>
+        <button class="btn" data-iso="reset" type="button">Reset</button>
+      </div>
+      <div style="background:#ffffff;border-radius:10px;overflow:hidden;cursor:grab">
+        <svg id="isoSvg" viewBox="0 0 600 400" style="width:100%;display:block;touch-action:none"></svg>
+      </div>
+      <div class="m" id="isoInfo" style="color:var(--mut);font-size:12px;margin-top:8px">Azimut 35° · Elevacija 25°</div>
     </div>
   </div>
 </div>
@@ -3340,7 +3366,11 @@ function prjRenderList(){
   var list=prjAll(),el=$("prjList");if(!el)return;
   if(!list.length){el.innerHTML='<div class="m" style="color:var(--dim)">Še ni shranjenih projektov.</div>';return}
   el.innerHTML=list.map(function(p,i){
+    var thumb=p.thumb
+      ?'<img class="prj-thumb" src="'+p.thumb+'" alt="" loading="lazy">'
+      :'<span class="prj-thumb ph" aria-hidden="true">📄</span>';
     return '<div style="display:flex;align-items:center;gap:8px;padding:7px 2px;border-bottom:1px solid var(--line)">'+
+      thumb+
       '<div style="flex:1;min-width:0"><b>'+E(p.name)+'</b> <span class="m" style="color:var(--dim)">· '+E(p.date)+' · '+Math.round(p.size/1024)+' kB</span></div>'+
       '<button class="exp-go" data-prj-open="'+i+'" type="button">Odpri</button>'+
       '<button class="exp-cancel" data-prj-del="'+i+'" type="button">Izbriši</button></div>';
@@ -3348,12 +3378,38 @@ function prjRenderList(){
   [].slice.call(el.querySelectorAll("[data-prj-open]")).forEach(function(b){b.addEventListener("click",function(){prjOpenAt(Number(b.getAttribute("data-prj-open")))})});
   [].slice.call(el.querySelectorAll("[data-prj-del]")).forEach(function(b){b.addEventListener("click",function(){var list2=prjAll();list2.splice(Number(b.getAttribute("data-prj-del")),1);prjWrite(list2);prjRenderList()})});
 }
+/* Faza 2: thumbnail (SVG → PNG canvas) za vizualno zgodovino — asinhrono; ob napaki/null se preskoči */
+function prjMakeThumb(cb){
+  cb=cb||function(){};
+  try{
+    var sv=svgEl();if(!sv)return cb(null);
+    var w=180,h=Math.round(w*297/420);
+    var c=document.createElement("canvas");c.width=w;c.height=h;
+    var ctx=c.getContext("2d");
+    ctx.fillStyle="#fff";ctx.fillRect(0,0,w,h);
+    var url="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(new XMLSerializer().serializeToString(sv));
+    var im=new Image();
+    im.onload=function(){
+      try{ctx.drawImage(im,0,0,w,h);var d=c.toDataURL("image/jpeg",0.7);cb(d.length<250000?d:null);}catch(e){cb(null)}
+    };
+    im.onerror=function(){cb(null)};
+    im.src=url;
+  }catch(e){cb(null)}
+}
 function prjSave(){
   var name=($("prjName").value||"").trim()||V("proj")||"Projekt";
   var snap=prjSnapshot(),list=prjAll();
   var d=new Date();
-  list.unshift({id:Date.now(),name:name,date:d.toLocaleDateString("sl-SI")+" "+("0"+d.getHours()).slice(-2)+":"+("0"+d.getMinutes()).slice(-2),size:snap.length,data:snap});
-  if(prjWrite(list)){$("prjName").value="";prjRenderList();$("prjNote").textContent="Projekt »"+name+"« shranjen ("+list.length+" shranjenih).";$("globalStatus").textContent="Projekt »"+name+"« shranjen v brskalnik.";toast("Projekt »"+name+"« shranjen","ok");}
+  var id=Date.now();
+  list.unshift({id:id,name:name,date:d.toLocaleDateString("sl-SI")+" "+("0"+d.getHours()).slice(-2)+":"+("0"+d.getMinutes()).slice(-2),size:snap.length,data:snap});
+  if(prjWrite(list)){$("prjName").value="";prjRenderList();$("prjNote").textContent="Projekt »"+name+"« shranjen ("+list.length+" shranjenih).";$("globalStatus").textContent="Projekt »"+name+"« shranjen v brskalnik.";toast("Projekt »"+name+"« shranjen","ok");
+    prjMakeThumb(function(thumb){
+      if(!thumb)return;
+      var l2=prjAll(),found=null;
+      l2.forEach(function(p){if(p.id===id)found=p});
+      if(found){found.thumb=thumb;prjWrite(l2);prjRenderList();}
+    });
+  }
 }
 function prjOpenAt(i){
   var p=prjAll()[i];if(!p)return;
@@ -3505,6 +3561,95 @@ $("tmplClose").onclick=closeTemplates;
 $("tmplOverlay").addEventListener("click",function(e){if(e.target===this)closeTemplates()});
 document.addEventListener("keydown",function(e){if($("tmplOverlay").classList.contains("on")&&e.key==="Escape")closeTemplates()});
 window.openTemplates=openTemplates;window.applyTemplate=applyTemplate;window.toast=toast;
+
+/* ---------- Faza 2: 3D pogled — zbirni model (enaka logika kot STEP) + rotacija (azimut/elevacija) ---------- */
+function collectSolids(){
+  var L=n("L"),H=n("H"),D=n("D"),N=Math.max(1,Math.round(n("n"))),NP=Math.max(1,Math.round(n("np")));
+  var sw=n("sw"),stn=n("st"),gap=n("gap");
+  var tp=dim(V("topP"),[80,40]),bp=dim(V("botP"),[60,40]),pp=dim(V("postP"),[50,50]);
+  var out=[],add=function(b){out.push(b)};
+  var topH=Math.min(tp[1],H*0.2),botH=Math.min(bp[1],H*0.2);
+  add({x0:0,y0:-tp[0]/2,z0:H-topH,x1:L,y1:tp[0]/2,z1:H,label:"Top profile"});
+  add({x0:0,y0:-bp[0]/2,z0:0,x1:L,y1:bp[0]/2,z1:botH,label:"Bottom profile"});
+  var inner=H-topH-botH,pitch=inner/N,sh=Math.max(2,sw/(sw+gap)*pitch);
+  for(var i=0;i<N;i++){
+    var z0=botH+i*pitch+gap/2,z1=Math.min(H-topH,z0+sh);
+    add({x0:0,y0:-stn/2,z0:z0,x1:L,y1:stn/2,z1:z1,label:"Slat "+(i+1)});
+  }
+  for(var k=0;k<NP;k++){
+    var x=L*k/Math.max(1,NP-1);if(NP===1)x=L/2;
+    add({x0:x-pp[0]/2,y0:-pp[1]/2,z0:0,x1:x+pp[0]/2,y1:pp[1]/2,z1:H,label:"Post front "+(k+1)});
+    add({x0:x-pp[0]/2,y0:D-pp[1]/2,z0:0,x1:x+pp[0]/2,y1:D+pp[1]/2,z1:H,label:"Post back "+(k+1)});
+  }
+  var kds=getKoritaData();
+  if(kds.active&&segsParse().length<2){
+    kds.items.forEach(function(kt,ki){
+      add({x0:kt.x,y0:D,z0:H,x1:kt.x+kt.w,y1:D+kds.D,z1:H+kds.H,label:"Cvetlično korito "+(ki+1)});
+      add({x0:kt.x+kt.w/2-30,y0:D,z0:H-60,x1:kt.x+kt.w/2+30,y1:D+kds.D,z1:H,label:"Konzola "+(ki+1)});
+    });
+  }
+  return out;
+}
+function renderIso3D(az,el){
+  var a=az*Math.PI/180,e=el*Math.PI/180;
+  var sa=Math.sin(a),ca=Math.cos(a),se=Math.sin(e),ce=Math.cos(e);
+  function R(x,y,z){var x1=x*ca+z*sa,y1=y,z1=-x*sa+z*ca;return [x1,y1*ce-z1*se,y1*se+z1*ce]}
+  var sol=collectSolids(),pol=[];
+  sol.forEach(function(b){
+    var C=[[b.x0,b.y0,b.z0],[b.x1,b.y0,b.z0],[b.x1,b.y1,b.z0],[b.x0,b.y1,b.z0],[b.x0,b.y0,b.z1],[b.x1,b.y0,b.z1],[b.x1,b.y1,b.z1],[b.x0,b.y1,b.z1]];
+    var faces=[[[0,3,2,1],[242,242,242]],[[4,5,6,7],[250,250,250]],[[0,1,5,4],[218,218,218]],[[1,2,6,5],[236,236,236]],[[2,3,7,6],[228,228,228]],[[3,0,4,7],[246,246,246]]];
+    faces.forEach(function(f){
+      var pts=f[0].map(function(i){return R(C[i][0],C[i][1],C[i][2])});
+      var z=pts.reduce(function(s,p){return s+p[2]},0)/4;
+      pol.push({pts:pts,z:z,fill:f[1]});
+    });
+  });
+  pol.sort(function(x,y){return y.z-x.z});
+  var all=[];pol.forEach(function(p){p.pts.forEach(function(pt){all.push(pt)})});
+  var x0=Math.min.apply(null,all.map(function(p){return p[0]})),x1=Math.max.apply(null,all.map(function(p){return p[0]}));
+  var y0=Math.min.apply(null,all.map(function(p){return p[1]})),y1=Math.max.apply(null,all.map(function(p){return p[1]}));
+  var w=x1-x0||1,h=y1-y0||1,sc=Math.min(520/w,320/h),cx=(x0+x1)/2,cy=(y0+y1)/2;
+  var s='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400"><rect width="600" height="400" fill="#ffffff"/>';
+  pol.forEach(function(p){
+    var pts=p.pts.map(function(pt){return (300+(pt[0]-cx)*sc)+","+(200-(pt[1]-cy)*sc)}).join(" ");
+    s+='<polygon points="'+pts+'" fill="rgb('+p.fill.join(",")+')" stroke="#777" stroke-width="0.6"/>';
+  });
+  return s+'</svg>';
+}
+var ISO={az:35,el:25};
+function renderIso3DTo(az,el){
+  var svg=$("isoSvg");if(!svg)return;
+  svg.innerHTML=renderIso3D(az,el);
+  var inf=$("isoInfo");if(inf)inf.textContent="Azimut "+Math.round(az)+"° · Elevacija "+Math.round(el)+"°";
+}
+function isoOpen(){renderIso3DTo(ISO.az,ISO.el);$("isoOverlay").classList.add("on")}
+function isoClose(){$("isoOverlay").classList.remove("on")}
+$("isoBtn").onclick=isoOpen;
+$("isoClose").onclick=isoClose;
+$("isoOverlay").addEventListener("click",function(e){if(e.target===this)isoClose()});
+document.addEventListener("keydown",function(e){if($("isoOverlay").classList.contains("on")&&e.key==="Escape")isoClose()});
+[].slice.call(document.querySelectorAll("[data-iso]")).forEach(function(b){
+  b.addEventListener("click",function(){
+    var k=b.getAttribute("data-iso");
+    if(k==="front")ISO.az=0;else if(k==="rear")ISO.az=180;else if(k==="left")ISO.az=-90;
+    else if(k==="right")ISO.az=90;else if(k==="top"){ISO.az=0;ISO.el=90}else{ISO.az=35;ISO.el=25}
+    renderIso3DTo(ISO.az,ISO.el);
+  });
+});
+(function(){
+  var svg=$("isoSvg"),d={on:false};
+  if(!svg)return;
+  svg.addEventListener("pointerdown",function(e){d.on=true;d.x=e.clientX;d.y=e.clientY;svg.style.cursor="grabbing";e.preventDefault()});
+  window.addEventListener("pointermove",function(e){
+    if(!d.on)return;
+    ISO.az=(ISO.az-(e.clientX-d.x)*0.6+360)%360;
+    ISO.el=Math.max(-85,Math.min(85,ISO.el+(e.clientY-d.y)*0.4));
+    d.x=e.clientX;d.y=e.clientY;
+    renderIso3DTo(ISO.az,ISO.el);
+  });
+  window.addEventListener("pointerup",function(){if(d.on){d.on=false;svg.style.cursor="grab"}});
+})();
+window.isoOpen=isoOpen;window.renderIso3D=renderIso3D;window.collectSolids=collectSolids;
 
 /* P3: PWA — namestljiva aplikacija, deluje brez signala (service worker, stale-while-revalidate).
    Registracija samo prek https (Vercel) oz. localhost; file:// in jsdom preskočita. */
