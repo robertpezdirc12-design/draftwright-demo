@@ -55,6 +55,18 @@ function check(name, ok, info) {
   $("gen").click(); svg = document.querySelector("#prev svg");
   check("prerez bočno: SIDRNA PLOŠČA", !!svg && svg.textContent.includes("SIDRNA PLOŠČA"));
   $("mountType").value = "na ploščo"; fire($("mountType"), "change");
+  // 1g) F4: segmenti — dvonadstropni sprednji pogled s ploščo
+  $("segList").value = "1. NADSTROPJE;6200;1030\nPRITLIČJE;7800;1050"; fire($("segList"), "input");
+  $("slabT").value = "180"; fire($("slabT"), "input");
+  $("gen").click(); svg = document.querySelector("#prev svg");
+  check("segmenti: 2 nadstropji + plošča 180 + mere", !!svg && ["PO SEGMENTIH", "1. NADSTROPJE", "PRITLIČJE", "7800", "BETONSKA PLOŠČA (180 mm)"].every((k) => svg.textContent.includes(k)));
+  // 1h) F5: tloris z desnim L-povratkom
+  $("w2").value = "2100"; fire($("w2"), "input");
+  $("gen").click(); svg = document.querySelector("#prev svg");
+  check("tloris: L-povratek + fasada + kotni steber + W2", !!svg && ["L-POVRATEK", "FASADA OBJEKTA", "W2 = 2100", "KOTNI STEBER"].every((k) => svg.textContent.includes(k)));
+  $("segList").value = ""; fire($("segList"), "input");
+  $("w2").value = "0"; fire($("w2"), "input");
+  $("slabT").value = "0"; fire($("slabT"), "input");
 
   // 2) pokoncna -> referencni list
   $("sysUse").value = "pokoncna"; fire($("sysUse"), "change");
