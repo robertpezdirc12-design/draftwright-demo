@@ -289,6 +289,12 @@ body.viewmode .viewbar{display:flex}
       <button class="mi" data-call="zoomIn">Povečaj <span class="k">+</span></button>
       <button class="mi" data-call="zoomOut">Pomanjšaj <span class="k">−</span></button>
       <button class="mi" data-call="zoomFit">Prileži</button>
+      <button class="mi" data-call="panBtn">Pan (vleči)</button>
+      <button class="mi" data-call="fsBtn">Celozaslonski predogled</button>
+      <button class="mi" data-call="isoBtn">3D pogled</button>
+      <button class="mi" data-call="showExample">Prikaži primer</button>
+      <div class="sep"></div>
+      <span class="m" style="color:var(--mut);display:block;padding:4px 8px">Zoom: <span id="zoomVal">100%</span></span>
     </div>
   </div>
   <div class="menu" data-menu>
@@ -310,6 +316,10 @@ body.viewmode .viewbar{display:flex}
   <div class="menu right" data-menu>
     <button type="button">Pomoč</button>
     <div class="drop">
+      <button class="mi" data-call="openHelp">Kako začeti… <span class="k">?</span></button>
+      <button class="mi" data-call="themeBtn">Tema (svetla/temna)</button>
+      <button class="mi" data-call="langBtn">Jezik SL/EN</button>
+      <div class="sep"></div>
       <div class="label">Bližnjice</div>
       <div style="padding:6px 8px;font-size:12px;color:var(--mut);line-height:1.7">
         <div><span class="kbd">Ctrl+G</span> generiraj risbo</div>
@@ -567,16 +577,6 @@ Konstrukcija odporna na vremenske vplive.</textarea>
 <div id="globalStatus" aria-live="polite">Pripravljeno.</div>
 </aside>
 <main>
-<div class="pbar"><div class="ptitle">Predogled lista</div><div class="pctrls">
-<button class="btn" id="zoomOut" title="Pomanjšaj" aria-label="Pomanjšaj">−</button>
-<span id="zoomVal">100%</span>
-<button class="btn" id="zoomIn" title="Povečaj" aria-label="Povečaj">+</button>
-<button class="btn" id="zoomFit">Prileži</button>
-<button class="btn" id="panBtn" title="Pan (vleči pri povečavi>100 %)">🖐 Pan</button>
-<button class="btn" id="fsBtn" title="Celozaslonski predogled">⛶</button>
-<button class="btn" id="isoBtn" title="3D pogled — vrtenje">🧊 3D</button>
-<button class="btn" id="showExample">Prikaži primer</button>
-</div></div>
 <div class="sheet"><div id="prev" class="empty"><b>Pripravljen</b>Prilepite sliko (Ctrl+V, povleci datoteko ali gumb »Izberi datoteko« v plošči Slika), izmerite ali vpišite mere in pritisnite Generiraj.<br><span style="display:inline-flex;gap:8px;margin-top:12px"><button class="btn" id="emptyExample">Prikaži primer risbe</button><button class="btn" data-call="openHelp">Kako začeti?</button></span></div></div>
 </main>
 </div>
@@ -819,6 +819,17 @@ Konstrukcija odporna na vremenske vplive.</textarea>
   </div>
 </div>
 <div class="hooks" aria-hidden="true">
+  <button id="themeBtn" type="button"></button>
+  <button id="langBtn" type="button"></button>
+  <button id="helpBtn" type="button"></button>
+  <button id="zoomIn" type="button"></button>
+  <button id="zoomOut" type="button"></button>
+  <button id="zoomFit" type="button"></button>
+  <button id="panBtn" type="button"></button>
+  <button id="fsBtn" type="button"></button>
+  <button id="isoBtn" type="button"></button>
+  <button id="showExample" type="button"></button>
+
   <button id="modeGuided" type="button"></button>
   <button id="modeExpert" type="button"></button>
   <input type="checkbox" id="refMode">
