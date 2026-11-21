@@ -92,8 +92,17 @@ npm test
 ```
 index.html               preusmeritev na aplikacijo
 tehnicka-risba-pro.html  glavna aplikacija (vse v eni datoteki, vključno z izvoznim dialogom)
+manifest.webmanifest      PWA manifest (sl, standalone, ikone, teme)
+sw.js                    Service Worker — stale-while-revalidate, offline način (P3)
+icon-192.png / icon-512.png  PWA ikone (192/512, maskable)
+vendor/                  vendored knjižnice (jsPDF + svg2pdf + LiberationSans TTF) za vektorski PDF (P4) — delujejo tudi offline
 samples/                 vzorčni izvozi (SVG/PDF/DXF/STEP) in testni posnetki
-tests/                   jsdom testi (smoke + izvozni dialog)
+docs/                    dodatna dokumentacija / viri (npr. slike za zaznavanje)
+tests/                   jsdom testi (15 suite; zlati posnetki v tests/golden/)
+package.json / package-lock.json   odvisnosti in testna skripta (npm test)
+sk-module.js             razvojni modul skice (vkoplčen v glavno datoteko)
+m2-rect.png / m2-src.png  testni viri za zaznavanje/perspektivo
+.github/                 CI (GitHub Actions — smoke test)
 ```
 
 ## Zagon
