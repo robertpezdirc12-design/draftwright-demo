@@ -297,6 +297,7 @@ body.viewmode .viewbar{display:flex}
       <button class="mi" data-call="gen">Generiraj risbo <span class="k">Ctrl+G</span></button>
       <button class="mi" data-call="detect">Zaznaj lamele s slike</button>
       <button class="mi" data-call="makePlan">Pripravi montažni načrt</button>
+      <button class="mi" data-call="openHelp">Kako začeti… <span class="k">?</span></button>
       <div class="sep"></div>
       <div class="label">Prednastavitve sistema</div>
       <button class="mi" data-preset="romb">ROMB vodoravno</button>
@@ -325,6 +326,7 @@ body.viewmode .viewbar{display:flex}
   <span id="fieldCount" style="font-size:11px;color:var(--mut);margin-right:6px">4/10</span>
   <button type="button" id="themeBtn" title="Preklopi temo (svetla/temna)" style="background:transparent;border:1px solid var(--line);border-radius:6px;padding:5px 9px;color:var(--tx);cursor:pointer;font-size:13px">☀️</button>
   <button type="button" id="langBtn" title="Jezik / Language (SL/EN)" style="background:transparent;border:1px solid var(--line);border-radius:6px;padding:5px 9px;color:var(--tx);cursor:pointer;font-size:12px;font-weight:600">EN</button>
+  <button type="button" id="helpBtn" title="Pomoč — kako začeti" style="background:transparent;border:1px solid var(--line);border-radius:50%;width:28px;height:28px;color:var(--tx);cursor:pointer;font-size:14px;font-weight:700">?</button>
   <button class="primarybar" type="button" data-call="gen">Generiraj risbo</button>
 </div>
 
@@ -573,7 +575,7 @@ Konstrukcija odporna na vremenske vplive.</textarea>
 <button class="btn" id="isoBtn" title="3D pogled — vrtenje">🧊 3D</button>
 <button class="btn" id="showExample">Prikaži primer</button>
 </div></div>
-<div class="sheet"><div id="prev" class="empty"><b>Pripravljen</b>Prilepite sliko, izmerite ali vpišite mere in pritisnite Generiraj.<br><button class="btn" id="emptyExample" style="margin-top:12px">Prikaži primer risbe</button></div></div>
+<div class="sheet"><div id="prev" class="empty"><b>Pripravljen</b>Prilepite sliko (Ctrl+V, povleci datoteko ali gumb »Izberi datoteko« v plošči Slika), izmerite ali vpišite mere in pritisnite Generiraj.<br><span style="display:inline-flex;gap:8px;margin-top:12px"><button class="btn" id="emptyExample">Prikaži primer risbe</button><button class="btn" data-call="openHelp">Kako začeti?</button></span></div></div>
 </main>
 </div>
 
@@ -722,6 +724,55 @@ Konstrukcija odporna na vremenske vplive.</textarea>
     </div>
   </div>
 </div>
+<div class="exp-overlay" id="helpOverlay">
+  <div class="exp-dialog" role="dialog" aria-modal="true" aria-label="Pomoč — kako začeti">
+    <div class="exp-head">
+      <div><h1>Kako začeti?</h1><p class="exp-sub">Štirje koraki od fotografije do tehnične risbe. Kliknite gumb v koraku, da skočite na pravo mesto.</p></div>
+      <button class="exp-x" id="helpClose" type="button" aria-label="Zapri" title="Zapri (Esc)">×</button>
+    </div>
+    <div class="exp-body">
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div class="exp-sec open"><button class="exp-sec-h" type="button"><span class="exp-chev">▶</span><b>1. Vnesite sliko</b></button>
+          <div class="exp-sec-b">
+            <p class="m" style="margin:0 0 8px">Odprite <b>ploščo Slika</b> (meni Plošča → 1). Sliko vstavite na enega od načinov:</p>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button class="btn go" id="helpFile" type="button">Izberi datoteko…</button>
+              <span class="m" style="align-self:center">ali <span class="kbd">Ctrl+V</span> prilepi, ali povleci datoteko v okno</span>
+              <button class="btn" data-goto="photo" type="button">Odpri ploščo Slika</button>
+            </div>
+          </div>
+        </div>
+        <div class="exp-sec"><button class="exp-sec-h" type="button"><span class="exp-chev">▶</span><b>2. Umeritev (merilo)</b></button>
+          <div class="exp-sec-b">
+            <p class="m" style="margin:0 0 8px">Program mora vedeti, koliko mm predstavlja piksel. Kliknite <b>2 točki</b> na znani dolžini na sliki (npr. mera 1000 mm) in vnesite njeno dolžino. Pri perspektivi uporabite <b>4 točke</b> (vogali ograje).</p>
+            <button class="btn" data-goto="cal" type="button">Odpri ploščo Umeritev</button>
+          </div>
+        </div>
+        <div class="exp-sec"><button class="exp-sec-h" type="button"><span class="exp-chev">▶</span><b>3. Samodejno zaznavanje lamel</b></button>
+          <div class="exp-sec-b">
+            <p class="m" style="margin:0 0 8px">Kliknite <b>Zaznaj lamele s slike</b> — program prepozna lamele in izpolni mere (št. lamel, višino, širino, režo). Rezultat vedno preverite.</p>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button class="btn go" id="helpDetect" type="button">Zaznaj lamele</button>
+              <button class="btn" data-goto="detect" type="button">Odpri ploščo Zaznavanje</button>
+            </div>
+          </div>
+        </div>
+        <div class="exp-sec"><button class="exp-sec-h" type="button"><span class="exp-chev">▶</span><b>4. Generiraj risbo in izvozi</b></button>
+          <div class="exp-sec-b">
+            <p class="m" style="margin:0 0 8px">Pritisnite <b>Generiraj risbo</b> (<span class="kbd">Ctrl+G</span>). Za izvoz (PDF/SVG/DXF/STEP, kosovnica…) uporabite Meni → Izvozi (<span class="kbd">Ctrl+E</span>).</p>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button class="btn go" id="helpGen" type="button">Generiraj risbo</button>
+              <button class="btn" data-goto="export" type="button">Odpri ploščo Izdelava</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="exp-foot">
+      <div class="exp-note" id="helpNote"></div>
+    </div>
+  </div>
+</div>
 <div class="hooks" aria-hidden="true">
   <button id="modeGuided" type="button"></button>
   <button id="modeExpert" type="button"></button>
@@ -739,6 +790,7 @@ Konstrukcija odporna na vremenske vplive.</textarea>
   <button id="prjDialogBtn" type="button"></button>
   <button id="prjLinkBtn" type="button"></button>
   <button id="tmplDialogBtn" type="button"></button>
+  <button id="openHelp" type="button"></button>
   <button id="genQuick" type="button"></button>
   <button id="dlSvgQuick" type="button"></button>
   <button id="prtQuick" type="button"></button>
@@ -3745,6 +3797,22 @@ $("langBtn").onclick=function(){
   toast(nxt==="en"?"Interface switched to English":"Vmesnik preklopljen v slovenščino","ok");
 };
 window.applyLang=applyLang;
+
+/* ---------- Pomoč za laike: "Kako začeti" (4 interaktivni koraki) ---------- */
+function openHelp(){if($("expOverlay").classList.contains("on"))return;$("helpNote").textContent="";$("helpOverlay").classList.add("on")}
+function closeHelp(){$("helpOverlay").classList.remove("on")}
+$("helpBtn").onclick=openHelp;
+$("helpClose").onclick=closeHelp;
+$("helpOverlay").addEventListener("click",function(e){if(e.target===this)closeHelp()});
+document.addEventListener("keydown",function(e){if($("helpOverlay").classList.contains("on")&&e.key==="Escape")closeHelp()});
+$("openHelp").onclick=openHelp; /* hook: meni, empty state (data-call="openHelp") */
+$("helpFile").onclick=function(){var f=$("file");if(f)f.click()};
+$("helpDetect").onclick=function(){var d=$("detect");if(d)d.click()};
+$("helpGen").onclick=function(){var g=$("gen");if(g)g.click()};
+[].slice.call(document.querySelectorAll("#helpOverlay .exp-sec-h")).forEach(function(b){
+  b.addEventListener("click",function(){b.parentNode.classList.toggle("open")});
+});
+window.openHelp=openHelp;window.closeHelp=closeHelp;
 
 /* P3: PWA — namestljiva aplikacija, deluje brez signala (service worker, stale-while-revalidate).
    Registracija samo prek https (Vercel) oz. localhost; file:// in jsdom preskočita. */
