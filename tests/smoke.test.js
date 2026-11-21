@@ -41,6 +41,9 @@ function check(name, ok, info) {
   let svg = document.querySelector("#prev svg");
   check("generacija klasicnega lista", !!svg && svg.querySelectorAll("text").length > 10,
     svg ? svg.querySelectorAll("text").length + " besedil" : "brez SVG");
+  // 1b) regresija: naslov detajla lamele sledi dejanskemu profilu (ROMB-67 67×26 mm; prej trdo kodiran "U 80×20×2")
+  check("detajl lamele: naslov sledi profilu (ROMB-67 67×26 mm)", svg && svg.textContent.includes("DETAIL LAMELE · ROMB-67 67×26 mm"),
+    svg ? "naslov: " + ((svg.textContent.split("DETAIL LAMELE")[1] || "?").slice(0, 26)) : "brez SVG");
 
   // 2) pokoncna -> referencni list
   $("sysUse").value = "pokoncna"; fire($("sysUse"), "change");
