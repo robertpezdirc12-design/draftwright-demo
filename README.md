@@ -69,6 +69,7 @@ Risba se ob izvozu vedno znova generira iz trenutnih polj, tako da izvoz vedno o
 | Projekt | JSON (shranjevanje / odpiranje celotnega stanja) |
 
 ### 6. Delovni načini
+- **jezik UI: SL/EN** (gumb v menijski vrstici, shranjeno v brskalniku) — risba in tehnični izpisi ostanejo slovenski (Roksal dokumentacija)
 - vodeni / strokovni način, izbira vidnih sklopov in polj
 - bližnjice: **Ctrl+G** generiraj · **Ctrl+S** shrani · **Ctrl+E** možnosti izvoza · **Alt+P** izbira plošče · **Ctrl+V** prilepi sliko · **+/−** povečava
 - dostopnost: `aria-live` status, `label for=` na 77 poljih
