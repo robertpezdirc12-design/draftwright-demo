@@ -1633,8 +1633,8 @@ function generate(){
 
   /* NOTES */
   s+=panel(256,226,152,48,"TEHNIČNI PODATKI IN OPOMBE");
-  var nt=V("notes").split("\n").filter(function(x){return x.trim()});nt.push("Barva: "+V("ral"));nt.push("Masa konstrukcije: "+f(m)+" kg");
-  var yy=234;nt.slice(0,7).forEach(function(line,idx){s+=tx(259,yy,(idx+1)+". "+line,2.25);yy+=4.2});
+  var nt=V("notes").split("\n").filter(function(x){return x.trim()});nt.push("Barva: "+V("ral")+" · Masa konstrukcije: "+f(m)+" kg");
+  var yy=234;nt.slice(0,8).forEach(function(line,idx){s+=tx(259,yy,(idx+1)+". "+line,2.25);yy+=4.2});
 
   /* TITLE BLOCK — 2 vrstici (F3): PROJEKT/RISBA·REV/MERILO/FORMAT/DATUM/RISAL + OBJEKT/TIP/MATERIAL/BARVA */
   var ty=274;
