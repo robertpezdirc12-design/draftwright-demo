@@ -98,7 +98,7 @@ async function loadAndDetect(buf) {
   const Hs = results.map((r) => r.H), ns = results.map((r) => r.n), sws = results.map((r) => r.sw);
   check("različnost: H se med slikami razlikuje", new Set(Hs).size >= 2, Hs.join("/"));
   check("različnost: n se med slikami razlikuje", new Set(ns).size >= 2, ns.join("/"));
-  check("različnost: sw se med slikami razlikuje (ali ≈ nominaln ob ROMB pretvorbi)", new Set(sws).size >= 1, sws.join("/"));
+  check("različnost: sw vse pozitivne in fizično smiselne", sws.every((w) => w > 0 && w < 250), sws.join("/"));
 
   /* 2) smiselnost H in n — resnica = dejanska zasedba lamel n×(sw+gap): A=720, B=950, C=510 mm */
   const expectH = [8 * (70 + 20), 10 * (80 + 15), 6 * (60 + 25)];

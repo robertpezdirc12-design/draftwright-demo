@@ -117,6 +117,14 @@ const wallCount = () => [...$("tlorisSvg").querySelectorAll("line")].filter((l) 
   $("menuSelfTest").click();
   check("I: samoprevera 126/126", /126 kombinacij · 0 napak · 0 JS napak/.test($("globalStatus").textContent), $("globalStatus").textContent);
 
+  // J) regresija (revizija): izvoz tlorisa — mera v mm, brez ×10 napake
+  clickSvg(50, 50); clickSvg(350, 50);
+  document.dispatchEvent(new window.KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+  $("btnTlorisSvg").click();
+  const tlSvg = await blobQueue[blobQueue.length - 1].text();
+  check("J: tloris izvoz — mera 3000 mm (ne 30000)", tlSvg.includes("3000 mm") && !tlSvg.includes("30000 mm"), (tlSvg.match(/3000+ mm/) || ["?"])[0]);
+  $("tlorisClear").click();
+
   console.log(`\n  Rezultat: ${pass} OK, ${fail} FAIL${errors.length ? ", JS napake: " + errors.join(" | ") : ", brez JS napak"}`);
   process.exit(fail || errors.length ? 1 : 0);
 })().catch((e) => { console.error("TEST CRASH:", e); process.exit(1); });

@@ -67,7 +67,7 @@ function grabLastBlobText() {
   check("račun: masa ≈ 57.1 kg (" + mExpected.toFixed(1) + ")", !!mTxt && Math.abs(parseFloat(mTxt.replace(",", ".")) - mExpected) < 0.5, "dobili " + (mTxt || "?") + " kg");
   /* BOM vrstice: 4 nosilci → 7 vijaki (NP*nbolt=4*4=16), 8 sidra (2*NP=8), 2 lamele (N=12) */
   check("račun: BOM lamela 12 (vrstica 2)", new RegExp("Lamela ROMB-67[\\s\\S]{0,200}?12").test(svgTxt) || svgTxt.includes("×12"));
-  check("račun: BOM nosilci 4 + vijaki 16 + sidra 8", svgTxt.includes("· 12") && /4[\s\S]{0,60}?Steber/.test(svgTxt) === false ? true : /Pritrdilni vijak[\s\S]{0,120}?16/.test(svgTxt) && /Sidro[\s\S]{0,120}?8/.test(svgTxt), "vijaki/sidra");
+  check("račun: BOM vijaki 16 + sidra 8", /Pritrdilni vijak[\s\S]{0,120}?16/.test(svgTxt) && /Sidro[\s\S]{0,120}?8/.test(svgTxt), "vijaki/sidra");
 
   /* ============ 4. KOSOVNICA (CSV) — konsistentnost z BOM ============ */
   const blob0 = blobs.length;
@@ -80,6 +80,14 @@ function grabLastBlobText() {
   $("buildCut").click();
   const cutTxt = $("cutOut").textContent || "";
   check("rezalni načrt: 12 kos × 4200 mm + nabava", cutTxt.includes("12 kos × 4200 mm") && cutTxt.includes("nabava"), cutTxt.slice(0, 90));
+  /* 5b) regresija (revizija): naročilnik šteje DESKE (ne kosov) — per=2: 20 kos → 10 desk */
+  setF("L", "2100"); setF("n", "20");
+  $("buildCut").click();
+  const bOrder0 = blobs.length;
+  $("menuDlOrder").click();
+  const orderTxt = blobs.length > bOrder0 ? await blobs[blobs.length - 1].text() : "";
+  check("naročilnik: nabava 5800 mm × 10 desk (per=2)", orderTxt.includes("Nabava: 5800 mm × 10 kos"), (orderTxt.match(/Nabava:[^\n]*/) || ["?"])[0]);
+  setF("L", "4200"); setF("n", "12");
 
   /* ============ 6. MONTAŽNI NAČRT + PREDRAČUN + NAROČILNIK + CHECKLIST ============ */
   const makePlanBtn = $("makePlan"); // "Pripravi montažni načrt" (buildPlan)
@@ -137,11 +145,11 @@ function grabLastBlobText() {
   setF("L", "0");
   $("gen").click();
   check("robni: L=0 → opozorilo (brez risbe)", $("prev").innerHTML.includes("Manjkajoče mere") || $("checks").textContent.includes("morajo biti pozitivne"));
-  setF("L", "4200");
+  setF("L", "2000");
   $("koritoList").value = "1100;300\n1400;1900"; fire($("koritoList"), "input");
   $("gen").click();
   const warnC = $("checks").textContent || "";
-  check("robni: korita čez mejo (L=2000) → opozorilo", warnC.includes("presega dolžino ograje") || true, warnC.slice(0, 60)); // L=4200 ne presega — zato OR true
+  check("robni: korita čez mejo (L=2000) → opozorilo", warnC.includes("presega dolžino ograje"), warnC.slice(0, 60));
   $("koritoList").value = ""; fire($("koritoList"), "input");
 
   /* ============ 13. BREZ JS NAPAK ============ */

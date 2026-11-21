@@ -79,7 +79,7 @@ Risba se ob izvozu vedno znova generira iz trenutnih polj, tako da izvoz vedno o
 
 ## Samoprevera
 
-Meni **Datoteka → Samoprevera (90 kombinacij)** generira 6 profilov × 5 uporab × 3 različice mer in preveri, da nastane veljaven SVG brez JS napak.
+Meni **Datoteka → Samoprevera (126 kombinacij)** generira 6 profilov × 7 uporab × 3 različice mer in preveri, da nastane veljaven SVG brez JS napak.
 
 Za avtomatske teste je v repozitoriju še [tests/](tests/) (jsdom): `smoke.test.js` (generiranje listov, validacije, izvozi), `export-dialog.test.js` (izvozni dialog — vsi formati, napredne nastavitve in robni primeri), `roksal-p1.test.js` (dilatacije, napušč, pregrade, palete barv, podlage) in `roksal-p2.test.js` (tehnični list, povpraševanje, prodajni pogoji), `issue2-phase1.test.js` (stale-state, orientacija reza), `vision.test.js` (realno pikselno zaznavanje, @napi-rs/canvas), `issue2-phase2.test.js` (DXF sloji, STEP topologija) in `issue2-phase3.test.js`, `tloris.test.js` in `skica.test.js` (stale-state, orientacija reza, enote) in `vision.test.js` + `issue2-phase2.test.js` (realno pikselno zaznavanje, DXF sloji/kodiranje, STEP topologija). Požene jih CI ([.github/workflows/ci.yml](.github/workflows/ci.yml)):
 
@@ -99,9 +99,8 @@ icon-192.png / icon-512.png  PWA ikone (192/512, maskable)
 vendor/                  vendored knjižnice (jsPDF + svg2pdf + LiberationSans TTF) za vektorski PDF (P4) — delujejo tudi offline
 samples/                 vzorčni izvozi (SVG/PDF/DXF/STEP) in testni posnetki
 docs/                    dodatna dokumentacija / viri (npr. slike za zaznavanje)
-tests/                   jsdom testi (15 suite; zlati posnetki v tests/golden/)
+tests/                   jsdom testi (21 suite; zlati posnetki v tests/golden/)
 package.json / package-lock.json   odvisnosti in testna skripta (npm test)
-sk-module.js             razvojni modul skice (vkoplčen v glavno datoteko)
 m2-rect.png / m2-src.png  testni viri za zaznavanje/perspektivo
 .github/                 CI (GitHub Actions — smoke test)
 ```

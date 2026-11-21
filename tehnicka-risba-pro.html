@@ -1553,7 +1553,7 @@ function generateStair(){
 
   s+=vt(250,30,"REZALNI SEZNAM");
   var pc=WC[$("sysProfile")?$("sysProfile").value:"romb67"]||{n:"Lamela",len:0};
-  var cut=rh-60,per=Math.max(1,Math.floor(pc.len/Math.max(1,cut))),boards=Math.ceil(nS/per),off=pc.len-per*cut;
+  var cut=rh-60,per=Math.max(1,Math.floor(pc.len/Math.max(1,cut))),boards=Math.ceil(nS/per),off=Math.max(0,pc.len-per*cut);
   var rows=[
     ["1",pc.n+" ("+V("sysColor")+")",f(n("sw"))+"x"+f(n("st"))+"x"+f(cut),nS+" kos"],
     ["2","Nosilci "+V("postP"),V("postP"),NP+" kos"],
@@ -1596,14 +1596,14 @@ function generate(){
   (V("segList")||"").trim().split("\n").forEach(function(sgl){var sgp=sgl.split(";"),sgw=parseFloat(sgp[1]),sgh=parseFloat(sgp[2]);
     if(sgp[0]&&sgp[0].trim()&&sgw>0&&sgh>0)segs.push({n:sgp[0].trim(),w:sgw,h:sgh})});
   var fx=20,fy=99,fs=Math.min(212/L,76/H),fw=L*fs,fh=H*fs;
-  var topH=topHmm*fs,botH=botHmm*fs,inner=fh-topH-botH,pitch=inner/N,sh=(sw/(sw+gap))*pitch;
+  var topH=topHmm*fs,botH=botHmm*fs,inner=fh-topH-botH,pitch=inner/N,sh=(sw/Math.max(1,sw+gap))*pitch;
   s+=panel(12,20,235,92,"SPREDNJI POGLED"+(segs.length>=2?" PO SEGMENTIH":" · M "+E(V("scale"))));
   if(segs.length>=2){
     var slabT=Math.max(0,n("slabT")||0),limF=roksalLimit(WC[$("sysProfile").value]||WC.romb67,V("sysUse"),H),sy2=30;
     segs.slice(0,3).forEach(function(sg){
       var fs2=Math.min(190/sg.w,26/sg.h),fw2=sg.w*fs2,fh2=sg.h*fs2,fx2=26,fy2=sy2+fh2;
       var t2=Math.min(pd[1],sg.h*0.2)*fs2,b2=Math.min(pdb[1],sg.h*0.2)*fs2;
-      var Ni=Math.max(1,Math.round((sg.h-topHmm-botHmm)/(sw+gap))),p2i=(fh2-t2-b2)/Ni,sh2=(sw/(sw+gap))*p2i;
+      var Ni=Math.max(1,Math.round((sg.h-topHmm-botHmm)/(sw+gap))),p2i=(fh2-t2-b2)/Ni,sh2=(sw/Math.max(1,sw+gap))*p2i;
       var np2=Math.max(2,Math.ceil(sg.w/limF.v)+1);
       s+=tx(fx2,fy2-fh2-1.2,sg.n,2.6,"start",500);
       s+=rc(fx2,fy2-fh2,fw2,fh2)+rc(fx2,fy2-fh2,fw2,t2)+rc(fx2,fy2-b2,fw2,b2);
@@ -1694,7 +1694,7 @@ function generate(){
   /* P2 (Faza 3): merilo prereza vidno označeno — dinamično (z/brez korita) */
   s+=panel(12,172,140,50,"PREREZ A–A · M 1:"+Math.round(1/seS));
   var seX=32,seY0=211,seW=pd[0]*seS,seD=Math.max(0.8,stn*seS);
-  var seTop=topHmm*seS,seBot=botHmm*seS,seZ=seY0-H*seS,sePi=(H-topHmm-botHmm)*seS/N,seSh=(sw/(sw+gap))*sePi;
+  var seTop=topHmm*seS,seBot=botHmm*seS,seZ=seY0-H*seS,sePi=(H-topHmm-botHmm)*seS/N,seSh=(sw/Math.max(1,sw+gap))*sePi;
   var seRom=(WC[$("sysProfile").value]||WC.romb67).n.indexOf("ROMB")>=0,seTan=Math.tan(Math.PI/12);
   s+=rc(seX-seW/2,seZ,seW,H*seS,"#cfcfcf","#111"); /* steber */
   for(i=0;i<N;i++){var seYy=seY0-seBot-(i+1)*sePi+gap*seS/2+seSh/2,seX0=seX+seW/2,seH2=Math.max(0.25,seSh-2*seD*seTan);
@@ -2076,7 +2076,7 @@ function restoreProjectString(txt){
     if((d.version||0)>PROJ_VERSION)throw new Error("projekt je shranjen z novejšo različico ("+d.version+") — posodobite aplikacijo");
     /* migracija: v1 (brez plan) → v2 doda prazno traso; v2 obnovi tloris */
     if(d.version===1&&!d.data.plan)d.data.plan={walls:[],anchor:null};
-    if(d.version===2&&!d.data.sketch)d.data.sketch={elems:[],paper:"A4",orient:"pokoncno",mreza:false};
+    if((d.version||0)<=2&&!d.data.sketch)d.data.sketch={elems:[],paper:"A4",orient:"pokoncno",mreza:false};
     if(d.data.sketch){SK.elems=(d.data.sketch.elems||[]).slice();SK.paper=d.data.sketch.paper||"A4";SK.orient=d.data.sketch.orient||"pokoncno";SK.mreza=!!d.data.sketch.mreza;$("skPaper").value=SK.paper;$("skOrient").value=SK.orient;$("skGrid").checked=SK.mreza;skRender()}
     if(d.data.plan){TLR.walls=(d.data.plan.walls||[]).slice();TLR.anchor=d.data.plan.anchor||null;tlrRender()}
     d=d.data;
@@ -2089,7 +2089,7 @@ function restoreProjectString(txt){
   S.calMode=d.calMode||"linear";S.cal=d.cal||null;S.calibrated=!!d.calibrated;S.lines=d.lines||[];
   if(d.detOverride)S.detOverride=d.detOverride;
   if(d.photo){var im=new Image();im.onload=function(){S.img=im;$("img").src=im.src;$("photoBox").classList.add("on");drawOverlay()};im.src=d.photo}
-  drawOverlay();checks();generate();
+  invalidateProduction();drawOverlay();checks();generate();
   return "Projekt naložen"+(unknown?" ("+unknown+" nepoznanih polj preskočenih)":"")+".";
 }
 $("loadFile").onchange=function(e){var file=e.target.files[0];if(!file)return;var r=new FileReader();r.onload=function(){
@@ -2305,7 +2305,7 @@ function getKoritaData(){
     var line=String(kl||"").trim();
     if(!line)return;
     var kp=line.split(";");
-    var kw=parseFloat(String(kp[0]||"").trim()),kx=parseFloat(String(kp[1]||"").trim());
+    var kw=parseFloat(String(kp[0]||"").trim().replace(",",".")),kx=parseFloat(String(kp[1]||"").trim().replace(",","."));
     if(!(kw>0&&kx>=0)){out.warnings.push("Vrstica "+(li+1)+" korit je neveljavna — pričakovano »širina;odmik« (mm).");return}
     if(kx+kw>L){out.warnings.push("Korito "+f(kw)+" mm na odmiku "+f(kx)+" mm presega dolžino ograje "+f(L)+" mm — izpuščeno iz količin.");return}
     out.items.push({w:kw,x:kx});
@@ -2531,7 +2531,7 @@ function buildQuote(){
 function buildOrder(){
   if(!cutData)buildCut();
   var p=WC[$("sysProfile").value],np=postCount(),lim=roksalLimit(p,V("sysUse"),n("H"));
-  var agg={};cutData.rows.forEach(function(r){agg[r[1]]=(agg[r[1]]||0)+parseInt(r[2],10)});
+  var agg={};cutData.rows.forEach(function(r){agg[r[1]]=(agg[r[1]]||0)+1});
   var lines=["NAROČILO — WPC material ("+(V("dobavitelj")||"WoodCore")+")",
     "Naloga: "+V("drw")+" • Stranka: "+(V("stranka")||"—")+" • Objekt: "+(V("objekt")||"—"),"",
     "DESKE:",
@@ -2764,7 +2764,7 @@ $("menuDlChecklist").onclick=function(){
 function buildPlan(){
   var p=WC[$("sysProfile").value],L=n("L"),H=n("H");
   var N=cutCount(),np=postCount();
-  var use=V("sysUse"),lim=roksalLimit(p,use,H),cut=cutLen(),per=Math.max(1,Math.floor(p.len/cut)),boards=Math.ceil(N/per),off=p.len-per*cut;
+  var use=V("sysUse"),lim=roksalLimit(p,use,H),cut=cutLen(),per=Math.max(1,Math.floor(p.len/cut)),boards=Math.ceil(N/per),off=Math.max(0,p.len-per*cut);
   var handles=Math.max(1,Math.ceil(L/4000)),hlen=L/handles;
   var rows=[
     ["Lamela "+p.n,f(p.w)+"x"+f(p.t)+"x"+f(cut)+" mm",N+" kos"],
@@ -3055,7 +3055,7 @@ function exportPdf(sv,paper){
         s+='<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="#111" stroke-width="3"/>';
         for(var k6=0;k6<np6;k6++){var t6=np6>1?k6/(np6-1):0;
           s+='<rect x="'+(x1+(x2-x1)*t6-2)+'" y="'+(y1+(y2-y1)*t6-2)+'" width="4" height="4" fill="#111"/>';}
-        s+='<text x="'+((x1+x2)/2)+'" y="'+((y1+y2)/2-4)+'" font-size="9" font-family="Arial" fill="#111" text-anchor="middle">'+f(len6*TL_PX2MM)+' mm · '+np6+' nos.</text>';
+        s+='<text x="'+((x1+x2)/2)+'" y="'+((y1+y2)/2-4)+'" font-size="9" font-family="Arial" fill="#111" text-anchor="middle">'+f(len6)+' mm · '+np6+' nos.</text>';
       });
       s+='<text x="10" y="12" font-size="10" font-family="Arial" fill="#111">TLORIS OGRAJE — '+E(V("proj"))+' · '+E(V("drw"))+' · '+E(V("date"))+'</text>';
       s+='</svg>';
@@ -3154,7 +3154,7 @@ function exportPdf(sv,paper){
   $("exportDialog").onclick=openExport;
   document.addEventListener("keydown",function(e){if(EXP.open&&e.key==="Escape")closeExport()});
   document.addEventListener("keydown",function(e){
-    if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="e"){e.preventDefault();openExport()}
+    if(!/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)&&(e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="e"){e.preventDefault();openExport()}
   });
 })();
 
@@ -3215,7 +3215,7 @@ function tlrRedo(){if(!TLR.redo.length)return;TLR.undo.push(JSON.stringify({w:TL
       s+='<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="#111" stroke-width="3"/>';
       for(var k6=0;k6<np6;k6++){var t6=np6>1?k6/(np6-1):0;
         s+='<rect x="'+(x1+(x2-x1)*t6-2)+'" y="'+(y1+(y2-y1)*t6-2)+'" width="4" height="4" fill="#111"/>';}
-      s+='<text x="'+((x1+x2)/2)+'" y="'+((y1+y2)/2-4)+'" font-size="9" font-family="Arial" fill="#111" text-anchor="middle">'+f(len6*TL_PX2MM)+' mm · '+np6+' nos.</text>';
+      s+='<text x="'+((x1+x2)/2)+'" y="'+((y1+y2)/2-4)+'" font-size="9" font-family="Arial" fill="#111" text-anchor="middle">'+f(len6)+' mm · '+np6+' nos.</text>';
     });
     s+='<text x="10" y="12" font-size="10" font-family="Arial" fill="#111">TLORIS OGRAJE — '+E(V("proj"))+' · '+E(V("drw"))+' · '+E(V("date"))+'</text>';
     s+='</svg>';
@@ -3256,7 +3256,10 @@ function skRender(){
     for(var y=10;y<pg[1];y+=10)s+='<line x1="0" y1="'+y+'" x2="'+pg[0]+'" y2="'+y+'" stroke="#ececec" stroke-width="0.3"/>';
   }
   SK.elems.forEach(function(e,ei){
-    var col=e.color,w=e.width,sel=(ei===SK.selected),hl=sel?' stroke-dasharray="2 1.5"':"";
+    /* XSS zaščita: barva le dovoljeni znaki, debelina numerična + omejena */
+    var col=String(e.color||"#111").replace(/[^a-zA-Z0-9#,()\s.-]/g,"")||"#111";
+    var w=Math.max(0.5,Math.min(40,parseFloat(e.width)||2));
+    var sel=(ei===SK.selected),hl=sel?' stroke-dasharray="2 1.5"':"";
     if(e.t==="free")s+='<polyline points="'+e.pts.map(function(p){return p.x+","+p.y}).join(" ")+'" fill="none" stroke="'+col+'" stroke-width="'+w+'" stroke-linecap="round" stroke-linejoin="round"'+hl+'/>';
     else if(e.t==="line")s+='<line x1="'+e.x1+'" y1="'+e.y1+'" x2="'+e.x2+'" y2="'+e.y2+'" stroke="'+col+'" stroke-width="'+w+'"'+hl+'/>';
     else if(e.t==="rect")s+='<rect x="'+Math.min(e.x1,e.x2)+'" y="'+Math.min(e.y1,e.y2)+'" width="'+Math.abs(e.x2-e.x1)+'" height="'+Math.abs(e.y2-e.y1)+'" fill="none" stroke="'+col+'" stroke-width="'+w+'"'+hl+'/>';
@@ -3296,8 +3299,10 @@ function skRender(){
       $("skStatus").textContent="Orodje: "+SK.tool;
     });
   });
-  $("skColor").addEventListener("change",function(){SK.color=this.value});
-  $("skWidth").addEventListener("change",function(){SK.width=Number(this.value)});
+  if(!$("skColor").__skwired2){$("skColor").__skwired2=1;
+    $("skColor").addEventListener("change",function(){SK.color=this.value});
+    $("skWidth").addEventListener("change",function(){SK.width=Number(this.value)});
+  }
 }
 function skSvgPt(e){
   var svg=$("skSvg"),r=svg.getBoundingClientRect(),pg=skPage();
@@ -3362,7 +3367,7 @@ function skHit(x,y){
       return;
     }
     if(SK.tool==="premakni"){
-      console.log("DBG pdown sel="+skHit(p.x,p.y)+" tool="+SK.tool+" down="+down);SK.selected=skHit(p.x,p.y);down=true;last=p;skRender();return;
+      SK.selected=skHit(p.x,p.y);down=true;last=p;skRender();return;
     }
     down=true;anchor=p;last=p;
   });
@@ -3371,7 +3376,7 @@ function skHit(x,y){
     var p=skSvgPt(e);
     if(SK.tool==="premakni"){
       if(SK.selected>=0&&last){
-        var dx=p.x-last.x,dy=p.y-last.y,el=SK.elems[SK.selected]; console.log("DBG premakni sel="+SK.selected+" dx="+dx+" t="+el.t+" cx="+el.cx);
+        var dx=p.x-last.x,dy=p.y-last.y,el=SK.elems[SK.selected];
         if(el.t==="free")el.pts.forEach(function(p2){p2.x+=dx;p2.y+=dy});
         else{el.x1+=dx;el.y1+=dy;el.x2+=dx;el.y2+=dy;if(el.cx!=null){el.cx+=dx;el.cy+=dy}if(el.x!=null){el.x+=dx;el.y+=dy}}
         last=p;skRender();
@@ -3519,8 +3524,8 @@ function updateGlobalStatus(msgs){
 }
 document.addEventListener("keydown",function(e){
   var typing=/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName);
-  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="g"){e.preventDefault();generate()}
-  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="s"){e.preventDefault();$("save").click()}
+  if(!typing&&(e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="g"){e.preventDefault();generate()}
+  if(!typing&&(e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="s"){e.preventDefault();$("save").click()}
   if(!typing&&e.key==="+")setZoom(zoom+10);
   if(!typing&&e.key==="-")setZoom(zoom-10);
 });
