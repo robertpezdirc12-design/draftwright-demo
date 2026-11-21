@@ -1289,8 +1289,9 @@ function generate(){
   s+=balloon(46,218,4)+ln(46,215.5,qx+4,qy+2,0.18);
   s+=balloon(120,214,5)+ln(117.5,214,qx+100,qy-1,0.18);
 
-  /* SLAT DETAIL - U profile */
-  s+=panel(158,172,114,50,"DETAIL LAMELE · U 80×20×2");
+  /* SLAT DETAIL - U profile (naslov sledi dejanskemu profilu, ne trdo kodiran U 80×20×2) */
+  var profP=WC[$("sysProfile").value]||null;
+  s+=panel(158,172,114,50,"DETAIL LAMELE · "+(profP?profP.n+" "+f(sw)+"×"+f(stn)+" mm":"U "+f(sw)+"×"+f(stn)+"×2"));
   var ux=214,uy=198,uh=16,uw=14;
   s+=poly([[ux-uw,uy-uh],[ux+uw,uy-uh],[ux+uw,uy+uh],[ux-uw,uy+uh],[ux-uw,uy+uh-2.5],[ux+uw-2.5,uy+uh-2.5],[ux+uw-2.5,uy-uh+2.5],[ux-uw,uy-uh+2.5]],"#dcdcdc","#111",0.3);
   s+=center(ux-uw-4,uy,ux+uw+5,uy);s+=center(ux,uy-uh-4,ux,uy+uh+4);
@@ -3054,7 +3055,7 @@ mn.addEventListener("drop",function(e){if(e.dataTransfer.files[0])loadPhoto(e.da
 $("notes").addEventListener("input",function(){notesTouched=true});
 restoreState();restoreFieldState();
 if(!$("date").value){var td=new Date();$("date").value=("0"+td.getDate()).slice(-2)+"."+("0"+(td.getMonth()+1)).slice(-2)+"."+td.getFullYear()}
-setMode(false);applyFieldVisibility();checks();
+setMode(false);applyFieldVisibility();applySystem();checks();
 var _rm=$("refModeMenu"); if(_rm) _rm.checked=!!$("refMode").checked;
 if(typeof updateModeTicks==="function") updateModeTicks();
 })();
