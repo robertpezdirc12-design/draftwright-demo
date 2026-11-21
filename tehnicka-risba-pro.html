@@ -187,6 +187,18 @@ input.invalid,select.invalid{border-color:var(--bad)!important;box-shadow:0 0 0 
   .exp-dialog{max-height:92vh;overflow-y:auto}
   .primarybar{position:sticky;bottom:10px;z-index:50;box-shadow:0 8px 24px #000a}
 }
+/* Faza 1: tablet — ožji stranski panel med 951–1200 px (močneje kot 400 px) */
+@media(min-width:951px) and (max-width:1200px){
+  .grid{grid-template-columns:320px minmax(0,1fr)}
+  aside{padding:12px 13px 16px}
+}
+/* Faza 1: share view mode — javni pregled za stranko (samo risba + PDF) */
+body.viewmode .menubar,body.viewmode aside,body.viewmode .pbar,body.viewmode #showAside,body.viewmode .show-aside-handle{display:none!important}
+body.viewmode .grid{grid-template-columns:1fr}
+body.viewmode main{padding:14px 18px;background:var(--bg)}
+.viewbar{display:none;align-items:center;gap:10px;padding:8px 14px;background:var(--bar);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:60}
+body.viewmode .viewbar{display:flex}
+.viewbar .vb-title{font-size:13px;font-weight:600;color:var(--tx);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -310,6 +322,12 @@ input.invalid,select.invalid{border-color:var(--bad)!important;box-shadow:0 0 0 
   <span id="fieldCount" style="font-size:11px;color:var(--mut);margin-right:6px">4/10</span>
   <button type="button" id="themeBtn" title="Preklopi temo (svetla/temna)" style="background:transparent;border:1px solid var(--line);border-radius:6px;padding:5px 9px;color:var(--tx);cursor:pointer;font-size:13px">☀️</button>
   <button class="primarybar" type="button" data-call="gen">Generiraj risbo</button>
+</div>
+
+<div class="viewbar" id="viewBar">
+  <span class="vb-title" id="vbTitle">Tehnična risba PRO</span>
+  <button class="btn go" id="vbPdf" type="button">⬇ Prenesi PDF</button>
+  <button class="btn" id="vbEdit" type="button">✎ Uredi projekt</button>
 </div>
 
 <div class="grid">
@@ -653,7 +671,8 @@ Konstrukcija odporna na vremenske vplive.</textarea>
       <div class="exp-label" style="margin-top:16px">Deljenje</div>
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
         <button class="exp-go" id="prjLink" type="button" style="background:var(--line);color:var(--tx)">Kopiraj povezavo projekta</button>
-        <span class="m" style="color:var(--dim)">URL vsebuje celoten projekt (brez fotografije) — prejemnik ga odpre s klikom.</span>
+        <button class="exp-go" id="prjLinkView" type="button" style="background:var(--line);color:var(--tx)">Kopiraj povezavo za ogled (stranka)</button>
+        <span class="m" style="color:var(--dim)">Povezava za ogled odpre čist pregled (samo risba + PDF), brez urejanja.</span>
       </div>
     </div>
     <div class="exp-foot">
@@ -2724,6 +2743,7 @@ function exportPdf(sv,paper){
     if(adv("date").on){var t=new Date();b+="-"+("0"+t.getDate()).slice(-2)+"-"+("0"+(t.getMonth()+1)).slice(-2)+"-"+t.getFullYear()}
     return b;
   }
+  window.svgVariant=svgVariant; /* Faza 1: dostopno iz view mode (javni pregled) */
   function svgVariant(o){
     o=o||{};
     var sv=svgEl();if(!sv)return null;
@@ -3349,6 +3369,40 @@ function prjLinkCopy(){
   if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(url).then(done,function(){window.prompt("Povezava projekta (Ctrl+C):",url)});
   else window.prompt("Povezava projekta (Ctrl+C):",url);
 }
+/* Faza 1: share view mode — povezava za ogled (stranka): samo risba + PDF, brez urejanja */
+function prjLinkView(){
+  var b64=btoa(unescape(encodeURIComponent(prjSnapshot()))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+  var url=window.location.origin+window.location.pathname+"?view=1#p="+b64;
+  var done=function(){if($("prjNote"))$("prjNote").textContent="Povezava za ogled kopirana — prejemnik vidi samo risbo + PDF.";toast("Povezava za ogled (stranka) kopirana","ok")};
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(url).then(done,function(){window.prompt("Povezava za ogled (Ctrl+C):",url)});
+  else window.prompt("Povezava za ogled (Ctrl+C):",url);
+}
+function parseViewMode(){
+  try{
+    var params=new URLSearchParams(window.location.search);
+    if(params.get("view")!=="1")return false;
+    document.body.classList.add("viewmode");
+    var pdf=$("vbPdf"),edit=$("vbEdit"),title=$("vbTitle");
+    if(pdf)pdf.onclick=function(){
+      generate();
+      var sv=window.svgVariant({paper:V("paper"),watermark:false,meta:true});
+      if(!sv){toast("Risbe ni mogoče generirati — preverite mere","err");return}
+      exportPdf(sv,V("paper")).then(function(doc){doc.save(V("drw")+".pdf");toast("PDF shranjen","ok")})
+        .catch(function(e){toast("PDF ni uspel: "+e.message,"err")});
+    };
+    if(edit)edit.onclick=function(){
+      document.body.classList.remove("viewmode");
+      try{history.replaceState(null,"",window.location.pathname+window.location.hash)}catch(e){}
+    };
+    if(title)title.textContent=(V("proj")||"Naložen projekt")+" · "+(V("drw")||"");
+    return true;
+  }catch(e){
+    /* view mode nikoli ne sme porušiti inicializacije aplikacije */
+    try{console.error("parseViewMode:",e)}catch(e2){}
+    return false;
+  }
+}
+$("prjLinkView").onclick=prjLinkView;
 function prjRestoreFromHash(){
   var h=window.location.hash||"";
   if(h.indexOf("#p=")!==0)return false;
@@ -3370,6 +3424,8 @@ $("prjOverlay").addEventListener("click",function(e){if(e.target===this)closePrj
 document.addEventListener("keydown",function(e){if($("prjOverlay").classList.contains("on")&&e.key==="Escape")closePrj()});
 window.prjRestoreFromHash=prjRestoreFromHash;window.restoreProjectString=restoreProjectString; /* P5: testno dostopni */
 prjRestoreFromHash();
+window.prjLinkView=prjLinkView;window.parseViewMode=parseViewMode; /* Faza 1: testno dostopni */
+parseViewMode();
 
 /* ---------- Faza 0.5: toast obvestila, tema, pan/fullscreen/wheel, galerija primerov ---------- */
 function toast(msg,type){
@@ -3478,7 +3534,7 @@ $("zoomOut").onclick=function(){setZoom(zoom-10)};
 $("zoomIn").onclick=function(){setZoom(zoom+10)};
 $("zoomFit").onclick=function(){setZoom(100)};
 $("showExample").onclick=showExample;
-$("emptyExample").onclick=showExample;
+if($("emptyExample"))$("emptyExample").onclick=showExample; /* element obstaja le v praznem stanju #prev — restore/generate ga odstrani */
 $("genQuick").onclick=generate;
 $("dlSvgQuick").onclick=function(){$("dlSvg").click()};
 $("prtQuick").onclick=function(){$("prt").click()};
