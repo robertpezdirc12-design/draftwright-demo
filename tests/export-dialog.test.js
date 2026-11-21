@@ -60,12 +60,13 @@ const itemCb = (id) => document.querySelector(`#expItems [data-exp-item="${id}"]
 const advCb = (id) => document.querySelector(`#expAdv [data-exp-adv="${id}"]`);
 async function runExportAndWait() {
   downloads.length = 0; printWindows = [];
+  $("globalStatus").textContent = ""; // čisto stanje — prejšnji (končni) status ne sme ustreli
   if ($("expGo").disabled) return downloads;
   $("expGo").click();
-  // čakaj na zaključek izvozne verige po statusu (odporno na load); največ 20 s
+  // čakaj na KONČNI zaključek izvozne verige; največ 20 s
   for (let i = 0; i < 400; i++) {
     await sleep(50);
-    if (/Izvoz (končan|prekinjen)|končan z napakami|Napaka pri izvozu/.test($("globalStatus").textContent)) break;
+    if (/Izvoz (končan|prekinjen)|končan z napakami/.test($("globalStatus").textContent)) break;
   }
   await sleep(60);
   return downloads;
@@ -170,7 +171,7 @@ async function runExportAndWait() {
   // 10) PDF z blokiranim pojavnim okvirjem → risba neuspešna, priloge pa se še vedno izvozijo
   openBlocked = true;
   dl = await runExportAndWait();
-  check("PDF blokiran: prijavljena napaka", /Izvoz končan z napakami/.test($("globalStatus").textContent) && /pojavni okvir/.test($("globalStatus").textContent), $("globalStatus").textContent);
+  check("PDF blokiran: vektorski + tisk blokiran → napaka prijavljena", /Izvoz končan z napakami/.test($("globalStatus").textContent) && /vektorski PDF/.test($("globalStatus").textContent), $("globalStatus").textContent);
   check("PDF blokiran: brez prenosov risbe", dl.length === 0);
   // 10b) blokiran PDF ne smije opustiti prilog: risba + kosovnica → 1 prenos (kosovnica)
   openDlg();
@@ -179,7 +180,7 @@ async function runExportAndWait() {
   advCb("wm").checked = false; fire(advCb("wm"), "change"); // brez žiga, da status ne omenja žiga
   dl = await runExportAndWait();
   check("PDF blokiran: priloga se vseeno izvozi", dl.length === 1 && dl[0].name.includes("kosovnica"), dl.map(d => d.name).join(", "));
-  check("PDF blokiran: status z delno uspešnostjo", /1 datoteka uspešnih, neuspešnih 1/.test($("globalStatus").textContent), $("globalStatus").textContent);
+  check("PDF blokiran: priloga izvožena + status napake risbe", /Izvoz končan z napakami/.test($("globalStatus").textContent) && /uspešnih, neuspešnih 1/.test($("globalStatus").textContent), $("globalStatus").textContent);
   openBlocked = false;
   downloads.length = 0;
 
