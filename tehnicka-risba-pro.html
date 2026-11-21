@@ -278,7 +278,8 @@ body.viewmode .viewbar{display:flex}
       <button class="mi" id="menuSelfTest" data-call="selfTest">Samoprevera (126 kombinacij)</button>
     </div>
   </div>
-  <div class="menu" data-menu>
+
+  <div class="spacer"></div>  <div class="menu" data-menu>
     <button type="button">Pogled</button>
     <div class="drop">
       <div class="label">Način dela</div>
@@ -332,11 +333,7 @@ body.viewmode .viewbar{display:flex}
       <div style="padding:6px 8px;font-size:11.5px;color:var(--mut)">Vse funkcije so dostopne iz opravilne vrstice, brez izgube možnosti.</div>
     </div>
   </div>
-  <div class="spacer"></div>
   <span id="fieldCount" style="font-size:11px;color:var(--mut);margin-right:6px">4/10</span>
-  <button type="button" id="themeBtn" title="Preklopi temo (svetla/temna)" style="background:transparent;border:1px solid var(--line);border-radius:6px;padding:5px 9px;color:var(--tx);cursor:pointer;font-size:13px">☀️</button>
-  <button type="button" id="langBtn" title="Jezik / Language (SL/EN)" style="background:transparent;border:1px solid var(--line);border-radius:6px;padding:5px 9px;color:var(--tx);cursor:pointer;font-size:12px;font-weight:600">EN</button>
-  <button type="button" id="helpBtn" title="Pomoč — kako začeti" style="background:transparent;border:1px solid var(--line);border-radius:50%;width:28px;height:28px;color:var(--tx);cursor:pointer;font-size:14px;font-weight:700">?</button>
   <button class="primarybar" type="button" data-call="gen">Generiraj risbo</button>
 </div>
 
@@ -819,6 +816,17 @@ Konstrukcija odporna na vremenske vplive.</textarea>
   </div>
 </div>
 <div class="hooks" aria-hidden="true">
+  <button id="themeBtn" type="button"></button>
+  <button id="langBtn" type="button"></button>
+  <button id="helpBtn" type="button"></button>
+  <button id="zoomIn" type="button"></button>
+  <button id="zoomOut" type="button"></button>
+  <button id="zoomFit" type="button"></button>
+  <button id="panBtn" type="button"></button>
+  <button id="fsBtn" type="button"></button>
+  <button id="isoBtn" type="button"></button>
+  <button id="showExample" type="button"></button>
+
   <button id="themeBtn" type="button"></button>
   <button id="langBtn" type="button"></button>
   <button id="helpBtn" type="button"></button>
