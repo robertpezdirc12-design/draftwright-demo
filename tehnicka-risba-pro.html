@@ -326,6 +326,9 @@ input.invalid,select.invalid{border-color:var(--bad)!important;box-shadow:0 0 0 
 <div><label for="sw">Širina lamele (mm)</label><input type="number" id="sw" value="80">></div>
 <div><label for="st">Debelina lamele (mm)</label><input type="number" id="st" value="20">></div>
 <div><label for="gap">Reža (mm)</label><input type="number" id="gap" value="10">></div>
+<div><label for="w2">Povratek W2 (mm, 0 = brez)</label><input type="number" id="w2" value="0"></div>
+<div><label for="slabT">Balkonska plošča — debelina (mm, 0 = brez)</label><input type="number" id="slabT" value="0"></div>
+<div style="grid-column:1/-1"><label for="segList">Segmenti za sprednji pogled (vrstica: naziv;širina;višina)</label><textarea id="segList" rows="3" placeholder="1. NADSTROPJE;6200;1030&#10;PRITLIČJE;7800;1050" style="width:100%;font-family:inherit"></textarea></div>
 <div><label for="wall">Stena profila (mm)</label><input type="number" id="wall" value="2">></div>
 <div><label for="prof">Profil lamele</label><select id="prof">><option value="rhombus">Romb</option><option value="tube">Pravokotna cev</option><option value="solid">Polna palica</option></select></div>
 <div><label for="topP">Zgornji profil</label><input type="text" id="topP" value="80x40x3">></div>
@@ -1225,10 +1228,32 @@ function generate(){
   var topHmm=Math.min(pd[1],H*0.2),botHmm=Math.min(pdb[1],H*0.2),baseHmm=60;
   var innerHmm=Math.max(10,H-topHmm-botHmm-baseHmm);
 
-  /* FRONT */
+  /* FRONT — ena ograja ALI več segmentov (F4: vrstica = naziv;širina;višina) */
+  var segs=[];
+  (V("segList")||"").trim().split("\n").forEach(function(sgl){var sgp=sgl.split(";"),sgw=parseFloat(sgp[1]),sgh=parseFloat(sgp[2]);
+    if(sgp[0]&&sgp[0].trim()&&sgw>0&&sgh>0)segs.push({n:sgp[0].trim(),w:sgw,h:sgh})});
   var fx=20,fy=99,fs=Math.min(212/L,76/H),fw=L*fs,fh=H*fs;
-  s+=panel(12,20,235,92,"SPREDNJI POGLED · M "+E(V("scale")));
   var topH=topHmm*fs,botH=botHmm*fs,inner=fh-topH-botH,pitch=inner/N,sh=(sw/(sw+gap))*pitch;
+  s+=panel(12,20,235,92,"SPREDNJI POGLED"+(segs.length>=2?" PO SEGMENTIH":" · M "+E(V("scale"))));
+  if(segs.length>=2){
+    var slabT=Math.max(0,n("slabT")||0),limF=roksalLimit(WC[$("sysProfile").value]||WC.romb67,V("sysUse"),H),sy2=30;
+    segs.slice(0,3).forEach(function(sg){
+      var fs2=Math.min(190/sg.w,26/sg.h),fw2=sg.w*fs2,fh2=sg.h*fs2,fx2=26,fy2=sy2+fh2;
+      var t2=Math.min(pd[1],sg.h*0.2)*fs2,b2=Math.min(pdb[1],sg.h*0.2)*fs2;
+      var Ni=Math.max(1,Math.round((sg.h-topHmm-botHmm)/(sw+gap))),p2i=(fh2-t2-b2)/Ni,sh2=(sw/(sw+gap))*p2i;
+      var np2=Math.max(2,Math.ceil(sg.w/limF.v)+1);
+      s+=tx(fx2,fy2-fh2-1.2,sg.n,2.6,"start",500);
+      s+=rc(fx2,fy2-fh2,fw2,fh2)+rc(fx2,fy2-fh2,fw2,t2)+rc(fx2,fy2-b2,fw2,b2);
+      for(var i2=0;i2<Ni;i2++){var yy2b=fy2-b2-(i2+1)*p2i+gap*fs2/2;s+=rc(fx2,yy2b,fw2,Math.max(0.4,sh2),"#e6e6e6","#111");for(var k2=1;k2<np2;k2++)s+=ln(fx2+fw2*k2/np2,yy2b,fx2+fw2*k2/np2,yy2b+sh2,0.12)}
+      for(k2=0;k2<np2;k2++)s+=rc(fx2+fw2*k2/np2-0.8,fy2-fh2,1.6,t2,"#cfcfcf","#111");
+      var sl2=slabT>0?slabT*fs2:0;
+      if(sl2>0)s+=rc(fx2,fy2+1,fw2,sl2,"none","#999")+hatch(fx2,fy2+1,fw2,sl2)+tx(fx2+fw2+2,fy2+1+sl2/2+0.6,"BETONSKA PLOŠČA ("+f(slabT)+" mm)",1.9,"start");
+      s+=dh(fx2,fx2+fw2,fy2+6+sl2,f(sg.w),fy2-fh2)+dv(fy2-fh2,fy2,fx2-6,f(sg.h),fx2);
+      sy2=fy2+sl2+13;
+    });
+    if(segs.length>3)s+=tx(244,26.5,"(+ "+(segs.length-3)+" segmentov ni prikazanih)",1.9,"end");
+    s+=tx(244,24.5,"Količine v BOM: glavna ograja (L × H) · nosilci/segment ≤ "+limF.v+" mm",1.9,"end",500,"#444");
+  }else{
   s+=rc(fx,fy-fh,fw,fh)+rc(fx,fy-topH,fw,topH)+rc(fx,fy-fh,fw,botH);
   s+=rc(fx,fy-fh+botH-1.5,fw,1.5,"#ddd","#111");
   for(var i=0;i<N;i++){var yy=fy-topH-(i+1)*pitch+gap*fs/2;s+=rc(fx,yy,fw,Math.max(0.5,sh),"#e6e6e6","#111");for(var k=1;k<NP;k++)s+=ln(fx+fw*k/NP,yy,fx+fw*k/NP,yy+sh,0.15)}
@@ -1238,9 +1263,10 @@ function generate(){
   var chx=fx+fw+6;
   if(topH>3.2)s+=dv(fy-fh,fy-fh+topH,chx,f(topHmm),fx+fw);
   if(inner>3.2)s+=dv(fy-fh+topH,fy-fh+topH+inner,chx,f(innerHmm),fx+fw);
-  if(botH>3.2)s+=dv(fy-fh+topH+inner,fy-fh+topH+inner+botH,chx,f(botHmm),fx+fw);
+  if(botH>3.2)s+=dv(fy-fh+topH,fy-fh+topH+inner+botH,chx,f(botHmm),fx+fw);
   if(baseHmm*fs>3.2)s+=dv(fy-botH,fy,chx,f(baseHmm),fx+fw);
   s+=tx(fx,fy+10,N+" × "+f(sw)+"×"+f(stn)+"×2 U-profil · reža "+f(gap)+" mm",2.4,"start");
+  }
 
   /* SIDE with wall */
   var sx=270,sy=99,ss=Math.min(112/D,76/H),swd=D*ss,shd=H*ss;
@@ -1253,13 +1279,25 @@ function generate(){
   s+=dh(sx,sx+swd,sy+5,f(D),sy-shd)+dv(sy-shd,sy,sx+swd+7,f(H),sx+swd);
   s+=dh(sx,sx+swd-40*ss,sy-6,f(D-40),sy-shd);
 
-  /* TOP */
-  var ax=20,ay=160,as=Math.min(116/L,42/D),aw=L*as,ad=D*as;
-  s+=panel(12,119,140,49,"TLORIS");
+  /* TOP — tloris, po želji z desnim L-povratkom (F5): W2>0 → fasadni trak + povratek + kotni steber */
+  var ax=20,ay=160,W2=Math.max(0,n("w2")||0),tlrL=W2>0;
+  var as=Math.min(116/L,tlrL?34/(D+W2+60):42/D),aw=L*as,ad=D*as,w2px=W2*as,bandT=Math.max(1.4,60*as);
+  s+=panel(12,119,140,49,"TLORIS"+(tlrL?" — DESNI L-POVRATEK":""));
   s+=rc(ax,ay-ad,aw,ad,"none","#111");
   s+=rc(ax-7,ay-ad+2,7,ad+2,"none","#111")+hatch(ax-7,ay-ad+2,7,ad+2);
   for(k=0;k<NP;k++){var px=ax+aw*k/Math.max(1,NP-1);s+=rc(px-1.6,ay-ad-1.6,3.2,3.2,"#ddd","#111");s+=rc(px-1.6,ay-1.6,3.2,3.2,"#ddd","#111");center(px,ay-ad-3,px,ay+3)}
-  s+=dh(ax,ax+aw,ay+6,f(L),ay-ad)+dv(ay-ad,ay,ax-7,f(D),ax);
+  s+=dh(ax,ax+aw,ay+6,(tlrL?"W1 = ":"")+f(L),ay-ad)+dv(ay-ad,ay,ax-7,f(D),ax);
+  if(tlrL){
+    var fcy=ay-ad-w2px; /* spodnji rob fasadnega traku = zgornji rob povratka */
+    s+=rc(ax-7,fcy-6,aw+ad+14,6,"none","#999")+hatch(ax-7,fcy-6,aw+ad+14,6);
+    s+=tx(ax+aw+ad+7,fcy-1.4,"FASADA OBJEKTA",1.9,"end");
+    s+=rc(ax+aw,fcy,bandT,w2px,"none","#111"); /* povratek: fasada → glavna trasa */
+    var cpx=Math.max(1.8,60*as);
+    s+=rc(ax+aw,ay-ad-cpx,cpx,cpx,"#ddd","#111")+tx(ax+aw+bandT+2,ay-ad-1,"KOTNI STEBER",1.9,"start");
+    for(var kr=1;kr<Math.max(1,Math.round(w2/800));kr++)s+=rc(ax+aw+bandT/2-0.8,fcy+w2px*kr/Math.round(w2/800),1.6,1.6,"#ddd","#111");
+    s+=dv(ay-ad-w2px,ay-ad,ax+aw+bandT+6,"W2 = "+f(W2),ax+aw);
+    s+=tx(ax-5,ay-ad/2+0.8,"A",2.2,"middle",500)+tx(ax+aw+bandT/2+5.5,ay-ad/2+0.8,"A",2.2,"middle",500);
+  }
 
   /* ISOMETRIC */
   s+=panel(158,119,250,49,"IZOMETRIČNI POGLED");
@@ -1610,7 +1648,7 @@ function kosovnicaCsv(){
 }
 var PROJ_SCHEMA="draftwright-project",PROJ_VERSION=3;
 $("dlCsv").onclick=function(){saveBlob(V("drw")+"-kosovnica.csv",kosovnicaCsv(),"text/csv;charset=utf-8")};
-var fields=["L","H","D","n","sw","st","gap","wall","prof","topP","botP","np","postP","bolt","nbolt","zoneTop","zoneMid","zoneBot","zoneBase","innerD","sysUse","sysProfile","sysColor","sysSurface","matSel","rho","paper","scale","projType","rev","proj","drw","mat","tol","fin","aut","date","chk","ral","bracket","anchor","weld","notes","emb","sub","stN","stRise","stGoing","stW","stPosts","stH","stockLen","kerf","priceBoard","pricePost","priceScrew","priceWork","workHours","installTemp","slopeMM","mountType","weldedParts","installer","handoverDate","subType","strankaTip","strankaDav","strankaNaslov","strankaEmail","strankaTel","dobavaMode","dobavitelj","stranka","objekt"];
+var fields=["L","H","D","w2","slabT","segList","n","sw","st","gap","wall","prof","topP","botP","np","postP","bolt","nbolt","zoneTop","zoneMid","zoneBot","zoneBase","innerD","sysUse","sysProfile","sysColor","sysSurface","matSel","rho","paper","scale","projType","rev","proj","drw","mat","tol","fin","aut","date","chk","ral","bracket","anchor","weld","notes","emb","sub","stN","stRise","stGoing","stW","stPosts","stH","stockLen","kerf","priceBoard","pricePost","priceScrew","priceWork","workHours","installTemp","slopeMM","mountType","weldedParts","installer","handoverDate","subType","strankaTip","strankaDav","strankaNaslov","strankaEmail","strankaTel","dobavaMode","dobavitelj","stranka","objekt"];
 function projectJson(){
   var data={};fields.forEach(function(id){data[id]=V(id)});
   data.refMode=$("refMode").checked;data.photo=S.photoData;data.cal=S.cal;data.calMode=S.calMode;
