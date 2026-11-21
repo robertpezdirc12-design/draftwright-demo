@@ -759,7 +759,7 @@ function applyDetection(){
   var r0px,r1px;
   if(S.det.rectK){r0px=0;r1px=S.det.gray.h-1}
   else{r0px=lines[0].y0*sc;r1px=lines[lines.length-1].y0*sc}
-  var prof=S.det.gray?svetlostniRazponi(S.det.gray,Math.round(cx*S.det.sc),r0px,r1px):null;
+  var prof=S.det.gray?svetlostniStolpci(S.det.gray,Math.round(cx*S.det.sc),r0px,r1px,S.det.ang):null;
   if(prof){
     S.det.profN=prof.slatN;
     if(!ov.n)$("n").value=String(prof.slatN);
@@ -771,6 +771,20 @@ function applyDetection(){
       if(S.det.bbox){
         var bl=(S.det.bbox.x1-S.det.bbox.x0)*(S.det.rectK?1/S.det.rectK:mmPerPx);
         if(bl>0&&!ov.L)$("L").value=String(Math.round(bl*10)/10);
+      }
+      /* Faza 3 (F6): ROMB fazi 15° — vidni temni pas na fotografiji je širši od nominalne mere
+         (fazi so vidni pod kotom). Korak lamel (sw+gap) je kotno neodvisen, zato: sw := nominalna
+         širina iz Roksal registra, fuga := izmerjeni korak − nominalna širina. Samo kadar je
+         izračunana fuga fizično smiselna (3–60 mm); sicer ostanejo izmerjene vrednosti. */
+      if(prof.slatMed>0&&prof.gapMed>0&&!ov.sw&&!ov.gap){
+        var pitchMm=(prof.slatMed+prof.gapMed)*mmPerPx,wp=WC[$("sysProfile").value]||null;
+        if(wp&&wp.n.indexOf("ROMB")>=0){
+          var gn=Math.round((pitchMm-wp.w)*10)/10;
+          if(gn>=3&&gn<=60){
+            $("sw").value=String(wp.w);$("gap").value=String(gn);
+            S.det.nomNote="ROMB fazi 15°: vidni pas "+(Math.round(prof.slatMed*mmPerPx*10)/10)+" → nominalno "+wp.w+" mm, fuga "+gn+" mm iz koraka";
+          }
+        }
       }
     }
   }
@@ -806,6 +820,31 @@ function svetlostniRazponi(g,col,r0,r1){
   var first=slatKept[0],last=slatKept[slatKept.length-1];
   return {slatN:slatKept.length,slatMed:slatMed,gapMed:gapMed,
           firstStartPx:first.start,lastEndPx:last.start+last.len};
+}
+/* Faza 3 (F6): večstolpčno štetje — ovire (veje, grmičje) pokvarijo posamezen stolpec;
+   rezultat = mediana po 7 stolpcih (center ±10/20/30 % širine), ovirani stolpci ne zmagajo.
+   Stolpci so kotno odmaknjeni (r0/r1 += dx·tan(ang), ista konvencija kot profiles()) —
+   pri naklonu se lamelni robovi ne prečkajo. */
+function svetlostniStolpci(g,col,r0,r1,ang){
+  var t=Math.tan((ang||0)*Math.PI/180),offs=[0,-0.1,0.1,-0.2,0.2,-0.3,0.3],res=[],i;
+  for(i=0;i<offs.length;i++){
+    var c2=Math.round(col+offs[i]*g.w);
+    if(c2<1||c2>=g.w-1)continue;
+    var dr=(c2-col)*t;
+    var r=svetlostniRazponi(g,c2,r0+dr,r1+dr);
+    if(r&&r.slatN>0)res.push(r);
+  }
+  if(!res.length)return null;
+  res.sort(function(a,b){return a.slatN-b.slatN});
+  var medN=res[Math.floor(res.length/2)].slatN;
+  var grp=res.filter(function(r){return r.slatN===medN});
+  if(!grp.length)grp=[res[0]];
+  function med2(arr){var a2=arr.slice().sort(function(x,y){return x-y});return a2[Math.floor(a2.length/2)]}
+  return {slatN:medN,
+          slatMed:med2(grp.map(function(r){return r.slatMed})),
+          gapMed:med2(grp.map(function(r){return r.gapMed})),
+          firstStartPx:med2(grp.map(function(r){return r.firstStartPx})),
+          lastEndPx:med2(grp.map(function(r){return r.lastEndPx}))};
 }
 /* Faza 2.5 (Issue #2 §5): rektifikacija — pri 4-tockovni (plane) kalibraciji se slika
    preslika v frontalni pogled prek INVERZNE homografije (k px/mm), nato tece zaznava na njej.
@@ -884,6 +923,7 @@ $("detect").onclick=function(){
   var msg="Profil: ~"+(S.det.profN||"?")+" lamel (iz svetlostnega profila), naklon "+f(best.ang)+"°, konsistentnost koraka ~"+S.det.confidence+"%.";
   if(rectK>0)msg+=" Zaznava na rektificiranem pregledu (perspektiva odstranjena).";
   msg+=" Širina/reža izmerjeni iz svetlostnega profila — preverite ročno.";
+  if(S.det.nomNote)msg+=" "+S.det.nomNote+".";
   if(Math.abs(best.ang)>=4)msg+=" Izrazit naklon: pri perspektivi priporočamo ročno merjenje.";
   if(!S.calibrated)msg+=" Za milimetre umerite sliko.";
   dt(msg,S.det.confidence<45?"warn":"");
