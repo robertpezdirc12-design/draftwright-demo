@@ -199,6 +199,8 @@ input.invalid,select.invalid{border-color:var(--bad)!important;box-shadow:0 0 0 
       <div class="sep"></div>
       <button class="mi" data-call="loadBtn">Odpri projekt…</button>
       <button class="mi" data-call="save">Shrani projekt… <span class="k">Ctrl+S</span></button>
+      <button class="mi" data-call="prjDialogBtn">Shranjeni projekti… <span class="k">brskalnik</span></button>
+      <button class="mi" data-call="prjLinkBtn">Kopiraj povezavo projekta</button>
       <div class="sep"></div>
       <div class="label">Izvoz</div>
       <button class="mi" data-call="exportDialog">Izvozi… — možnosti izvoza <span class="k">Ctrl+E</span></button>
@@ -587,6 +589,31 @@ Konstrukcija odporna na vremenske vplive.</textarea>
     </div>
   </div>
 </div>
+<div class="exp-overlay" id="prjOverlay">
+  <div class="exp-dialog" role="dialog" aria-modal="true" aria-label="Shranjeni projekti">
+    <div class="exp-head">
+      <div><h1>Shranjeni projekti</h1><p class="exp-sub">Projekti v brskalniku (lokalno, brez fotografije — kvota ~5 MB; umeritev, trasa in skica ostanejo). Za polni projekt s sliko uporabite »Shrani projekt« (datoteka).</p></div>
+      <button class="exp-x" id="prjClose" type="button" aria-label="Zapri" title="Zapri (Esc)">×</button>
+    </div>
+    <div class="exp-body">
+      <div class="exp-label">Shrani trenutni projekt</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <input type="text" id="prjName" placeholder="Ime (privzeto: naziv projekta)" style="flex:1;padding:7px 9px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--tx)">
+        <button class="exp-go" id="prjSave" type="button">Shrani</button>
+      </div>
+      <div class="exp-label" style="margin-top:16px">Seznam</div>
+      <div id="prjList"></div>
+      <div class="exp-label" style="margin-top:16px">Deljenje</div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <button class="exp-go" id="prjLink" type="button" style="background:var(--line);color:var(--tx)">Kopiraj povezavo projekta</button>
+        <span class="m" style="color:var(--dim)">URL vsebuje celoten projekt (brez fotografije) — prejemnik ga odpre s klikom.</span>
+      </div>
+    </div>
+    <div class="exp-foot">
+      <div class="exp-note" id="prjNote"></div>
+    </div>
+  </div>
+</div>
 <div class="hooks" aria-hidden="true">
   <button id="modeGuided" type="button"></button>
   <button id="modeExpert" type="button"></button>
@@ -601,6 +628,8 @@ Konstrukcija odporna na vremenske vplive.</textarea>
   <input type="file" id="loadFile" accept="application/json">
   <button id="dlPlan" type="button"></button>
   <button id="exportDialog" type="button"></button>
+  <button id="prjDialogBtn" type="button"></button>
+  <button id="prjLinkBtn" type="button"></button>
   <button id="genQuick" type="button"></button>
   <button id="dlSvgQuick" type="button"></button>
   <button id="prtQuick" type="button"></button>
@@ -1708,27 +1737,31 @@ function projectJson(){
 }
 $("save").onclick=function(){saveBlob(V("drw")+"-project.json",projectJson(),"application/json")};
 $("loadBtn").onclick=function(){$("loadFile").click()};
+/* P5: enoten vir nalaganja projekta — datoteka, shranjeni projekti (brskalnik) in URL povezava */
+function restoreProjectString(txt){
+  var d=JSON.parse(txt);
+  if(d&&d.schema===PROJ_SCHEMA&&d.data){
+    if((d.version||0)>PROJ_VERSION)throw new Error("projekt je shranjen z novejšo različico ("+d.version+") — posodobite aplikacijo");
+    /* migracija: v1 (brez plan) → v2 doda prazno traso; v2 obnovi tloris */
+    if(d.version===1&&!d.data.plan)d.data.plan={walls:[],anchor:null};
+    if(d.version===2&&!d.data.sketch)d.data.sketch={elems:[],paper:"A4",orient:"pokoncno",mreza:false};
+    if(d.data.sketch){SK.elems=(d.data.sketch.elems||[]).slice();SK.paper=d.data.sketch.paper||"A4";SK.orient=d.data.sketch.orient||"pokoncno";SK.mreza=!!d.data.sketch.mreza;$("skPaper").value=SK.paper;$("skOrient").value=SK.orient;$("skGrid").checked=SK.mreza;skRender()}
+    if(d.data.plan){TLR.walls=(d.data.plan.walls||[]).slice();TLR.anchor=d.data.plan.anchor||null;tlrRender()}
+    d=d.data;
+  }
+  else if(d&&d.schema&&d.schema!==PROJ_SCHEMA)throw new Error("nepodprta shema "+d.schema+" (pričakovana "+PROJ_SCHEMA+")");
+  /* legacy (v0): ravna struktura brez ovojnice — sprejeto */
+  var unknown=0;
+  fields.forEach(function(id){if(d[id]!=null)$(id).value=d[id]});
+  $("refMode").checked=!!d.refMode;var _rm3=$("refModeMenu");if(_rm3)_rm3.checked=$("refMode").checked;
+  S.calMode=d.calMode||"linear";S.cal=d.cal||null;S.calibrated=!!d.calibrated;S.lines=d.lines||[];
+  if(d.detOverride)S.detOverride=d.detOverride;
+  if(d.photo){var im=new Image();im.onload=function(){S.img=im;$("img").src=im.src;$("photoBox").classList.add("on");drawOverlay()};im.src=d.photo}
+  drawOverlay();checks();generate();
+  return "Projekt naložen"+(unknown?" ("+unknown+" nepoznanih polj preskočenih)":"")+".";
+}
 $("loadFile").onchange=function(e){var file=e.target.files[0];if(!file)return;var r=new FileReader();r.onload=function(){
-  try{
-    var d=JSON.parse(r.result);
-    if(d&&d.schema===PROJ_SCHEMA&&d.data){
-      if((d.version||0)>PROJ_VERSION)throw new Error("projekt je shranjen z novejšo različico ("+d.version+") — posodobite aplikacijo");
-      /* migracija: v1 (brez plan) → v2 doda prazno traso; v2 obnovi tloris */
-      if(d.version===1&&!d.data.plan)d.data.plan={walls:[],anchor:null};
-      if(d.version===2&&!d.data.sketch)d.data.sketch={elems:[],paper:"A4",orient:"pokoncno",mreza:false};
-      if(d.data.sketch){SK.elems=(d.data.sketch.elems||[]).slice();SK.paper=d.data.sketch.paper||"A4";SK.orient=d.data.sketch.orient||"pokoncno";SK.mreza=!!d.data.sketch.mreza;$("skPaper").value=SK.paper;$("skOrient").value=SK.orient;$("skGrid").checked=SK.mreza;skRender()}
-      if(d.data.plan){TLR.walls=(d.data.plan.walls||[]).slice();TLR.anchor=d.data.plan.anchor||null;tlrRender()}
-      d=d.data;
-    }
-    else if(d&&d.schema&&d.schema!==PROJ_SCHEMA)throw new Error("nepodprta shema "+d.schema+" (pričakovana "+PROJ_SCHEMA+")");
-    /* legacy (v0): ravna struktura brez ovojnice — sprejeto */
-    var unknown=0;
-    fields.forEach(function(id){if(d[id]!=null)$(id).value=d[id]});
-    $("refMode").checked=!!d.refMode;var _rm3=$("refModeMenu");if(_rm3)_rm3.checked=$("refMode").checked;
-    S.calMode=d.calMode||"linear";S.cal=d.cal||null;S.calibrated=!!d.calibrated;S.lines=d.lines||[];
-    if(d.detOverride)S.detOverride=d.detOverride;
-    if(d.photo){var im=new Image();im.onload=function(){S.img=im;$("img").src=im.src;$("photoBox").classList.add("on");drawOverlay()};im.src=d.photo}
-    drawOverlay();checks();generate();dt("Projekt naložen"+(unknown?" ("+unknown+" nepoznanih polj preskočenih)":"")+".","")}catch(err){dt("Napaka pri nalaganju: "+err.message,"bad")}
+  try{dt(restoreProjectString(r.result),"")}catch(err){dt("Napaka pri nalaganju: "+err.message,"bad")}
 };r.readAsText(file)};
 
 /* ---------- Roksal WoodCore system logic — use-specific rules (v15: napušč, pregrade, palete, dilatacije) ---------- */
@@ -3065,6 +3098,71 @@ function restoreState(){
 }
 document.addEventListener("input",function(){invalidateProduction();clearTimeout(saveTimer);saveTimer=setTimeout(saveState,400)});
 document.addEventListener("change",function(){invalidateProduction();clearTimeout(saveTimer);saveTimer=setTimeout(saveState,400)});
+
+/* ---------- P5: shranjeni projekti (brskalnik) + deljenje po URL povezavi ----------
+   Projekti so lokalni (localStorage) BREZ fotografije (kvota ~5 MB; cal/trasa/skica ostanejo).
+   Povezava: projekt kodiran v #p=<base64url> — prejemnik odpre povezavo in projekt se naloži. */
+var PRJKEY="draftwright-projects";
+function prjAll(){try{return JSON.parse(localStorage.getItem(PRJKEY)||"[]")}catch(e){return[]}}
+function prjWrite(list){
+  try{localStorage.setItem(PRJKEY,JSON.stringify(list));return true}
+  catch(e){$("globalStatus").textContent="Shramba brskalnika je polna — izbrišite stare projekte.";$("globalStatus").style.color="var(--wa)";return false}
+}
+function prjSnapshot(){var d=JSON.parse(projectJson());d.photo=null;if(d.data)d.data.photo=null;return JSON.stringify(d)}
+function prjRenderList(){
+  var list=prjAll(),el=$("prjList");if(!el)return;
+  if(!list.length){el.innerHTML='<div class="m" style="color:var(--dim)">Še ni shranjenih projektov.</div>';return}
+  el.innerHTML=list.map(function(p,i){
+    return '<div style="display:flex;align-items:center;gap:8px;padding:7px 2px;border-bottom:1px solid var(--line)">'+
+      '<div style="flex:1;min-width:0"><b>'+E(p.name)+'</b> <span class="m" style="color:var(--dim)">· '+E(p.date)+' · '+Math.round(p.size/1024)+' kB</span></div>'+
+      '<button class="exp-go" data-prj-open="'+i+'" type="button">Odpri</button>'+
+      '<button class="exp-cancel" data-prj-del="'+i+'" type="button">Izbriši</button></div>';
+  }).join("");
+  [].slice.call(el.querySelectorAll("[data-prj-open]")).forEach(function(b){b.addEventListener("click",function(){prjOpenAt(Number(b.getAttribute("data-prj-open")))})});
+  [].slice.call(el.querySelectorAll("[data-prj-del]")).forEach(function(b){b.addEventListener("click",function(){var list2=prjAll();list2.splice(Number(b.getAttribute("data-prj-del")),1);prjWrite(list2);prjRenderList()})});
+}
+function prjSave(){
+  var name=($("prjName").value||"").trim()||V("proj")||"Projekt";
+  var snap=prjSnapshot(),list=prjAll();
+  var d=new Date();
+  list.unshift({id:Date.now(),name:name,date:d.toLocaleDateString("sl-SI")+" "+("0"+d.getHours()).slice(-2)+":"+("0"+d.getMinutes()).slice(-2),size:snap.length,data:snap});
+  if(prjWrite(list)){$("prjName").value="";prjRenderList();$("prjNote").textContent="Projekt »"+name+"« shranjen ("+list.length+" shranjenih).";$("globalStatus").textContent="Projekt »"+name+"« shranjen v brskalnik.";}
+}
+function prjOpenAt(i){
+  var p=prjAll()[i];if(!p)return;
+  try{$("prjNote").textContent=restoreProjectString(p.data);closePrj();$("globalStatus").textContent="Projekt »"+p.name+"« naložen iz shrambe.";}
+  catch(e){$("prjNote").textContent="Napaka: "+e.message}
+}
+function openPrj(){if($("expOverlay").classList.contains("on"))return;$("prjName").value="";prjRenderList();$("prjNote").textContent="";$("prjOverlay").classList.add("on")}
+function closePrj(){$("prjOverlay").classList.remove("on")}
+function prjLinkCopy(){
+  var b64=btoa(unescape(encodeURIComponent(prjSnapshot()))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+  var url=window.location.origin+window.location.pathname+"#p="+b64;
+  var done=function(){$("globalStatus").textContent="Povezava projekta kopirana ("+Math.round(url.length/1024)+" kB).";if($("prjNote"))$("prjNote").textContent="Povezava kopirana v odložišče.";};
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(url).then(done,function(){window.prompt("Povezava projekta (Ctrl+C):",url)});
+  else window.prompt("Povezava projekta (Ctrl+C):",url);
+}
+function prjRestoreFromHash(){
+  var h=window.location.hash||"";
+  if(h.indexOf("#p=")!==0)return false;
+  try{
+    var b64=h.slice(3).replace(/-/g,"+").replace(/_/g,"/");
+    while(b64.length%4)b64+="=";
+    var msg=restoreProjectString(decodeURIComponent(escape(atob(b64))));
+    try{history.replaceState(null,"",window.location.pathname+window.location.search)}catch(e2){}
+    $("globalStatus").textContent="Projekt naložen iz povezave — "+msg;
+    return true;
+  }catch(e){$("globalStatus").textContent="Povezava z projektom ni veljavna ("+e.message+").";return false}
+}
+$("prjSave").onclick=prjSave;
+$("prjClose").onclick=closePrj;
+$("prjLink").onclick=prjLinkCopy;
+$("prjDialogBtn").onclick=openPrj;
+$("prjLinkBtn").onclick=prjLinkCopy;
+$("prjOverlay").addEventListener("click",function(e){if(e.target===this)closePrj()});
+document.addEventListener("keydown",function(e){if($("prjOverlay").classList.contains("on")&&e.key==="Escape")closePrj()});
+window.prjRestoreFromHash=prjRestoreFromHash;window.restoreProjectString=restoreProjectString; /* P5: testno dostopni */
+prjRestoreFromHash();
 
 /* ---------- UI/UX: stepper, zoom, quick actions, drop target ---------- */
 var zoom=100;
