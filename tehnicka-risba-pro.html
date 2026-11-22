@@ -79,7 +79,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--ac)}textarea{min-heig
 .photo{position:relative;width:100%;display:none;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#000}
 .photo.on{display:block}.photo img{display:block;width:100%;height:auto}#ov{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair}
 .sheet{background:#fff;display:inline-block;min-width:100%;box-shadow:0 12px 40px #0009}#prev{width:100%;height:auto;display:block}
-.empty{padding:36px 20px;text-align:center;color:var(--mut);border:1px dashed var(--line);border-radius:8px}.empty b{display:block;color:var(--tx);font-weight:500;margin-bottom:8px}
+.empty{padding:36px 20px;text-align:center;color:var(--mut);border:1px dashed var(--line);border-radius:8px;cursor:pointer}.empty b{display:block;color:var(--tx);font-weight:500;margin-bottom:8px}
 .warnbox{margin-top:8px;padding:8px;border:1px solid #7a5a22;background:#2a2113;border-radius:6px;font-size:11px;color:var(--wa);display:none}
 .warnbox.on{display:block}
 .range{width:100%;accent-color:var(--ac)}
@@ -1009,6 +1009,12 @@ function loadPhoto(file){
   r.readAsDataURL(file);
 }
 $("file").onchange=function(e){if(e.target.files[0])loadPhoto(e.target.files[0])};
+/* Miška: klik na prazno območje predogleda odpre izbirnik slike (razen na gumbih) */
+$("prev").addEventListener("click",function(e){
+  if(!$("prev").classList.contains("empty"))return;
+  if(e.target.closest("button"))return;
+  var f=$("file");if(f)f.click();
+});
 document.addEventListener("paste",function(e){var it=(e.clipboardData||{}).items||[];for(var i=0;i<it.length;i++)if(it[i].type.indexOf("image/")===0){loadPhoto(it[i].getAsFile());e.preventDefault();return}});
 $("photoBox").addEventListener("dragover",function(e){e.preventDefault()});
 $("photoBox").addEventListener("drop",function(e){e.preventDefault();if(e.dataTransfer.files[0])loadPhoto(e.dataTransfer.files[0])});
@@ -4779,7 +4785,7 @@ $("prtQuick").onclick=function(){$("prt").click()};
 var mn=document.querySelector("main");
 ["dragenter","dragover"].forEach(function(t){mn.addEventListener(t,function(e){e.preventDefault();mn.classList.add("drop")})});
 ["dragleave","drop"].forEach(function(t){mn.addEventListener(t,function(e){e.preventDefault();mn.classList.remove("drop")})});
-mn.addEventListener("drop",function(e){if(e.dataTransfer.files[0])loadPhoto(e.dataTransfer.files[0])});
+mn.addEventListener("drop",function(e){e.preventDefault();if(e.dataTransfer.files[0])loadPhoto(e.dataTransfer.files[0])});
 
 /* ---------- toolbar menus ---------- */
 (function(){

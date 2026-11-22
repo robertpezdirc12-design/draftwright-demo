@@ -46,6 +46,11 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 (async () => {
   check("photo: privzeto skrit predal", document.body.classList.contains("aside-hidden"));
 
+  /* Miška: klik na prazno območje predogleda ne sme povzročiti napak (odpre izbirnik) */
+  document.querySelector("#prev").dispatchEvent(new window.MouseEvent("click", { bubbles: true }));
+  await sleep(50);
+  check("photo: klik na empty ne povzroči napake", errors.length === 0);
+
   const png = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 0]);
   const file = new window.File([png], "f.png", { type: "image/png" });
   const evt = new window.Event("drop", { bubbles: true });
