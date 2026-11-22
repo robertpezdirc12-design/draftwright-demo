@@ -226,6 +226,8 @@ body.viewmode .viewbar{display:flex}
 .pp-v{font-weight:600}
 .pp-edit{display:flex;flex-direction:column;gap:6px;border-top:1px solid var(--line);padding-top:8px}
 .pp-edit label{font-size:11px;color:var(--mut)}
+/* P3.3: oznaka zastarelih proizvodnih rezultatov (»rebuild«) */
+.stale{outline:2px dashed var(--wa);outline-offset:2px}
 </style>
 </head>
 <body>
@@ -1541,6 +1543,18 @@ function mass(){
   cutItems().forEach(function(it){if(String(it.name).indexOf("Lamela")===0)tot+=area*it.len*it.qty});
   return tot*rho/1e9;
 }
+/* P3.1: masne lastnosti — skupna masa lamel, kg/m², kg/m */
+function massStats(){
+  var kg=mass();
+  var Lm=Math.max(1,n("L")/1000);
+  var areaM2=Math.max(1,(n("L")*n("D")/1e6));
+  return {kg:kg,perM2:kg/areaM2,perM:kg/Lm};
+}
+window.massStats=massStats;
+/* P3.3: oznake zastarelih proizvodnih rezultatov */
+var PROD_OUTS=["cutOut","planOut","quoteOut","checklistOut"];
+function markStale(){PROD_OUTS.forEach(function(id){var el=$(id);if(el&&el.innerHTML)el.classList.add("stale")})}
+function clearStale(){PROD_OUTS.forEach(function(id){var el=$(id);if(el)el.classList.remove("stale")})}
 /* ---------- reference-matching sheet ---------- */
 function generateReference(){
   var L=Math.max(1,n("L")),H=Math.max(1,n("H")),D=Math.max(1,n("D")),N=Math.max(1,Math.round(n("n")));
@@ -2794,6 +2808,7 @@ function buildCut(){
     (rows.length?'<table style="width:100%;font-size:11px;border-collapse:collapse;margin-top:5px"><tr><th>Vir</th><th>Deska</th><th>Količina</th><th>Vsebina</th><th>Ostanek</th></tr>'+rows.map(function(x){return '<tr><td>'+E(x[0])+'</td><td>'+E(x[1])+'</td><td>'+E(x[2])+'</td><td>'+E(x[3])+'</td><td>'+E(x[4])+'</td></tr>'}).join('')+'</table>':'');
   buildQuote();
   buildOrder();
+  clearStale();
   return cutData;
 }
 function buildQuote(){
@@ -2810,7 +2825,9 @@ function buildQuote(){
              ["Montaža",wh+" ur",wh*pw]];
   var total=items.reduce(function(a,x){return a+x[2]},0);
   quoteData={items:items,total:total};
-  $("quoteOut").innerHTML='<b style="color:var(--tx)">Orientacijski predračun (brez DDV):</b> <b style="color:var(--ac)">'+total.toFixed(2)+' EUR</b> · <span style="color:var(--mut)">cene so nastavljive zgoraj; sidra, alu cevi in dostava niso vključeni; predračun ni ponudba.</span>';
+  clearStale();
+  var ms3=massStats();
+  $("quoteOut").innerHTML='<b style="color:var(--tx)">Orientacijski predračun (brez DDV):</b> <b style="color:var(--ac)">'+total.toFixed(2)+' EUR</b> · <span style="color:var(--mut)">cene so nastavljive zgoraj; sidra, alu cevi in dostava niso vključeni; predračun ni ponudba. Skupna masa lamel (ocena): '+f(ms3.kg)+' kg · '+f(ms3.perM2)+' kg/m².</span>';
   return quoteData;
 }
 function buildOrder(){
@@ -3015,6 +3032,7 @@ function buildChecklist(){
   L.push("Prevzel/a: _____________________   Datum: ______________   Podpis: ______________________");
   checklistText=L.join("\n");
   $("checklistOut").textContent=checklistText;
+  clearStale();
   $("globalStatus").textContent="Montažni checklist pripravljen — "+L.length+" vrstic.";
   return checklistText;
 }
@@ -3090,8 +3108,12 @@ function buildPlan(){
     rows.splice(4,0,["Vodoravne cevi","razmak ≤ "+rail+" mm — dolžina "+f(L)+" mm",rowsN+" kos"]);
   }
   if(p.n.indexOf("KUBO")>=0)rows.splice(4,0,["Alu cev 20×60×2","obvezna — razpon ≤ 2600 mm (na prostem eloksirana)",use==="fasada"?(Math.ceil(H/1000)+1)+" kos":2+" kos"]);
+  /* P3.1: povzetek masnih lastnosti */
+  var msP=massStats();
+  rows.push(["Masa lamel (ocena)",f(msP.kg)+" kg · "+f(msP.perM2)+" kg/m² · "+f(msP.perM)+" kg/m","—"]);
   planData=rows;
   $("planOut").innerHTML='<table style="width:100%;font-size:11px;border-collapse:collapse">'+rows.map(function(r){return '<tr><td style="padding:2px 4px;border-bottom:1px solid var(--line)">'+E(r[0])+'</td><td style="padding:2px 4px;border-bottom:1px solid var(--line)">'+E(r[1])+'</td><td style="padding:2px 4px;border-bottom:1px solid var(--line);text-align:right;color:var(--tx)">'+E(r[2])+'</td></tr>'}).join('')+'</table><p style="margin-top:6px">Barva: '+E(V("sysColor"))+' · površina: '+E(V("sysSurface"))+' · montaža nad +5 °C. Količine so orientacijske — preverite jih pri naročilu. Orodje: baterijski vrtalnik (ročni izvijač ni primeren), Widia/HM rezila, brusni papir granulacija 40, grezilo; aksesoarji po profilu — distančniki + začetni distančnik in zaključna letev 45×55 (terasa), čepi levi/desni (romb), fasadni klipi (romb fasada), WEPOS WPC impregnacija (pohištvo).</p>';
+  clearStale();
 }
 $("makePlan").onclick=function(){buildPlan();showResult("planOut","Montažni načrt")};
 function planCsv(){
@@ -3926,8 +3948,8 @@ document.addEventListener("keydown",function(e){
   if(k==="z"){e.preventDefault();histUndo()}
   else if(k==="y"){e.preventDefault();histRedo()}
 });
-document.addEventListener("input",function(){histPush();invalidateProduction();clearTimeout(saveTimer);saveTimer=setTimeout(saveState,400)});
-document.addEventListener("change",function(){histPush();invalidateProduction();clearTimeout(saveTimer);saveTimer=setTimeout(saveState,400)});
+document.addEventListener("input",function(){histPush();invalidateProduction();markStale();clearTimeout(saveTimer);saveTimer=setTimeout(saveState,400)});
+document.addEventListener("change",function(){histPush();invalidateProduction();markStale();clearTimeout(saveTimer);saveTimer=setTimeout(saveState,400)});
 
 /* P2.1: konfiguracije + dizajn tabela (CSV) */
 var CFGKEY="draftwright-konfiguracije";
