@@ -202,6 +202,30 @@ body.viewmode main{padding:14px 18px;background:var(--bg)}
 .viewbar{display:none;align-items:center;gap:10px;padding:8px 14px;background:var(--bar);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:60}
 body.viewmode .viewbar{display:flex}
 .viewbar .vb-title{font-size:13px;font-weight:600;color:var(--tx);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* P1.3: trak napak — ob dnu delovnega prostora, klik-za-popravek */
+.err-tray{position:sticky;bottom:0;width:100%;max-width:1100px;margin:10px auto 0;background:var(--bar);border:1px solid var(--wa);border-radius:8px;color:var(--tx);display:none;z-index:40}
+.err-tray.on{display:block}
+.err-tray .et-head{display:flex;align-items:center;justify-content:space-between;padding:6px 10px;cursor:pointer;user-select:none}
+.err-tray .et-count{color:var(--wa);font-size:12px;font-weight:600}
+.err-tray .et-toggle{background:transparent;border:none;color:var(--mut);cursor:pointer;font-size:12px;padding:2px 6px}
+.err-tray .et-body{display:none;padding:0 8px 8px;flex-direction:column;gap:4px;max-height:40vh;overflow:auto}
+.err-tray.open .et-body{display:flex}
+.err-tray .et-item{text-align:left;background:var(--p2);border:1px solid var(--line);border-radius:6px;padding:6px 8px;font:inherit;font-size:11.5px;color:var(--tx);cursor:pointer}
+.err-tray .et-item:hover{border-color:var(--ac)}
+.err-tray .et-item[data-field=""]{cursor:default}
+/* P1.2: kontekstualni panel (lastnosti dimenzije) */
+.prop-panel{position:fixed;top:52px;right:12px;width:280px;background:var(--panel);border:1px solid var(--line);border-radius:10px;box-shadow:0 16px 40px #000a;z-index:76;display:none}
+.prop-panel.on{display:block}
+.pp-head{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--line)}
+.pp-title{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:var(--ac)}
+.pp-x{background:transparent;border:none;color:var(--mut);font-size:16px;cursor:pointer;width:26px;height:26px;border-radius:6px}
+.pp-x:hover{background:var(--p2);color:var(--tx)}
+.pp-body{padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.pp-row{display:flex;justify-content:space-between;gap:10px;font-size:12.5px}
+.pp-k{color:var(--mut)}
+.pp-v{font-weight:600}
+.pp-edit{display:flex;flex-direction:column;gap:6px;border-top:1px solid var(--line);padding-top:8px}
+.pp-edit label{font-size:11px;color:var(--mut)}
 </style>
 </head>
 <body>
@@ -305,6 +329,10 @@ body.viewmode .viewbar{display:flex}
       <button class="mi" data-call="detect">Zaznaj lamele s slike</button>
       <button class="mi" data-call="makePlan">Pripravi montažni načrt</button>
       <button class="mi" data-call="openHelp">Kako začeti… <span class="k">?</span></button>
+      <div class="sep"></div>
+      <div class="label">Zgodovina (P1.1)</div>
+      <button class="mi" data-call="histUndoBtn">Undo parametrov <span class="k">Ctrl+Z</span></button>
+      <button class="mi" data-call="histRedoBtn">Redo parametrov <span class="k">Ctrl+Y</span></button>
       <div class="sep"></div>
       <div class="label">Prednastavitve sistema</div>
       <button class="mi" data-preset="romb">ROMB vodoravno</button>
@@ -575,6 +603,8 @@ Konstrukcija odporna na vremenske vplive.</textarea>
 </aside>
 <main>
 <div class="sheet"><div id="prev" class="empty"><b>Pripravljen</b>Prilepite sliko (Ctrl+V, povleci datoteko ali gumb »Izberi datoteko« v plošči Slika), izmerite ali vpišite mere in pritisnite Generiraj.<br><span style="display:inline-flex;gap:8px;margin-top:12px"><button class="btn" id="emptyExample">Prikaži primer risbe</button><button class="btn" data-call="openHelp">Kako začeti?</button></span></div></div>
+<div id="errTray" aria-live="polite"></div>
+<div id="propPanel" class="prop-panel" role="dialog" aria-label="Lastnosti dimenzije"></div>
 </main>
 </div>
 
@@ -826,6 +856,8 @@ Konstrukcija odporna na vremenske vplive.</textarea>
   <button id="fsBtn" type="button"></button>
   <button id="isoBtn" type="button"></button>
   <button id="showExample" type="button"></button>
+  <button id="histUndoBtn" type="button"></button>
+  <button id="histRedoBtn" type="button"></button>
 
   <button id="themeBtn" type="button"></button>
   <button id="langBtn" type="button"></button>
@@ -1058,7 +1090,22 @@ function applyDetection(){
       if(prof.gapMed>0&&!ov.gap)$("gap").value=String(Math.round(prof.gapMed*mmPerPx*10)/10);
       if(S.det.bbox){
         var bl=(S.det.bbox.x1-S.det.bbox.x0)*(S.det.rectK?1/S.det.rectK:mmPerPx);
-        if(bl>0&&!ov.L)$("L").value=String(Math.round(bl*10)/10);
+        /* M2 (Issue #2): avto-L iz bbox je ZANESILNO le, kadar je detekcija koraka
+           konsistentna (prag 45 % — isti prag, ki že sproži opozorilo v dt()). Pri nizki
+           zanesljivosti (nagnat pogled, perspektiva, šibek kontrast) se L NE izpolnjuje
+           samodejno (stop-rule: ostane ročno), da ne bi privaril napačne dolžine. Oba
+           uvida označimo z S.det.autoL / autoLNote in ju izpišemo v status. */
+        if(bl>0&&!ov.L){
+          if(S.det.confidence>=45){
+            var lv=Math.round(bl*10)/10;
+            $("L").value=String(lv);
+            S.det.autoL=true;S.det.autoLVal=lv;
+            S.det.autoLNote="L="+lv+" mm avtomatsko iz detekcije (konsistentnost koraka "+S.det.confidence+" %) — preverite ročno";
+          }else{
+            S.det.autoL=false;S.det.autoLVal=null;
+            S.det.autoLNote="L ostane ročno: zanesljivost detekcije "+S.det.confidence+" % (pod pragom 45 %), zato avto-L zavrnjen — vpisite L ročno";
+          }
+        }
       }
       /* Faza 3 (F6): ROMB fazi 15° — vidni temni pas na fotografiji je širši od nominalne mere
          (fazi so vidni pod kotom). Korak lamel (sw+gap) je kotno neodvisen, zato: sw := nominalna
@@ -1242,7 +1289,9 @@ $("detect").onclick=function(){
     msg+=" — kliknite gumb v plošči Slika.";
   }
   if(Math.abs(best.ang)>=4)msg+=" Izrazit naklon: pri perspektivi priporočamo ročno merjenje.";
+  if(S.det.autoLNote)msg+=" "+S.det.autoLNote+".";
   if(!S.calibrated)msg+=" Za milimetre umerite sliko.";
+  /* M2: opozorilo ob nizki zanesljivosti — tam se avto-L tudi zavrne (ista meja 45 %) */
   dt(msg,S.det.confidence<45?"warn":"");
 };
 $("sens").oninput=function(){if(S.det)$("detect").click()};
@@ -1317,8 +1366,83 @@ function checks(){
   var box=$("checks");box.className="warnbox"+(msgs.length?" on":"");box.innerHTML=msgs.map(function(m){return"• "+E(m)}).join("<br>");
   var zoneBad=msgs.some(function(m){return m.indexOf("srednje polje")>=0});
   $("n").classList.toggle("invalid",zoneBad);$("gap").classList.toggle("invalid",zoneBad);
-  updateGlobalStatus(msgs);syncSteps()
+  renderErrTray(msgs);updateGlobalStatus(msgs);syncSteps()
 }
+/* P1.3: trak napak — klik-za-popravek (fokus polja) */
+function fieldForMsg(m){
+  if(/srednje polje/.test(m))return "zoneMid";
+  if(/globino D|globina D/.test(m))return "D";
+  if(/višino H|višina H/.test(m))return "H";
+  if(/Mere L, H in D/.test(m))return "L";
+  if(/Stena profila/.test(m))return "wall";
+  if(/Dilatacija/.test(m))return "gap";
+  if(/Padec podlage/.test(m))return "slopeMM";
+  if(/Montaža pod \+5/.test(m))return "installTemp";
+  if(/Varjeni deli/.test(m))return "weldedParts";
+  if(/ni predviden/.test(m))return "sysProfile";
+  if(/presega Roksal omejitev/.test(m))return "np";
+  if(/KUBO pregrada/.test(m))return "H";
+  if(/korito|korita/i.test(m))return "koritoList";
+  if(/pesek|tlakovci|ploščice|hidroizolacija|prane plošče|kovinska konstrukcija/.test(m))return "subType";
+  return null;
+}
+function renderErrTray(msgs){
+  var tray=$("errTray");if(!tray)return;
+  if(!msgs.length){tray.className="err-tray";tray.innerHTML="";return}
+  var list=msgs.map(function(m){
+    var fid=fieldForMsg(m);
+    return '<button type="button" class="et-item" data-field="'+(fid||"")+'" title="'+(fid?"Klikni za skok na polje":"")+'">'+E(m)+'</button>';
+  }).join("");
+  tray.className="err-tray on";
+  tray.innerHTML='<div class="et-head"><span class="et-count">'+msgs.length+' '+(msgs.length===1?"opozorilo":"opozorili")+'</span><button type="button" class="et-toggle" aria-label="Razširi">▾</button></div><div class="et-body">'+list+'</div>';
+  var tgl=tray.querySelector(".et-toggle");
+  if(tgl)tgl.onclick=function(){tray.classList.toggle("open")};
+}
+document.addEventListener("click",function(e){
+  var b=e.target.closest("#errTray [data-field]");
+  if(!b)return;
+  var fid=b.getAttribute("data-field");if(!fid)return;
+  var f=$(fid);
+  if(f){f.focus();try{f.scrollIntoView({block:"center",behavior:"smooth"})}catch(err){}}
+});
+/* P1.2: kontekstualni panel — klik na dimenzijo v risbi odpre lastnosti */
+var PROP_FIELDS=["L","H","D","n","sw","gap","st","wall","w2","zoneTop","zoneMid","zoneBot","zoneBase","innerD"];
+function fieldForNumeric(val){
+  for(var pi=0;pi<PROP_FIELDS.length;pi++){
+    var pid=PROP_FIELDS[pi];
+    if(Math.abs(n(pid)-val)<0.05)return pid;
+  }
+  return null;
+}
+function closePropPanel(){var p=$("propPanel");if(p)p.classList.remove("on")}
+function openPropPanel(label,val){
+  var p=$("propPanel");if(!p)return;
+  var fid=fieldForNumeric(val);
+  var html='<div class="pp-head"><span class="pp-title">Dimenzija</span><button type="button" class="pp-x" aria-label="Zapri" title="Zapri (Esc)">×</button></div>'+
+    '<div class="pp-body"><div class="pp-row"><span class="pp-k">Naziv</span><span class="pp-v">'+E(label)+'</span></div>'+
+    '<div class="pp-row"><span class="pp-k">Vrednost</span><span class="pp-v">'+f(val)+' mm</span></div>'+
+    (fid?'<div class="pp-row"><span class="pp-k">Polje</span><span class="pp-v">#'+fid+'</span></div>'+
+     '<div class="pp-edit"><label>Nova vrednost (mm)</label><input type="number" id="ppInput" value="'+f(val)+'">'+
+     '<button type="button" class="btn go" id="ppApply">Uporabi</button></div>':'')+
+    '</div>';
+  p.innerHTML=html;p.classList.add("on");
+  var x=p.querySelector(".pp-x");if(x)x.onclick=closePropPanel;
+  var apply=p.querySelector("#ppApply");
+  if(apply&&fid){
+    apply.onclick=function(){
+      var inp=p.querySelector("#ppInput");
+      if(inp&&$(fid)){$(fid).value=inp.value;$(fid).dispatchEvent(new Event("input",{bubbles:true}));generate();}
+      closePropPanel();
+    };
+  }
+}
+document.addEventListener("click",function(e){
+  var d=e.target.closest("#prev [data-dim]");
+  if(d){var dv2=parseFloat(String(d.textContent).replace(",","."));if(isFinite(dv2))openPropPanel(d.textContent,dv2);}
+});
+document.addEventListener("keydown",function(e){
+  if(e.key==="Escape"){var p=$("propPanel");if(p&&p.classList.contains("on"))closePropPanel();}
+});
 ["L","H","D","n","sw","gap","st","wall"].forEach(function(id){$(id).addEventListener("input",checks)});
 ["zoneTop","zoneMid","zoneBot","zoneBase"].forEach(function(id){$(id).addEventListener("input",checks)});
 ["installTemp","slopeMM"].forEach(function(id){$(id).addEventListener("input",checks)});
@@ -1328,19 +1452,19 @@ $("refMode").addEventListener("change",function(){var m=$("refModeMenu");if(m)m.
 /* ---------- SVG sheet ---------- */
 function ln(x1,y1,x2,y2,w,extra){return '<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="#111" stroke-width="'+(w||0.25)+'" '+(extra||"")+'/>'}
 function rc(x,y,w,h,fill,stroke){return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" fill="'+(fill||"none")+'" stroke="'+(stroke||"#111")+'" stroke-width="0.3"/>'}
-function tx(x,y,s,z,a,w,c,rot){var tr=rot?' transform="rotate('+rot+' '+x+' '+y+')"':'';return '<text x="'+x+'" y="'+y+'" font-family="Arial,Helvetica,sans-serif" font-size="'+(z||2.6)+'" text-anchor="'+(a||"start")+'" font-weight="'+(w||400)+'" fill="'+(c||"#111")+'"'+tr+'>'+E(s)+'</text>'}
+function tx(x,y,s,z,a,w,c,rot,extra){var tr=rot?' transform="rotate('+rot+' '+x+' '+y+')"':'';return '<text x="'+x+'" y="'+y+'" font-family="Arial,Helvetica,sans-serif" font-size="'+(z||2.6)+'" text-anchor="'+(a||"start")+'" font-weight="'+(w||400)+'" fill="'+(c||"#111")+'"'+tr+(extra?" "+extra:"")+'>'+E(s)+'</text>'}
 function dh(x1,x2,y,label,ey){var a=Math.min(x1,x2),b=Math.max(x1,x2),t=(a+b)/2,s="";
   s+=ln(a,ey,a,y+2,0.18)+ln(b,ey,b,y+2,0.18)+ln(a,y,b,y,0.25);
   s+='<path d="M'+a+' '+y+' L'+(a+2)+' '+(y-0.8)+' L'+(a+2)+' '+(y+0.8)+' Z" fill="#111"/>';
   s+='<path d="M'+b+' '+y+' L'+(b-2)+' '+(y-0.8)+' L'+(b-2)+' '+(y+0.8)+' Z" fill="#111"/>';
   s+='<rect x="'+(t-label.length*0.8)+'" y="'+(y-3.5)+'" width="'+(label.length*1.6)+'" height="2.9" fill="#fff"/>';
-  return s+tx(t,y-1.4,label,2.5,"middle")}
+  return s+tx(t,y-1.4,label,2.5,"middle",400,"#111","",'data-dim="'+E(label)+'"')}
 function dv(y1,y2,x,label,ex){var a=Math.min(y1,y2),b=Math.max(y1,y2),t=(a+b)/2,s="",ar=Math.min(0.8,Math.abs(b-a)*0.2),aw=ar*0.35;
   s+=ln(ex,a,x+2,a,0.18)+ln(ex,b,x+2,b,0.18)+ln(x,a,x,b,0.25);
   s+='<path d="M'+x+' '+a+' L'+(x-aw)+' '+(a+ar)+' L'+(x+aw)+' '+(a+ar)+' Z" fill="#111"/>';
   s+='<path d="M'+x+' '+b+' L'+(x-aw)+' '+(b-ar)+' L'+(x+aw)+' '+(b-ar)+' Z" fill="#111"/>';
   s+='<rect x="'+(x-aw)+'" y="'+(t-Math.max(2,label.length*0.5))+'" width="'+(aw*2)+'" height="'+Math.max(4,label.length)+'" fill="#fff"/>';
-  return s+tx(x,t+0.9,label,2.5,"middle",400,"#111",-90)}
+  return s+tx(x,t+0.9,label,2.5,"middle",400,"#111",-90,'data-dim="'+E(label)+'"')}
 function panel(x,y,w,h,title){return rc(x,y,w,h,"none","#777")+tx(x+2,y+4.5,title,2.8,"start",500)}
 function hatch(x,y,w,h){var s="";for(var i=0;i<w+h;i+=4){var x1=x+Math.max(0,i-h),y1=y+Math.min(i,h),x2=x+Math.min(i,w),y2=y+Math.max(0,i-w);if(x1<=x+w&&y2<=y+h)s+=ln(x1,y1,x2,y2,0.12,'stroke="#999"')}return s}
 function poly(pts,fill,stroke,w){return '<polygon points="'+pts.map(function(p){return p[0]+","+p[1]}).join(" ")+'" fill="'+(fill||"none")+'" stroke="'+(stroke||"#111")+'" stroke-width="'+(w||0.25)+'"/>'}
@@ -2253,6 +2377,84 @@ $("sysSurface").addEventListener("change",function(){
   for(var i=0;i<pal.length;i++){var r=pal[i].indexOf("Rustic")===0;if(r===want){c=pal[i];break}}
   if(c){$("sysColor").value=c;applySystem()}
 });
+
+/* ---------- M5: več-znamkovski registar (registrska abstrakcija, P4-a) ----------
+   Namen: WoodCore/Roksal postane *en registar* med drugimi (AZEK, Trex, Fiberon, RENOLIT …)
+   brez ponovne vgradnje logike ob menjavi znamke. Enotna shema (profil / dilatacijska tabela /
+   pravila podlage / barvna paleta / uporabe / kontaktni obrazec) + validacija.
+   Stop-rule M5: BREZ pogodbenih podatkov znamk → registriran ostane samo WoodCore; druga znamka
+   se vgradi šele, ko so njeni podatki na voljo. Ta blok je ZADOBELEN: shema + validator +
+   prvi registar (WoodCore, ki referencira obstoječe vire WC/DIL/USE_NAMES/PAL_*),
+   ne pa izmišljenih podatkov drugih znamk. */
+var REGISTRY_SCHEMA={
+  required:["id","naziv","material","profiles","dilatacijska","pravaPodlage","palete","uporabe","kontaktni"],
+  profileRequired:["n","w","t","len","max","fix","allowed","drill","palette"]
+};
+function validateRegistry(entry){
+  var probs=[],i;
+  if(!entry||typeof entry!=="object"){return ["registar ni objekt"]}
+  for(i=0;i<REGISTRY_SCHEMA.required.length;i++){
+    if(entry[REGISTRY_SCHEMA.required[i]]===undefined)probs.push("manjka polje: "+REGISTRY_SCHEMA.required[i]);
+  }
+  if(entry.profiles&&typeof entry.profiles==="object"){
+    var keys=Object.keys(entry.profiles);
+    if(!keys.length)probs.push("profiles: prazna mapa");
+    keys.forEach(function(k){
+      var p=entry.profiles[k];if(!p||typeof p!=="object")return probs.push("profil "+k+": ni objekt");
+      for(var j=0;j<REGISTRY_SCHEMA.profileRequired.length;j++){
+        if(p[REGISTRY_SCHEMA.profileRequired[j]]===undefined)probs.push("profil "+k+": manjka "+REGISTRY_SCHEMA.profileRequired[j]);
+      }
+      if(typeof p.w!=="number"||p.w<=0)probs.push("profil "+k+": w mora biti >0");
+      if(!Array.isArray(p.allowed)||!p.allowed.length)probs.push("profil "+k+": allowed mora biti neprazen seznam");
+    });
+  }
+  if(entry.dilatacijska&&entry.dilatacijska.temps&&entry.dilatacijska.vals){
+    var tt=entry.dilatacijska.temps,vm=entry.dilatacijska.vals;
+    if(!Array.isArray(tt)||!tt.length)probs.push("dilatacijska: temps prazno");
+    for(i=1;i<tt.length;i++)if(tt[i]<=tt[i-1])probs.push("dilatacijska: temps ni strogo naraščujoča");
+    if(!Array.isArray(vm)||!vm.length)probs.push("dilatacijska: vals prazno");
+    else for(i=0;i<vm.length;i++)if(!Array.isArray(vm[i])||vm[i].length<5)probs.push("dilatacijska: vrstica "+i+" mora imeti 5 vrednosti (1–5 m)");
+  }
+  if(entry.kontaktni&&typeof entry.kontaktni==="object"){
+    if(!entry.kontaktni.dopisatelj)probs.push("kontaktni: manjka dopisatelj");
+    if(!Array.isArray(entry.kontaktni.opozorila))probs.push("kontaktni: opozorila mora biti seznam");
+  }
+  return probs;
+}
+function woodcoreRegistry(){
+  return {
+    id:"woodcore",
+    naziv:"WoodCore / Roksal",
+    material:"WoodCore WPC (bambus / HDPE)",
+    profiles:WC,
+    dilatacijska:{temps:DIL.temps,vals:DIL.vals},
+    pravaPodlage:roksalLimit,
+    palete:{klasik:PAL_KLASIK,rustik:PAL_RUSTIK},
+    uporabe:USE_NAMES,
+    kontaktni:{
+      dopisatelj:"Roksal d.o.o.",
+      pogoji:"splošni pogoji v5.0",
+      garancija:"15 let na material, 2 leti na dela izvedena s strani Roksal/a",
+      eula:"predračun je orientacijski, ni ponudba; za zavezujočo ponudbo in DDV glej pogodbeni obrazec",
+      opozorila:["Vse mere so v milimetrih (mm); pred izdelavo preveriti na objektu.",
+        "Izračuni so orientacijske narave in niso pogodbena dokumenta — pred naročilom potrditi pri Roksalu.",
+        "Dilatacijske reže po uradni temperaturni tabeli; vogal 1 mm."]
+    }
+  };
+}
+var REGISTRY={woodcore:woodcoreRegistry()};
+var REGISTRY_ACTIVE="woodcore";
+function registryBrands(){return Object.keys(REGISTRY)}
+function activeRegistry(){return REGISTRY[REGISTRY_ACTIVE]||REGISTRY.woodcore}
+function setRegistryBrand(id){if(REGISTRY[id]){REGISTRY_ACTIVE=id;return true}return false}
+
+/* Testno dostopno (monolit): IIFE-razlogi za tests/auto-l.test.js, registry.test.js in
+   vision-deep.test.js — enaka konvencija kot window.exportPdf / window.prjRestoreFromHash. */
+window.WC=WC;window.DIL=DIL;window.USE_NAMES=USE_NAMES;window.PAL_KLASIK=PAL_KLASIK;window.PAL_RUSTIK=PAL_RUSTIK;
+window.roksalLimit=roksalLimit;window.REGISTRY_SCHEMA=REGISTRY_SCHEMA;window.validateRegistry=validateRegistry;
+window.woodcoreRegistry=woodcoreRegistry;window.REGISTRY=REGISTRY;window.registryBrands=registryBrands;
+window.activeRegistry=activeRegistry;window.setRegistryBrand=setRegistryBrand;
+window.S=S;window.applyDetection=applyDetection;window.svetlostniStolpci=svetlostniStolpci;
 
 /* ---------- cut list / installation plan ---------- */
 var planData=null;
@@ -3559,8 +3761,47 @@ function restoreState(){
     if(d.sketch){SK.elems=(d.sketch.elems||[]).slice();SK.paper=d.sketch.paper||"A4";SK.orient=d.sketch.orient||"pokoncno";SK.mreza=!!d.sketch.mreza;skRender()}
   }catch(e){try{localStorage.removeItem(LSKEY)}catch(e2){}}
 }
-document.addEventListener("input",function(){invalidateProduction();clearTimeout(saveTimer);saveTimer=setTimeout(saveState,400)});
-document.addEventListener("change",function(){invalidateProduction();clearTimeout(saveTimer);saveTimer=setTimeout(saveState,400)});
+/* P1.1: zgodovina operacij — undo/redo polj (recept) */
+var HIST_FIELDS=["L","H","D","w2","segList","koritoList","n","sw","st","gap","wall","np","zoneTop","zoneMid","zoneBot","zoneBase","innerD","paper","scale","sysProfile","sysUse","sysColor","sysSurface","subType","mountType","installTemp","slopeMM","kerf","stockLen"];
+var HIST={stack:[],idx:-1,max:40};
+function histSnapshot(){
+  var d={};HIST_FIELDS.forEach(function(id){d[id]=V(id)});
+  d.refMode=!!$("refMode")&&$("refMode").checked;
+  return JSON.stringify(d);
+}
+function histPush(){
+  var s=histSnapshot();
+  if(s===HIST.stack[HIST.idx])return;
+  HIST.stack=HIST.stack.slice(0,HIST.idx+1);
+  HIST.stack.push(s);if(HIST.stack.length>HIST.max)HIST.stack.shift();
+  HIST.idx=HIST.stack.length-1;
+}
+function histRestore(s){
+  var d=JSON.parse(s);
+  HIST_FIELDS.forEach(function(id){if(d[id]!=null&&$(id))$(id).value=d[id]});
+  if($("refMode"))$("refMode").checked=!!d.refMode;
+  var _rmh=$("refModeMenu");if(_rmh)_rmh.checked=!!d.refMode;
+  invalidateProduction();checks();saveState();
+}
+function histUndo(){
+  if(HIST.idx>0){HIST.idx--;histRestore(HIST.stack[HIST.idx]);syncSteps();$("globalStatus").textContent="Undo: obnovljeno prejšnje stanje parametrov.";}
+}
+function histRedo(){
+  if(HIST.idx<HIST.stack.length-1){HIST.idx++;histRestore(HIST.stack[HIST.idx]);syncSteps();$("globalStatus").textContent="Redo: ponovno uporabljeno stanje parametrov.";}
+}
+window.histUndo=histUndo;window.histRedo=histRedo;
+document.addEventListener("keydown",function(e){
+  if(!(e.ctrlKey||e.metaKey))return;
+  var k=(e.key||"").toLowerCase();
+  var tg=e.target&&e.target.tagName?e.target.tagName:"";
+  if(/INPUT|TEXTAREA|SELECT/.test(tg))return;
+  var inCanvas=!!(e.target&&e.target.closest&&e.target.closest("#skSvg,#tlorisSvg"));
+  if(inCanvas)return;
+  if(k==="z"){e.preventDefault();histUndo()}
+  else if(k==="y"){e.preventDefault();histRedo()}
+});
+document.addEventListener("input",function(){histPush();invalidateProduction();clearTimeout(saveTimer);saveTimer=setTimeout(saveState,400)});
+document.addEventListener("change",function(){histPush();invalidateProduction();clearTimeout(saveTimer);saveTimer=setTimeout(saveState,400)});
 
 /* ---------- P5: shranjeni projekti (brskalnik) + deljenje po URL povezavi ----------
    Projekti so lokalni (localStorage) BREZ fotografije (kvota ~5 MB; cal/trasa/skica ostanejo).
