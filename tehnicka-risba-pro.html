@@ -970,7 +970,7 @@ Konstrukcija odporna na vremenske vplive.</textarea>
   <button id="prt" type="button"></button>
   <button id="save" type="button"></button>
   <button id="loadBtn" type="button"></button>
-  <input type="file" id="loadFile" accept="application/json">
+  <input type="file" id="loadFile" accept=".json,application/json,image/png,image/jpeg,image/webp,image/gif">
   <button id="dlPlan" type="button"></button>
   <button id="exportDialog" type="button"></button>
   <button id="prjDialogBtn" type="button"></button>
@@ -2375,9 +2375,27 @@ function restoreProjectString(txt){
   invalidateProduction();drawOverlay();checks();generate();
   return "Projekt naložen"+(unknown?" ("+unknown+" nepoznanih polj preskočenih)":"")+".";
 }
-$("loadFile").onchange=function(e){var file=e.target.files[0];if(!file)return;var r=new FileReader();r.onload=function(){
-  try{dt(restoreProjectString(r.result),"")}catch(err){dt("Napaka pri nalaganju: "+err.message,"bad")}
-};r.readAsText(file)};
+$("loadFile").onchange=function(e){
+  var file=e.target.files[0];if(!file)return;
+  var name=(file.name||"").toLowerCase();
+  /* #: če uporabnik izbere sliko (namesto JSON projekta), jo naložimo kot fotografijo */
+  if(/\.(png|jpe?g|webp|gif|bmp)$/.test(name)||/^image\//.test(file.type||"")){
+    loadPhoto(file);
+    toast("Izbrana datoteka je slika — naložena kot fotografija (projekt naj bo .json).","err");
+    return;
+  }
+  var r=new FileReader();
+  r.onload=function(){
+    try{
+      dt(restoreProjectString(r.result),"");
+      toast("Projekt naložen","ok");
+    }catch(err){
+      dt("Napaka pri nalaganju projekta: "+err.message,"bad");
+      toast("Napaka pri nalaganju projekta: "+err.message,"err");
+    }
+  };
+  r.readAsText(file);
+};
 
 /* ---------- Roksal WoodCore system logic — use-specific rules (v15: napušč, pregrade, palete, dilatacije) ---------- */
 /* Barvne palete po profilu (lestvice roksal.com/woodcore-wpc-deske/barvni-odtenki):
