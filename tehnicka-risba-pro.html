@@ -342,6 +342,14 @@ body.viewmode .viewbar{display:flex}
       <label class="checkrow"><input type="checkbox" id="refModeMenu"> <span>Referenčni način lista</span></label>
     </div>
   </div>
+  <div class="menu" data-menu>
+    <button type="button">Konfiguracije</button>
+    <div class="drop">
+      <button class="mi" data-call="cfgSaveBtn">Shrani trenutno…</button>
+      <button class="mi" data-call="cfgOpen">Upravljaj / uporabi…</button>
+      <button class="mi" data-call="cfgCsvBtn">Izvozi dizajn tabelo (CSV)</button>
+    </div>
+  </div>
   <div class="menu right" data-menu>
     <button type="button">Pomoč</button>
     <div class="drop">
@@ -845,6 +853,21 @@ Konstrukcija odporna na vremenske vplive.</textarea>
     </div>
   </div>
 </div>
+<div class="exp-overlay" id="cfgOverlay">
+  <div class="exp-dialog" role="dialog" aria-modal="true" aria-label="Konfiguracije">
+    <div class="exp-head">
+      <div><h1>Konfiguracije</h1><p class="exp-sub">Shranjene različice parametrov — uporabi, izbriši ali izvozi kot dizajn tabelo (CSV).</p></div>
+      <button class="exp-x" id="cfgClose" type="button" aria-label="Zapri" title="Zapri (Esc)">×</button>
+    </div>
+    <div class="exp-body">
+      <div class="btns" style="margin-bottom:10px">
+        <button class="btn go" id="cfgSaveTop" type="button">Shrani trenutno stanje</button>
+        <button class="btn" id="cfgCsvTop" type="button">Izvozi dizajn tabelo (CSV)</button>
+      </div>
+      <div id="cfgList"></div>
+    </div>
+  </div>
+</div>
 <div class="hooks" aria-hidden="true">
   <button id="themeBtn" type="button"></button>
   <button id="langBtn" type="button"></button>
@@ -858,6 +881,9 @@ Konstrukcija odporna na vremenske vplive.</textarea>
   <button id="showExample" type="button"></button>
   <button id="histUndoBtn" type="button"></button>
   <button id="histRedoBtn" type="button"></button>
+  <button id="cfgSaveBtn" type="button"></button>
+  <button id="cfgOpen" type="button"></button>
+  <button id="cfgCsvBtn" type="button"></button>
 
   <button id="themeBtn" type="button"></button>
   <button id="langBtn" type="button"></button>
@@ -3802,6 +3828,83 @@ document.addEventListener("keydown",function(e){
 });
 document.addEventListener("input",function(){histPush();invalidateProduction();clearTimeout(saveTimer);saveTimer=setTimeout(saveState,400)});
 document.addEventListener("change",function(){histPush();invalidateProduction();clearTimeout(saveTimer);saveTimer=setTimeout(saveState,400)});
+
+/* P2.1: konfiguracije + dizajn tabela (CSV) */
+var CFGKEY="draftwright-konfiguracije";
+function cfgAll(){try{return JSON.parse(localStorage.getItem(CFGKEY)||"[]")}catch(e){return[]}}
+function cfgWrite(list){try{localStorage.setItem(CFGKEY,JSON.stringify(list))}catch(e){}}
+function cfgSnapshotData(){var d={};fields.forEach(function(id){d[id]=V(id)});d.refMode=$("refMode").checked;return d}
+function cfgSave(name){
+  if(!name)return null;
+  var list=cfgAll();var idx=-1;
+  list.forEach(function(c,i){if(c.name===name)idx=i});
+  var cfg={name:name,savedAt:new Date().toISOString(),data:cfgSnapshotData()};
+  if(idx>=0)list[idx]=cfg;else list.push(cfg);
+  cfgWrite(list);return cfg;
+}
+function cfgApply(name){
+  var list=cfgAll();var cfg=null;
+  list.forEach(function(c){if(c.name===name)cfg=c});
+  if(!cfg)return false;
+  fields.forEach(function(id){if(cfg.data[id]!=null&&$(id))$(id).value=cfg.data[id]});
+  if($("refMode"))$("refMode").checked=!!cfg.data.refMode;
+  var _rmc=$("refModeMenu");if(_rmc)_rmc.checked=!!cfg.data.refMode;
+  invalidateProduction();checks();saveState();return true;
+}
+function cfgDelete(name){cfgWrite(cfgAll().filter(function(c){return c.name!==name}))}
+function cfgCsv(){
+  var keys=["name","savedAt"].concat(fields);
+  var rows=[keys];
+  cfgAll().forEach(function(c){
+    rows.push(keys.map(function(k){
+      if(k==="name")return c.name;
+      if(k==="savedAt")return c.savedAt;
+      return c.data[k]!=null?c.data[k]:"";
+    }));
+  });
+  return "\ufeff"+rows.map(function(r){return r.map(function(v){return '"'+String(v).replace(/"/g,'""')+'"'}).join(";")}).join("\n");
+}
+function cfgRenderList(){
+  var box=$("cfgList");if(!box)return;
+  var list=cfgAll();
+  if(!list.length){box.innerHTML='<div class="empty"><b>Ni shranjenih konfiguracij</b>Shranite trenutno stanje parametrov za hitro ponovno uporabo.</div>';return}
+  box.innerHTML='<table style="width:100%;font-size:12px;border-collapse:collapse">'+
+    '<tr style="text-align:left"><th style="padding:4px 6px">Ime</th><th style="padding:4px 6px">Shranjeno</th><th></th></tr>'+
+    list.map(function(c,i){
+      return '<tr data-cfg="'+i+'"><td style="padding:4px 6px">'+E(c.name)+'</td>'+
+        '<td style="padding:4px 6px;color:var(--mut);font-size:11px">'+(c.savedAt||"").slice(0,16).replace("T"," ")+'</td>'+
+        '<td style="padding:4px 6px;text-align:right"><button class="btn" data-act="apply" type="button">Uporabi</button> '+
+        '<button class="btn" data-act="del" type="button">Briši</button></td></tr>';
+    }).join("")+'</table>';
+}
+function openCfgs(){cfgRenderList();$("cfgOverlay").classList.add("on")}
+function closeCfgs(){$("cfgOverlay").classList.remove("on")}
+window.cfgSave=cfgSave;window.cfgApply=cfgApply;window.cfgDelete=cfgDelete;window.cfgCsv=cfgCsv;window.cfgAll=cfgAll;
+$("cfgOpen").onclick=openCfgs;
+$("cfgClose").onclick=closeCfgs;
+$("cfgSaveTop").onclick=function(){
+  var n=window.prompt("Ime konfiguracije:","Konfiguracija "+(cfgAll().length+1));
+  if(n){cfgSave(n);cfgRenderList();toast("Konfiguracija »"+n+"« shranjena","ok")}
+};
+$("cfgCsvTop").onclick=function(){saveBlob("draftwright-konfiguracije.csv",cfgCsv(),"text/csv;charset=utf-8")};
+$("cfgSaveBtn").onclick=function(){
+  var n=window.prompt("Ime konfiguracije:","Konfiguracija "+(cfgAll().length+1));
+  if(n)cfgSave(n);
+};
+$("cfgCsvBtn").onclick=function(){saveBlob("draftwright-konfiguracije.csv",cfgCsv(),"text/csv;charset=utf-8")};
+$("cfgList").addEventListener("click",function(e){
+  var b=e.target.closest("[data-act]");if(!b)return;
+  var tr=b.closest("[data-cfg]");if(!tr)return;
+  var c=cfgAll()[Number(tr.getAttribute("data-cfg"))];if(!c)return;
+  if(b.getAttribute("data-act")==="apply"){
+    if(cfgApply(c.name)){toast("Konfiguracija »"+c.name+"« uporabljena","ok");closeCfgs()}
+  }else if(b.getAttribute("data-act")==="del"){
+    cfgDelete(c.name);cfgRenderList();
+  }
+});
+document.addEventListener("keydown",function(e){
+  if(e.key==="Escape"&&$("cfgOverlay")&&$("cfgOverlay").classList.contains("on"))closeCfgs();
+});
 
 /* ---------- P5: shranjeni projekti (brskalnik) + deljenje po URL povezavi ----------
    Projekti so lokalni (localStorage) BREZ fotografije (kvota ~5 MB; cal/trasa/skica ostanejo).
