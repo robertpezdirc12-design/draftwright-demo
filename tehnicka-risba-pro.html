@@ -1467,6 +1467,16 @@ document.addEventListener("click",function(e){
   var d=e.target.closest("#prev [data-dim]");
   if(d){var dv2=parseFloat(String(d.textContent).replace(",","."));if(isFinite(dv2))openPropPanel(d.textContent,dv2);}
 });
+/* P2.3: interaktivni baloni — klik prikaže podatke o BOM postavki */
+document.addEventListener("click",function(e){
+  var b=e.target.closest("#prev [data-bom]");
+  if(!b)return;
+  var n=Number(b.getAttribute("data-bom"));
+  if(window.BOM_ROWS&&window.BOM_ROWS[n-1]){
+    var r=window.BOM_ROWS[n-1];
+    toast("BOM vrstica "+n+": "+r[1]+" ("+r[3]+") — količina "+r[4],"ok");
+  }
+});
 document.addEventListener("keydown",function(e){
   if(e.key==="Escape"){var p=$("propPanel");if(p&&p.classList.contains("on"))closePropPanel();}
 });
@@ -1495,7 +1505,7 @@ function dv(y1,y2,x,label,ex){var a=Math.min(y1,y2),b=Math.max(y1,y2),t=(a+b)/2,
 function panel(x,y,w,h,title){return rc(x,y,w,h,"none","#777")+tx(x+2,y+4.5,title,2.8,"start",500)}
 function hatch(x,y,w,h){var s="";for(var i=0;i<w+h;i+=4){var x1=x+Math.max(0,i-h),y1=y+Math.min(i,h),x2=x+Math.min(i,w),y2=y+Math.max(0,i-w);if(x1<=x+w&&y2<=y+h)s+=ln(x1,y1,x2,y2,0.12,'stroke="#999"')}return s}
 function poly(pts,fill,stroke,w){return '<polygon points="'+pts.map(function(p){return p[0]+","+p[1]}).join(" ")+'" fill="'+(fill||"none")+'" stroke="'+(stroke||"#111")+'" stroke-width="'+(w||0.25)+'"/>'}
-function balloon(x,y,num){return '<circle cx="'+x+'" cy="'+y+'" r="2.7" fill="#fff" stroke="#111" stroke-width="0.3"/>'+tx(x,y+0.9,String(num),2.3,"middle",500)}
+function balloon(x,y,num){return '<circle cx="'+x+'" cy="'+y+'" r="2.7" fill="#fff" stroke="#111" stroke-width="0.3"/>'+tx(x,y+0.9,String(num),2.3,"middle",500,"#111","",'data-bom="'+num+'"')}
 function center(x1,y1,x2,y2){return ln(x1,y1,x2,y2,0.15,'stroke="#777" stroke-dasharray="4 1 2 1"')}
 function tbl(x,y,cols,rows,head,rh){rh=rh||4.9;var s="",tot=cols.reduce(function(a,b){return a+b},0),i,j,cx,cy=y;
   s+=rc(x,y,tot,rows.length*rh+(head?rh:0),"none","#111");
@@ -1927,6 +1937,7 @@ function generate(){
     rows.push(["9","Cvetlično korito","WPC/alu (ocena — potrditi pri Roksalu)","globina "+f(kdB.D)+" × višina "+f(kdB.H)+" — širine: "+seKb.map(function(kt){return f(kt.w)}).join(", "),String(seKb.length)]);
     rows.push(["10","Konzolni nosilec korita","Jeklo","max(2, ceil(širina/600)+1) na korito — ocena",String(seKb.reduce(function(a,kt){return a+koritoNosilci(kt.w)},0))]);
   }
+  window.BOM_ROWS=rows; /* P2.3: register za interaktivne balone */
   s+=panel(12,226,238,48,"SEZNAM SESTAVNIH DELOV");
   s+=tbl(14,230,[8,50,28,120,28],rows,["Št.","Naziv dela","Material","Dimenzije (mm)","Količ."],rows.length>8?Math.max(3.2,44/(rows.length+1)):undefined);
 
