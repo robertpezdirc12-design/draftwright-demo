@@ -107,3 +107,11 @@
 - Po vsaki nalogi: `npm test` (vsi obstoječi + novi testi zeleni), zlati posnetki nespremenjeni.
 - Ročno v brskalniku (lokalni strežnik): prehod skozi glavni tok (slika → risba → izvoz) + novi scenariji.
 - Za P2/P3: dodatno ročno preverjanje izvozov (DXF/STEP/PDF) z neodvisnimi orodji (ezdxf/steputils), kjer je primerno.
+
+---
+
+## Status izvedbe (2026-11-22)
+
+- **Faza P1 — vse dokončano**: P1.1 zgodovina (undo/redo + recept), P1.2 kontekstualni panel, P1.3 trak napak.
+- **Faza P2 — vse dokončano**: P2.1 konfiguracije + dizajn tabela, P2.2 break view (prelom dolgih ograj) + oznake prerezov, P2.3 BOM z interaktivnimi baloni, P2.4 predloge listov (ISO/ANSI), P2.5 PDM-lite (posnetki).
+- Testna veriga ob zaključku: 30 surov / zelenih (0 FAIL).
