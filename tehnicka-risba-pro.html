@@ -2016,7 +2016,7 @@ var DW_COMPONENTS={
   botProfile:{naziv:"Spodnji profil",material:"Alu/jeklo",dim:function(){return V("botP")},qty:function(){return 1},izracun:"1 na odsek"},
   aluCev:{naziv:"Alu cev 20×60×2 (obvezna)",material:function(){return "Aluminij (na prostem eloksirana)"},dim:function(){return "20×60×2 × "+f((V("sysUse")==="fasada")?n("H"):cutLen())+" mm"},qty:function(){return (V("sysUse")==="fasada")?Math.ceil(n("H")/1000)+1:2},izracun:function(){return (V("sysUse")==="fasada")?"letve ≤ 1000 mm: ceil(H/1000)+1":"zgoraj + spodaj (pregrada)"}},
   nosilec:{naziv:"Nosilec",material:"Jeklo",dim:function(){return V("postP")},qty:function(){return postCount()},izracun:function(){var l2=roksalLimit(WC[$("sysProfile").value]||WC.romb67,V("sysUse"),n("H"));return l2.label+" ≤ "+l2.v+" mm"}},
-  vijakiRF:{naziv:"Vijaki RF",material:"Inox",dim:"2 na lamelo + 2 na nosilec",qty:function(){return 2*cutCount()+2*postCount()},izracun:"2 × lamela + 2 × nosilec"},
+  vijakiRF:{naziv:"Vijaki RF",material:"Inox",dim:"2 na lamelo + 2 na nosilec",qty:function(){return 2*lamelaTotal()+2*postCount()},izracun:"2 × lamela (vklj. segmenti/L-povratek) + 2 × nosilec"},
   pritrdilni:{naziv:function(){return "Pritrdilni vijak ("+V("bolt")+")"},material:"Inox",dim:function(){return V("bolt")},qty:function(){return postCount()*Math.max(0,n("nbolt"))},izracun:function(){return V("nbolt")+" na nosilec × "+postCount()}},
   sidra:{naziv:function(){return "Sidra ("+V("anchor")+" — "+V("emb")+" mm)"},material:"Inox",dim:function(){return V("anchor")+" — "+V("emb")+" mm"},qty:function(){return 2*postCount()},izracun:"2 na nosilec"},
   vrata:{naziv:"Vrata WoodCore",material:"TBI — podatki proizvajalca",dim:"TBI",qty:function(){return "TBI"},izracun:"NI v BOM — potrebna specifikacija Roksala"},
@@ -2088,7 +2088,11 @@ function restoreProjectString(txt){
   $("refMode").checked=!!d.refMode;var _rm3=$("refModeMenu");if(_rm3)_rm3.checked=$("refMode").checked;
   S.calMode=d.calMode||"linear";S.cal=d.cal||null;S.calibrated=!!d.calibrated;S.lines=d.lines||[];
   if(d.detOverride)S.detOverride=d.detOverride;
+  /* #37: obnovi avtoritativno foto stanje S.photoData (save→load→save round-trip);
+     brez fotografije počisti morebitno zastarelo stanje. */
+  S.photoData=d.photo||null;
   if(d.photo){var im=new Image();im.onload=function(){S.img=im;$("img").src=im.src;$("photoBox").classList.add("on");drawOverlay()};im.src=d.photo}
+  else{S.img=null;$("photoBox").classList.remove("on");}
   invalidateProduction();drawOverlay();checks();generate();
   return "Projekt naložen"+(unknown?" ("+unknown+" nepoznanih polj preskočenih)":"")+".";
 }
@@ -2514,7 +2518,7 @@ function buildCut(){
 function buildQuote(){
   if(!cutData)buildCut();
   var p=WC[$("sysProfile").value],np=postCount(),use=V("sysUse");
-  var boardM=cutData.used/1000, rfScrews=2*cutData.count+2*np, fixScrews=np*Math.max(0,n("nbolt"));
+  var boardM=cutData.used/1000, rfScrews=2*lamelaTotal()+2*np, fixScrews=np*Math.max(0,n("nbolt")); // #37: vijaki za vse fizične lamele (vklj. segmenti/L-povratek)
   var pb=n("priceBoard"),pp=n("pricePost"),ps=n("priceScrew"),pw=n("priceWork"),wh=n("workHours");
   var firstLbl=(use==="terasa")?"Nosilci / podložne letve (center 33–35 cm)":"Nosilci";
   var firstQty=(use==="terasa")?Math.max(2,Math.ceil(n("L")/335)+1):np;
@@ -2540,7 +2544,7 @@ function buildOrder(){
     "- Odpad: "+(cutData.waste/1000).toFixed(2)+" m, izkoristek "+cutData.yield+"%","",
     "PROFILI IN PRITRDILA:",
     "- Nosilci: "+np+" kos ("+lim.label+" ≤ "+lim.v+" mm)",
-    "- Vijaki RF: "+(2*cutData.count+2*np)+" kos; pritrdilni ("+V("bolt")+"): "+(np*Math.max(0,n("nbolt")))+" kos",
+    "- Vijaki RF: "+(2*lamelaTotal()+2*np)+" kos; pritrdilni ("+V("bolt")+"): "+(np*Math.max(0,n("nbolt")))+" kos",
     "- Sidra: "+(2*np)+" kos, globina "+V("emb")+" mm, podlaga "+V("sub"),
     (function(){var k=getKoritaData();return k.active&&segsParse().length<2?"- Cvetlična korita: "+k.items.length+" kos (globina "+f(k.D)+" × višina "+f(k.H)+" mm; širine: "+k.items.map(function(kt){return f(kt.w)}).join(", ")+") — konzolni nosilci: "+(k.items.reduce(function(a,kt){return a+koritoNosilci(kt.w)},0))+" kos":""})(),
     (p.n.indexOf("KUBO")>=0)?"- Alu cev 20×60×2 (obvezna — na prostem eloksirana): "+((V("sysUse")==="fasada")?(Math.ceil(n("H")/1000)+1)+" kos":"2 kos")+"":"",
@@ -2762,20 +2766,25 @@ $("menuDlChecklist").onclick=function(){
 };
 
 function buildPlan(){
+  /* #37: montažni načrt uporablja ISTI avtoritativni proizvodni izračun kot rezalni načrt
+     (buildCut: zaloge stockLen, kerf, optimizacija) — brez konfliktnih številk v dokumentih. */
+  if(!cutData)buildCut();
   var p=WC[$("sysProfile").value],L=n("L"),H=n("H");
   var N=cutCount(),np=postCount();
-  var use=V("sysUse"),lim=roksalLimit(p,use,H),cut=cutLen(),per=Math.max(1,Math.floor(p.len/cut)),boards=Math.ceil(N/per),off=Math.max(0,p.len-per*cut);
+  var use=V("sysUse"),lim=roksalLimit(p,use,H),cut=cutLen();
+  var boards=cutData.rows.length,off=cutData.waste,unfilled=cutData.unfilled;
   var handles=Math.max(1,Math.ceil(L/4000)),hlen=L/handles;
   var rows=[
     ["Lamela "+p.n,f(p.w)+"x"+f(p.t)+"x"+f(cut)+" mm",N+" kos"],
-    ["Zaloga desk",p.len+" mm — "+per+(per===1?" kos":per===2?" kosa":per>2&&per<5?" kosi":" kosov")+" na desko",boards+" desek"],
-    ["Odpad",f(off)+" mm na desko","~"+f(off*boards/1000)+" m"],
+    ["Zaloga desk","kerf "+f(cutData.kerf)+" mm · nabava po optimizatorju ("+f(cutData.yield)+"% izkoristek)",boards+" desek"],
+    ["Odpad","~"+f(off/1000)+" m skupaj","~"+f(off*1000)+" mm"],
     ["Stebrički / nosilci",lim.label+" ≤ "+lim.v+" mm",np+" kos"],
     ["Sidra","2 na nosilec",(2*np)+" kos"],
     ["Ročaj",f(hlen)+" mm na kos",handles+" kos"],
-    ["Vijaki RF","2 na lamelo + 2 na nosilec",(2*N+2*np)+" kos"],
+    ["Vijaki RF","2 na lamelo + 2 na nosilec",(2*lamelaTotal()+2*np)+" kos"],
     ["Pritrdilni vijaki",V("bolt")+" — "+V("nbolt")+" na nosilec",(np*Math.max(0,n("nbolt")))+" kos"]
   ];
+  if(unfilled>0)rows.push(["Opozorilo","rezalni načrt: "+unfilled+" kosov ni mogoče izrezati iz razpoložljive zaloge","!"]);
   var kdPl=getKoritaData(),ktsPl=(segsParse().length<2)?kdPl.items:[];
   if(ktsPl.length&&kdPl.active){
     rows.push(["Cvetlično korito","globina "+f(kdPl.D)+" × višina "+f(kdPl.H)+" mm (ocena — potrditi pri Roksalu)",ktsPl.length+" kos"]);
@@ -3631,9 +3640,11 @@ function prjLinkCopy(){
    dovolj majhen, da ga QR (≈2,9 kB) prenese. */
 function prjViewPayload(){
   var d={};
+  /* #37: vključi vsa polja, ki vplivajo na generiranje risbe/PDF (cona + globina) */
   ["L","H","D","n","sw","st","gap","w2","slabT","segList","koritoH","koritoD","koritoList",
    "sysUse","sysProfile","sysColor","sysSurface","mountType","paper","scale","projType","rev","proj","drw",
-   "subType","topP","botP","np","postP","bolt","nbolt","bracket","anchor"].forEach(function(id){d[id]=V(id)});
+   "subType","topP","botP","np","postP","bolt","nbolt","bracket","anchor",
+   "zoneTop","zoneMid","zoneBot","zoneBase","innerD"].forEach(function(id){d[id]=V(id)});
   d.refMode=$("refMode").checked;
   d.plan={walls:TLR.walls.slice(),anchor:TLR.anchor};
   d.sketch={elems:SK.elems.slice(),paper:SK.paper,orient:SK.orient,mreza:SK.mreza};
@@ -3807,6 +3818,28 @@ function collectSolids(){
       add({x0:kt.x+kt.w/2-30,y0:D,z0:H-60,x1:kt.x+kt.w/2+30,y1:D+kds.D,z1:H,label:"Konzola "+(ki+1)});
     });
   }
+  /* #37: pariteta 3D predogleda z 2D/proizvodnim modelom — segmenti (F4) in L-povratek (F5) */
+  var limSeg=roksalLimit(WC[$("sysProfile").value]||WC.romb67,V("sysUse"),n("H"));
+  function addRun(x0,x1,swRun,stnRun,gapRun,NRun,NPRun,prefix){
+    var topH2=Math.min(tp[1],H*0.2),botH2=Math.min(bp[1],H*0.2);
+    add({x0:x0,y0:-tp[0]/2,z0:H-topH2,x1:x1,y1:tp[0]/2,z1:H,label:prefix+" top profile"});
+    add({x0:x0,y0:-bp[0]/2,z0:0,x1:x1,y1:bp[0]/2,z1:botH2,label:prefix+" bottom profile"});
+    var inner2=H-topH2-botH2,pitch2=inner2/NRun,sh2=Math.max(2,swRun/Math.max(1,swRun+gapRun)*pitch2);
+    for(var i=0;i<NRun;i++){
+      var z0a=botH2+i*pitch2+gapRun/2,z1a=Math.min(H-topH2,z0a+sh2);
+      add({x0:x0,y0:-stnRun/2,z0:z0a,x1:x1,y1:stnRun/2,z1:z1a,label:"Slat "+prefix+"-"+(i+1)});
+    }
+    for(var k=0;k<NPRun;k++){
+      var x=x0+(x1-x0)*k/Math.max(1,NPRun-1);if(NPRun===1)x=(x0+x1)/2;
+      add({x0:x-pp[0]/2,y0:-pp[1]/2,z0:0,x1:x+pp[0]/2,y1:pp[1]/2,z1:H,label:"Post "+prefix+"-"+(k+1)});
+      add({x0:x-pp[0]/2,y0:D-pp[1]/2,z0:0,x1:x+pp[0]/2,y1:D+pp[1]/2,z1:H,label:"Post "+prefix+"-B"+(k+1)});
+    }
+  }
+  segsParse().forEach(function(sg,si){
+    addRun(L,L+sg.w,sw,stn,gap,lamelaCountFor(sg.h),Math.max(2,Math.ceil(sg.w/limSeg.v)+1),"Segment "+(si+1));
+  });
+  var w2v=Math.max(0,n("w2")||0);
+  if(w2v>0)addRun(L,L+w2v,sw,stn,gap,cutCount(),Math.max(2,Math.ceil(w2v/limSeg.v)+1),"Return");
   return out;
 }
 function renderIso3D(az,el){

@@ -62,7 +62,7 @@ function check(name, ok, info) {
   let csv = await blobQueue[blobQueue.length - 1].text();
   check("kosovnica: stolpec Izračun", csv.includes('"Izračun"'));
   check("kosovnica: sled pri nosilcih (limit Roksal)", csv.includes("razmak med stebri ≤"), (csv.match(/"Nosilec"[^\n]*/) || [""])[0]);
-  check("kosovnica: sled pri vijakih RF", csv.includes("2 × lamela + 2 × nosilec"));
+  check("kosovnica: sled pri vijakih RF", csv.includes("2 × lamela (vklj. segmenti/L-povratek) + 2 × nosilec"));
   check("kosovnica: Sidra z anchom", csv.includes('"Sidra (M10 — 90 mm)"'));
 
   // ---- pogl. 11: registr komponent — vrata TBI, brez izmišljenih specifikacij ----

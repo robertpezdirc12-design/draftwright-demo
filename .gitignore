@@ -15,3 +15,6 @@ node_modules/
 
 # Temp
 /tmp/
+
+# Agent internal memory (local only)
+.workbuddy-ai/
