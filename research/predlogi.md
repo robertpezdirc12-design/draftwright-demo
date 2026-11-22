@@ -102,12 +102,10 @@ M3/M5 sta odprti le **po M1**, M4 pa le **po M2** (odvisnosti iz P5). Zato jima 
 
 | Mejnik | Obseg | Odprt po | Stop-rule | Nov test |
 |---|---|---|---|---|
-| **M1** veja-higiena + commit modularizacije + testna disciplina | S | — | `npm test` ni zeleno → ne zdubim | obstoječih **21 surov** (+ modules/layout/regression) |
-| **M2** stabilno avto-L | M | M1 | zanesljivost pod pragom → ročni vnos | obstoječi surovi |
+| **M1** veja-higiena + commit modularizacije + testna disciplina | S | — | `npm test` ni zeleno → ne zdubim | obstoječih **21 surov** (+ modules/layout/regression) ✅ |
+| **M2** stabilno avto-L | M | M1 | zanesljivost pod pragom → ročni vnos | `auto-l.test.js` (confidence-gated) ✅ |
 | **M3** WASM bool/CNC | L | M1 | nalaganje >10 s na mobilnem → desktop-only | `boolean-step.test.js` |
 | **M4** globoko učenje lamel | L | M2 | dataset premajhen → ostane heuristika | `vision-deep.test.js` |
-| **M5** več-znamkovski registar + ponudba/DDV | M–L | M1 | brez pogodbenih podatkov znamk → ena znamka | `registry.test.js` |
+| **M5** več-znamkovski registar + ponudba/DDV | M–L | M1 | brez pogodbenih podatkov znamk → ena znamka | `registry.test.js` (scope M: shema+validator+WoodCore) ✅ |
 
-**Združevalno pravilo (P5, testni mejnik):** vsak mejnik združimo v `main` le, če (1) `npm test` zeleno na CI, (2) zlati posnetki nepoškodovani (ali namerno posodobljeni), (3) nov samostojni test pokrije nov modul.
-
-> **Dejansko stanje pri pisanju (2026-11-22):** M1 je **deležno izveden, a ne commitan** — modularizacija (`js/`, `tools/`, novi testi) leži nespremljena v delovnem drevesu; `npm test` (21 surov) je zelen. Nadgradnja M2–M5 torej stoji na M1- commit, ki še manjka.
+**Dejansko stanje (posodobljeno, git preverjeno):** M1 ✅ (commit `d61f156` modularizacija + `7a100e8` raziskovalna izdaja), M2 ✅ (commit `3e75940` — avto-L confidence-gated, prag 45 %, `auto-l.test.js`), M5-scope-M ✅ (commit `bb6ab78` — registrska abstrakcija `js/08-roksal.js` + `registry.test.js`, stop-rule: registriran ostane samo WoodCore). M3 (WASM bool/CNC, obseg L) in M4 (globoko učenje, obseg L, odprt po M2 — zdaj odprt) sta predvidena. `package.json` vgrajuje **23 testnih surov**.
