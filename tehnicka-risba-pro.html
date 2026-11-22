@@ -1005,7 +1005,7 @@ var S={img:null,calMode:"linear",cal:null,calibrated:false,picking:false,tmp:[],
 /* ---------- image input ---------- */
 function loadPhoto(file){
   var r=new FileReader();
-  r.onload=function(){S.photoData=r.result;var im=new Image();im.onload=function(){S.img=im;S.cal=null;S.calibrated=false;S.tmp=[];S.raw=null;S.lines=[];S.rectCache=null;$("img").src=im.src;$("ov").setAttribute("viewBox","0 0 "+im.naturalWidth+" "+im.naturalHeight);$("photoBox").classList.add("on");drawOverlay();st("Slika naložena. Izberite umeritev.","")};im.src=r.result};
+  r.onload=function(){S.photoData=r.result;var im=new Image();im.onload=function(){S.img=im;S.cal=null;S.calibrated=false;S.tmp=[];S.raw=null;S.lines=[];S.rectCache=null;$("img").src=im.src;$("ov").setAttribute("viewBox","0 0 "+im.naturalWidth+" "+im.naturalHeight);$("photoBox").classList.add("on");drawOverlay();st("Slika naložena. Izberite umeritev.","");if(typeof window.openPanel==="function")window.openPanel("photo")};im.src=r.result};
   r.readAsDataURL(file);
 }
 $("file").onchange=function(e){if(e.target.files[0])loadPhoto(e.target.files[0])};
