@@ -154,3 +154,92 @@ $("sysSurface").addEventListener("change",function(){
   for(var i=0;i<pal.length;i++){var r=pal[i].indexOf("Rustic")===0;if(r===want){c=pal[i];break}}
   if(c){$("sysColor").value=c;applySystem()}
 });
+
+/* ---------- M5: več-znamkovski registar (registrska abstrakcija, P4-a) ----------
+   Namen: WoodCore/Roksal postane *en registar* med drugimi (AZEK, Trex, Fiberon, RENOLIT …)
+   brez ponovne vgradnje logike ob menjavi znamke. Enotna shema (profil / dilatacijska tabela /
+   pravila podlage / barvna paleta / uporabe / kontaktni obrazec) + validacija.
+   Stop-rule M5: BREZ pogodbenih podatkov znamk → registriran ostane samo WoodCore; druga znamka
+   se vgradi šele, ko so njeni podatki na voljo. Ta modul je zato ZADOBELEN: shema + validator +
+   prvi registar (WoodCore, ki referencira obstoječe globalne vire WC/DIL/USE_NAMES/PAL_*),
+   ne pa izmišljenih podatkov drugih znamk. */
+
+/* Referenčna shema enega registra znamke. Polja:
+   id        – enolična ključnica ("woodcore"); naziv – prikazno ime znamke;
+   material  – opis materiala (npr. "WoodCore WPC (bambus / HDPE)");
+   profiles  – mapa key→{n,w,t,len,max,fix,allowed[],post{?},rail{?},facade{?},drill,palette[]};
+   dilatacijska – {temps:[°C…], vals:[[mm po 1–5 m]…]} (temperatura × dolžina deske);
+   pravaPodlage – funkcija (profil, uporaba, H) → {v, label} (razmak nosilcev/cev);
+   palete    – imenovane barvne palete {imeno:[barve…]} (osnova za sysColor/sysSurface);
+   uporabe   – mapa key→slovensko ime (npr. precna→"prečna ograja");
+   kontaktni – obrazec pogodbenih podatkov: {dopisatelj,pogoji,garancija,opozorila[],eula}. */
+var REGISTRY_SCHEMA={
+  required:["id","naziv","material","profiles","dilatacijska","pravaPodlage","palete","uporabe","kontaktni"],
+  profileRequired:["n","w","t","len","max","fix","allowed","drill","palette"]
+};
+/* Vrne seznam problemov (prazno polje = registar validiran). Samoprevera sheme — osnova za
+   tests/registry.test.js in za varno vgradnjo novih znamk. */
+function validateRegistry(entry){
+  var probs=[],i;
+  if(!entry||typeof entry!=="object"){return ["registar ni objekt"]}
+  for(i=0;i<REGISTRY_SCHEMA.required.length;i++){
+    if(entry[REGISTRY_SCHEMA.required[i]]===undefined)probs.push("manjka polje: "+REGISTRY_SCHEMA.required[i]);
+  }
+  /* profili: mapa z vsaj enim profilom; vsak profil nosi obvezna polja */
+  if(entry.profiles&&typeof entry.profiles==="object"){
+    var keys=Object.keys(entry.profiles);
+    if(!keys.length)probs.push("profiles: prazna mapa");
+    keys.forEach(function(k){
+      var p=entry.profiles[k];if(!p||typeof p!=="object")return probs.push("profil "+k+": ni objekt");
+      for(var j=0;j<REGISTRY_SCHEMA.profileRequired.length;j++){
+        if(p[REGISTRY_SCHEMA.profileRequired[j]]===undefined)probs.push("profil "+k+": manjka "+REGISTRY_SCHEMA.profileRequired[j]);
+      }
+      if(typeof p.w!=="number"||p.w<=0)probs.push("profil "+k+": w mora biti >0");
+      if(!Array.isArray(p.allowed)||!p.allowed.length)probs.push("profil "+k+": allowed mora biti neprazen seznam");
+    });
+  }
+  /* dilatacijska tabela: temps (naraščajoče, ne prazno) in vals (nabor vrstic po dolžinah 1–5 m) */
+  if(entry.dilatacijska&&entry.dilatacijska.temps&&entry.dilatacijska.vals){
+    var tt=entry.dilatacijska.temps,vm=entry.dilatacijska.vals;
+    if(!Array.isArray(tt)||!tt.length)probs.push("dilatacijska: temps prazno");
+    for(i=1;i<tt.length;i++)if(tt[i]<=tt[i-1])probs.push("dilatacijska: temps ni strogo naraščujoča");
+    if(!Array.isArray(vm)||!vm.length)probs.push("dilatacijska: vals prazno");
+    else for(i=0;i<vm.length;i++)if(!Array.isArray(vm[i])||vm[i].length<5)probs.push("dilatacijska: vrstica "+i+" mora imeti 5 vrednosti (1–5 m)");
+  }
+  /* kontaktni obrazec: dopisatelj + opozorila (pravo razmejevanje odgovornosti, P4-c) */
+  if(entry.kontaktni&&typeof entry.kontaktni==="object"){
+    if(!entry.kontaktni.dopisatelj)probs.push("kontaktni: manjka dopisatelj");
+    if(!Array.isArray(entry.kontaktni.opozorila))probs.push("kontaktni: opozorila mora biti seznam");
+  }
+  return probs;
+}
+
+/* Prvi (za sedaj edini) registar — WoodCore/Roksal. Podatkovni del referencira obstoječe
+   globalne vire (brez podvajanja in brez spremembe obnašanja); abstrakcija samo dodaja
+   enotno shemo + pogodbeni obrazec za bodoče znamke. */
+function woodcoreRegistry(){
+  return {
+    id:"woodcore",
+    naziv:"WoodCore / Roksal",
+    material:"WoodCore WPC (bambus / HDPE)",
+    profiles:WC,                                   // obstoječi registar profilov (global)
+    dilatacijska:{temps:DIL.temps,vals:DIL.vals},  // dilatacijska tabela (global DIL)
+    pravaPodlage:roksalLimit,                       // funkcija pravil podlag/cev (global)
+    palete:{klasik:PAL_KLASIK,rustik:PAL_RUSTIK},
+    uporabe:USE_NAMES,
+    kontaktni:{
+      dopisatelj:"Roksal d.o.o.",
+      pogoji:"splošni pogoji v5.0",
+      garancija:"15 let na material, 2 leti na dela izvedena s strani Roksal/a",
+      eula:"predračun je orientacijski, ni ponudba; za zavezujočo ponudbo in DDV glej pogodbeni obrazec",
+      opozorila:["Vse mere so v milimetrih (mm); pred izdelavo preveriti na objektu.",
+        "Izračuni so orientacijske narave in niso pogodbena dokumenta — pred naročilom potrditi pri Roksalu.",
+        "Dilatacijske reže po uradni temperaturni tabeli; vogal 1 mm."]
+    }
+  };
+}
+var REGISTRY={woodcore:woodcoreRegistry()};
+var REGISTRY_ACTIVE="woodcore";   // privzeti registar; ostali se omogočijo le z validiranimi podatki
+function registryBrands(){return Object.keys(REGISTRY)}
+function activeRegistry(){return REGISTRY[REGISTRY_ACTIVE]||REGISTRY.woodcore}
+function setRegistryBrand(id){if(REGISTRY[id]){REGISTRY_ACTIVE=id;return true}return false}
