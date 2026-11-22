@@ -137,6 +137,21 @@ Aplikacija je statična — odprete `index.html` (ali direktno `tehnicka-risba-p
 - AI-prepoznavanje profila: večsignalni klasifikator (širina kor korak, separacija, fizična validacija) s zaupanjem in alternativami; predlog uporabnik potrdi (gumb v plošči Slika).
 - Predračun je orientacijski in **ni ponudba**; risba **ni statični izračun** — nosilnost in sidranje preveri strokovnjak.
 
+### Pričakovana natančnost meritev iz fotografije
+
+Meritve so **orientacijske** — za milimetre je potrebna umeritev z znano referenčno dolžino (2/4 točke). Pričakovane napake (potrjene na sintetičnih slikah z eksaktno resnico, `tests/vision.test.js`):
+
+| Scenarij | Meritev | Pričakovana napaka |
+|---|---|---|
+| Idealna fotografija (ravna, enakomerno osvetljena) | H, št. lamel | **±3–5 %** |
+| Šum / zamegljenost | H, št. lamel | ±3–5 % |
+| Perspektiva (s 4-točkovno rektifikacijo) | H | ±5 % (brez nje tudi do −40 %!) |
+| Širina lamele / reža | sw, gap | **±20–25 %** |
+| Dolžina L iz fotografije | L | **ni zanesljiva** — vpišite ročno ali uporabite tloris |
+| Tuji tipi ograj (kovina/PVC/mreža) | vse | **ni veljavno** — aplikacija opozori; orodje je namenjeno WPC/lesu |
+
+Namig: status po zaznavi prikaže **konsistentnost koraka** (≥ 90 % = zanesljivo štetje); pod 45 % se predlog profila ne vsiljuje.
+
 ## Licenca
 
 MIT — glej [LICENSE](LICENSE).
