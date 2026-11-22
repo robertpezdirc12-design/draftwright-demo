@@ -1,3 +1,7 @@
+// Draftwright — modul 13-skica (izločeno iz tehnicka-risba-pro.html; razbitje monolita)
+// Klasična skripta: deljen globalni obseg; naložena pred 16-boot.js.
+"use strict";
+
 /* ---------- Issue #6: terenska skica — prazen list, prostoročno risanje, ročno sestavljanje ----------
    Ločen modul od foto/parametričnega toka (brez prekrivanja): prazen list brez mreže/okvira po privzetku,
    elementi so pripomočki za skiciranje (NE samodejno potrjena geometrija), ročne mere jasno označene. */
@@ -13,7 +17,7 @@ function skRender(){
     for(var y=10;y<pg[1];y+=10)s+='<line x1="0" y1="'+y+'" x2="'+pg[0]+'" y2="'+y+'" stroke="#ececec" stroke-width="0.3"/>';
   }
   SK.elems.forEach(function(e,ei){
-    var col=e.color,w=e.width,sel=(ei===SK.selected),hl=sel?' stroke-dasharray="2 1.5"':"";
+    var col=safeColor(e.color),w=Math.max(0.1,Math.min(20,numOf(e.width,2))),sel=(ei===SK.selected),hl=sel?' stroke-dasharray="2 1.5"':"";
     if(e.t==="free")s+='<polyline points="'+e.pts.map(function(p){return p.x+","+p.y}).join(" ")+'" fill="none" stroke="'+col+'" stroke-width="'+w+'" stroke-linecap="round" stroke-linejoin="round"'+hl+'/>';
     else if(e.t==="line")s+='<line x1="'+e.x1+'" y1="'+e.y1+'" x2="'+e.x2+'" y2="'+e.y2+'" stroke="'+col+'" stroke-width="'+w+'"'+hl+'/>';
     else if(e.t==="rect")s+='<rect x="'+Math.min(e.x1,e.x2)+'" y="'+Math.min(e.y1,e.y2)+'" width="'+Math.abs(e.x2-e.x1)+'" height="'+Math.abs(e.y2-e.y1)+'" fill="none" stroke="'+col+'" stroke-width="'+w+'"'+hl+'/>';
@@ -42,18 +46,39 @@ function skRender(){
   svg.innerHTML=s;
   var pgTxt=SK.paper+" ("+(SK.orient==="pokoncno"?"pokončno":"ležeče")+")";
   $("skStatus").textContent=SK.elems.length?("Elementov: "+SK.elems.length+" · list: "+pgTxt+(SK.mreza?" · mreža":"")):"Prazen list — izberite orodje in rišite.";
+  $("skUndo").disabled=!SK.undo.length;$("skRedo").disabled=!SK.redo.length;
+  /* povezava orodij/barve/debeline (Issue #6 Faza 2) */
+  [].forEach.call(document.querySelectorAll("[data-sk-tool]"),function(b){
+    if(b.__skwired)return;
+    b.__skwired=1;
+    b.addEventListener("click",function(){
+      SK.tool=b.getAttribute("data-sk-tool");SK.selected=-1;
+      [].forEach.call(document.querySelectorAll("[data-sk-tool]"),function(x){x.style.borderColor=(x===b)?"var(--ac)":""});
+      $("skStatus").textContent="Orodje: "+SK.tool;
+    });
+  });
+  if(!$("skColor").__dwWired){$("skColor").__dwWired=1;$("skColor").addEventListener("change",function(){SK.color=safeColor(this.value)})}
+  if(!$("skWidth").__dwWired){$("skWidth").__dwWired=1;$("skWidth").addEventListener("change",function(){SK.width=Math.max(0.1,Math.min(20,numOf(this.value,2)))})}
 }
 function skSvgPt(e){
   var svg=$("skSvg"),r=svg.getBoundingClientRect(),pg=skPage();
   return {x:(e.clientX-r.left)*pg[0]/r.width,y:(e.clientY-r.top)*pg[1]/r.height};
 }
-function skCommit(e){SK.elems.push(e);SK.drawing=null}
+function skCommit(e){
+  /* normalizacija: vlečenje shrani a/b → element z x1/y1/x2/y2 ali cx/cy/r (Faza 2 po fazi Issue #6) */
+  if(e.a){
+    if(e.t==="circle"){e.cx=(e.a.x+e.b.x)/2;e.cy=(e.a.y+e.b.y)/2;e.r=Math.hypot(e.b.x-e.a.x,e.b.y-e.a.y)}
+    else{e.x1=e.a.x;e.y1=e.a.y;e.x2=e.b.x;e.y2=e.b.y}
+    delete e.a;delete e.b;delete e.preview;
+  }
+  SK.elems.push(e);SK.drawing=null;
+}
 function skHit(x,y){
   var best=-1,bd=6;
   SK.elems.forEach(function(e,i){
     var d=Infinity;
     if(e.t==="free"){e.pts.forEach(function(p2){d=Math.min(d,Math.hypot(p2.x-x,p2.y-y))})}
-    else if(e.t==="circle"){d=Math.abs(Math.hypot(x-e.cx,y-e.cy)-e.r)}
+    else if(e.t==="circle"){var dd=Math.hypot(x-e.cx,y-e.cy);d=(dd<=e.r)?0:Math.abs(dd-e.r)}
     else if(e.t==="text"){d=Math.hypot(x-e.x,y-e.y)}
     else{var x1=Math.min(e.x1,e.x2),y1=Math.min(e.y1,e.y2),x2=Math.max(e.x1,e.x2),y2=Math.max(e.y1,e.y2);
       if(x>=x1-6&&x<=x2+6&&y>=y1-6&&y<=y2+6)d=Math.min(Math.abs(x-x1),Math.abs(x-x2),Math.abs(y-y1),Math.abs(y-y2))}
@@ -64,6 +89,7 @@ function skHit(x,y){
 (function(){
   var svg=$("skSvg"),down=false,anchor=null,last=null;
   function preview(t,a,b,color,width,extra){
+    color=safeColor(color);width=Math.max(0.1,Math.min(20,numOf(width,2)));extra=E(extra||"");
     if(t==="free")return '<polyline points="'+a.x+","+a.y+" "+b.x+","+b.y+'" fill="none" stroke="'+color+'" stroke-width="'+width+'"/>';
     if(t==="line")return '<line x1="'+a.x+'" y1="'+a.y+'" x2="'+b.x+'" y2="'+b.y+'" stroke="'+color+'" stroke-width="'+width+'"/>';
     if(t==="rect")return '<rect x="'+Math.min(a.x,b.x)+'" y="'+Math.min(a.y,b.y)+'" width="'+Math.abs(b.x-a.x)+'" height="'+Math.abs(b.y-a.y)+'" fill="none" stroke="'+color+'" stroke-width="'+width+'"/>';
@@ -93,6 +119,10 @@ function skHit(x,y){
       if(txt){skCommit({t:"text",x:p.x,y:p.y,txt:txt,color:SK.color,width:SK.width});skRender()}
       return;
     }
+    if(SK.tool==="iso"){
+      skCommit({t:"iso",x:p.x,y:p.y,s:40,color:SK.color,width:SK.width});skRender();
+      return;
+    }
     if(SK.tool==="premakni"){
       SK.selected=skHit(p.x,p.y);down=true;last=p;skRender();return;
     }
@@ -116,8 +146,7 @@ function skHit(x,y){
       skRender();return;
     }
     last=p;
-    var lbl=SK.tool==="dim"?window.prompt("Mera (ročni vnos):","")||"":null;
-    SK.drawing={t:SK.tool,a:anchor||p,b:p,color:SK.color,width:SK.width,label:lbl,preview:preview(SK.tool,anchor||p,p,SK.color,SK.width,lbl)};
+    SK.drawing={t:SK.tool,a:anchor||p,b:p,color:SK.color,width:SK.width,label:"",preview:preview(SK.tool,anchor||p,p,SK.color,SK.width,"")};
     skRender();
   });
   window.addEventListener("pointerup",function(){
@@ -128,8 +157,19 @@ function skHit(x,y){
     SK.drawing=null;anchor=null;skRender();
   });
 })();
-$("skUndo").onclick=function(){if(!SK.undo.length)return;SK.redo.push(JSON.stringify({e:SK.elems,p:SK.paper,o:SK.orient,m:SK.mreza}));var st=JSON.parse(SK.undo.pop());SK.elems=st.e;SK.paper=st.p;SK.orient=st.o;SK.mreza=st.m;$("skPaper").value=SK.paper;$("skOrient").value=SK.orient;$("skGrid").checked=SK.mreza;skRender()};
-$("skRedo").onclick=function(){if(!SK.redo.length)return;SK.undo.push(JSON.stringify({e:SK.elems,p:SK.paper,o:SK.orient,m:SK.mreza}));var st=JSON.parse(SK.redo.pop());SK.elems=st.e;SK.paper=st.p;SK.orient=st.o;SK.mreza=st.m;$("skPaper").value=SK.paper;$("skOrient").value=SK.orient;$("skGrid").checked=SK.mreza;skRender()};
+function skUndo(){if(!SK.undo.length)return;SK.redo.push(JSON.stringify({e:SK.elems,p:SK.paper,o:SK.orient,m:SK.mreza}));var st=JSON.parse(SK.undo.pop());SK.elems=st.e;SK.paper=st.p;SK.orient=st.o;SK.mreza=st.m;$("skPaper").value=SK.paper;$("skOrient").value=SK.orient;$("skGrid").checked=SK.mreza;skRender()}
+function skRedo(){if(!SK.redo.length)return;SK.undo.push(JSON.stringify({e:SK.elems,p:SK.paper,o:SK.orient,m:SK.mreza}));var st=JSON.parse(SK.redo.pop());SK.elems=st.e;SK.paper=st.p;SK.orient=st.o;SK.mreza=st.m;$("skPaper").value=SK.paper;$("skOrient").value=SK.orient;$("skGrid").checked=SK.mreza;skRender()}
+$("skUndo").onclick=skUndo;
+$("skRedo").onclick=skRedo;
+$("skDup").onclick=function(){
+  if(SK.selected<0||!SK.elems[SK.selected]){$("skStatus").textContent="Podvoji: najprej kliknite element z orodjem Premakni (izbere najbližjega).";return}
+  skPushUndo();
+  var cp=JSON.parse(JSON.stringify(SK.elems[SK.selected]));
+  if(cp.t==="free")cp.pts=cp.pts.map(function(p2){return{x:p2.x+10,y:p2.y+10}});
+  else if(cp.cx!=null){cp.cx+=10;cp.cy+=10}else{cp.x1+=10;cp.y1+=10;cp.x2+=10;cp.y2+=10;if(cp.x!=null){cp.x+=10;cp.y+=10}}
+  SK.elems.push(cp);SK.selected=SK.elems.length-1;skRender();
+  $("skStatus").textContent="Element podvojen (offset +10 mm).";
+};
 $("skClear").onclick=function(){if(!SK.elems.length)return;skPushUndo();SK.elems=[];SK.selected=-1;skRender()};
 $("skPrint").onclick=function(){
   SK.selected=-1;skRender();
@@ -141,11 +181,4 @@ $("skPrint").onclick=function(){
 $("skPaper").onchange=function(){skPushUndo();SK.paper=this.value;skRender()};
 $("skOrient").onchange=function(){skPushUndo();SK.orient=this.value;skRender()};
 $("skGrid").onchange=function(){skPushUndo();SK.mreza=this.checked;skRender()};
-document.addEventListener("keydown",function(e){
-  if($("expOverlay").classList.contains("on"))return;
-  var typing=/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName);
-  if(typing)return;
-  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="z"){e.preventDefault();$("skUndo").click()}
-  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="y"){e.preventDefault();$("skRedo").click()}
-});
 skRender();

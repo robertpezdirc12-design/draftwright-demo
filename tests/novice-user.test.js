@@ -7,8 +7,9 @@
 const fs = require("fs");
 const path = require("path");
 const { JSDOM } = require("jsdom");
+const { loadAppHtml } = require("./helpers/bootApp");
 
-const html = fs.readFileSync(path.join(__dirname, "..", "tehnicka-risba-pro.html"), "utf8");
+const html = loadAppHtml();
 const errors = [];
 
 const dom = new JSDOM(html, {
@@ -55,7 +56,7 @@ function check(name, ok, info) {
 
   /* 4) klik na Zaznaj/Generiraj ne crash-a (handler obstaja) */
   $("helpGen").click();
-  check("pomoč: helpGen sproži generiranje (handler)", $("prev").classList.contains("empty") || !!document.querySelector("#prev svg"));
+  check("pomoč: helpGen sproži generiranje (handler)", !!document.querySelector("#prev svg"));
 
   /* 5) Esc zapre */
   document.dispatchEvent(new window.KeyboardEvent("keydown", { key: "Escape", bubbles: true }));

@@ -9,8 +9,9 @@
 const fs = require("fs");
 const path = require("path");
 const { JSDOM } = require("jsdom");
+const { loadAppHtml } = require("./helpers/bootApp");
 
-const html = fs.readFileSync(path.join(__dirname, "..", "tehnicka-risba-pro.html"), "utf8");
+const html = loadAppHtml();
 const errors = [];
 const downloads = [];
 const blobQueue = [];
@@ -194,7 +195,7 @@ async function lastText() {
   downloads.length = 0;
   $("menuDlOrder").click();
   t = await lastText();
-  check("naročilnik: nabava agregirana", !!t && t.includes("5800 mm × 11 kos") && !t.includes("5800 mm × 1 kos;"), (t || "").match(/Nabava[^\n]*/)?.[0]);
+  check("naročilnik: nabava agregirana", !!t && t.includes("5800 mm × 11") && !/5800 mm × 1 (kos|deska);/.test(t), (t || "").match(/Nabava[^\n]*/)?.[0]);
   check("naročilnik: površina Klasik", !!t && t.includes("(Klasik)"));
 
   // ---- pogl. 2: refMode v projektu ----

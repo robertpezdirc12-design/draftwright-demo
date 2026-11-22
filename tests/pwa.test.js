@@ -10,9 +10,11 @@ const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
 const { JSDOM } = require("jsdom");
+const { loadAppHtml, appFileSource } = require("./helpers/bootApp");
 
 const root = path.join(__dirname, "..");
-const html = fs.readFileSync(path.join(root, "tehnicka-risba-pro.html"), "utf8");
+const html = loadAppHtml();
+const uiMisc = appFileSource("15-ui-misc.js");
 const errors = [];
 
 let pass = 0, fail = 0;
@@ -46,7 +48,7 @@ function pngSize(file) {
   check("sw.js: sintaksa veljavna", swOk);
   const sw = fs.existsSync(swPath) ? fs.readFileSync(swPath, "utf8") : "";
   check("sw.js: stale-while-revalidate (hit takoj, osvežitev v ozadju)", sw.includes("cache.match") && sw.includes("hit || net") && sw.includes("cache.put"));
-  check("sw.js: samo isti izvor (GET)", sw.includes('e.request.method !== "GET"') && sw.includes("url.origin !== self.location.origin"));
+  check("sw.js: samo isti izvor (GET)", /\.method\s*!==\s*"GET"/.test(sw) && sw.includes("url.origin !== self.location.origin"));
   check("sw.js: čiščenje starih različic ob aktivaciji", sw.includes("caches.delete") && sw.includes("skipWaiting") && sw.includes("clients.claim"));
 
   /* 3) ikone */
@@ -55,7 +57,7 @@ function pngSize(file) {
 
   /* 4) HTML: meta oznake + registracija + mobilni CSS */
   check("HTML: link manifest + theme-color + apple-touch-icon", html.includes('rel="manifest" href="manifest.webmanifest"') && html.includes('name="theme-color" content="#141c24"') && html.includes('rel="apple-touch-icon" href="icon-192.png"'));
-  check("HTML: registracija SW varovana (https/localhost, catch)", html.includes('"serviceWorker" in navigator&&(window.location.protocol==="https:"||window.location.hostname==="localhost")') && /register\("sw\.js"\)\.catch/.test(html));
+  check("HTML: registracija SW varovana (https/localhost, catch)", uiMisc.includes('"serviceWorker" in navigator&&(window.location.protocol==="https:"||window.location.hostname==="localhost")') && uiMisc.includes('register("sw.js")') && /\.catch\(/.test(uiMisc) && uiMisc.includes("SKIP_WAITING"));
   check("HTML: mobilni predal @media 760 (aside fiksni + transform + dotiki)", html.includes("@media(max-width:760px)") && html.includes("body.aside-hidden aside{display:block;transform:translateX(-104%)}") && html.includes("min-height:38px"));
 
   /* 5) aplikacija se zažene brez JS napak (SW registracija varno preskočena v jsdom) */
@@ -75,6 +77,8 @@ function pngSize(file) {
   dom.window.document.getElementById("gen").click();
   check("aplikacija: generiranje deluje (brez JS napak)", !!document.querySelector("#prev svg") && errors.length === 0, errors.length ? errors.join(" | ") : "brez napak");
   check("aplikacija: SW NI registriran v jsdom (guard)", !("serviceWorker" in dom.window.navigator) || dom.window.navigator.serviceWorker.register === undefined);
+  const csp = document.querySelector('meta[http-equiv="Content-Security-Policy"]');
+  check("CSP: blokirani inline dogodkovni atributi", !!csp && /script-src-attr[^;]*'none'/.test(csp.content));
 
   console.log(`\n  Rezultat: ${pass} OK, ${fail} FAIL${errors.length ? ", JS napake: " + errors.join(" | ") : ", brez JS napak"}`);
   process.exit(fail || errors.length ? 1 : 0);

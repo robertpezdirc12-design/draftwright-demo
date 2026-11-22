@@ -7,8 +7,9 @@
 const fs = require("fs");
 const path = require("path");
 const { JSDOM } = require("jsdom");
+const { loadAppHtml } = require("./helpers/bootApp");
 
-const html = fs.readFileSync(path.join(__dirname, "..", "tehnicka-risba-pro.html"), "utf8");
+const html = loadAppHtml();
 const errors = [];
 
 const downloads = [];

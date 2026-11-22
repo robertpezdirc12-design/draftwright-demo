@@ -6,8 +6,9 @@
 const fs = require("fs");
 const path = require("path");
 const { JSDOM } = require("jsdom");
+const { loadAppHtml } = require("./helpers/bootApp");
 
-const html = fs.readFileSync(path.join(__dirname, "..", "tehnicka-risba-pro.html"), "utf8");
+const html = loadAppHtml();
 const errors = [];
 
 const dom = new JSDOM(html, {
@@ -242,7 +243,8 @@ function check(name, ok, info) {
   check("pan: toggle aktivira način", $("panBtn").classList.contains("on"));
   $("panBtn").click();
   check("pan: toggle izklopi", !$("panBtn").classList.contains("on"));
-  check("fullscreen: gumb obstaja", !!$("fsBtn"));
+  $("fsBtn").click();
+  check("fullscreen: gumb ima delujoč handler", typeof $("fsBtn").onclick === "function" && errors.length === 0);
 
   // 18) Faza 2: 3D pogled — zbirni model + rotacija + modal
   const sols = window.collectSolids();

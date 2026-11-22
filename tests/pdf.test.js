@@ -11,9 +11,11 @@
 const fs = require("fs");
 const path = require("path");
 const { JSDOM } = require("jsdom");
+const { loadAppHtml, appFileSource } = require("./helpers/bootApp");
 
 const root = path.join(__dirname, "..");
-const html = fs.readFileSync(path.join(root, "tehnicka-risba-pro.html"), "utf8");
+const html = loadAppHtml();
+const rawHtml = fs.readFileSync(path.join(root, "tehnicka-risba-pro.html"), "utf8");
 const errors = [];
 
 let pass = 0, fail = 0;
@@ -28,7 +30,7 @@ function check(name, ok, info) {
   const svg2src = fs.readFileSync(path.join(root, "vendor", "svg2pdf.umd.min.js"), "utf8");
   const ttf = fs.readFileSync(path.join(root, "vendor", "LiberationSans-Regular.ttf"));
   check("vendor: jsPDF UMD + svg2pdf UMD + TTF", jspdfSrc.length > 100000 && svg2src.includes("svg2pdf") && ttf.slice(0, 4).equals(Buffer.from([0x00, 0x01, 0x00, 0x00])), "jsPDF " + Math.round(jspdfSrc.length / 1024) + " kB · svg2pdf " + Math.round(svg2src.length / 1024) + " kB · TTF " + Math.round(ttf.length / 1024) + " kB");
-  check("HTML: vendor skripti + exportPdf + vektorski PDF v dialogu", html.includes('<script src="vendor/jspdf.umd.min.js" defer></script>') && html.includes('<script src="vendor/svg2pdf.umd.min.js" defer></script>') && html.includes("function exportPdf(sv,paper)") && html.includes("risba (PDF, vektorski)"));
+  check("HTML: vendor skripti + modul PDF + vektorski PDF v dialogu", rawHtml.includes('<script src="vendor/jspdf.umd.min.js" defer></script>') && rawHtml.includes('<script src="vendor/svg2pdf.umd.min.js" defer></script>') && rawHtml.includes('<script src="js/10-pdf.js"></script>') && appFileSource("10-pdf.js").includes("function exportPdf(sv,paper)") && appFileSource("11-export-dialog.js").includes("risba (PDF, vektorski)"));
   const swSrc = fs.existsSync(path.join(root, "sw.js")) ? fs.readFileSync(path.join(root, "sw.js"), "utf8") : "";
   check("SW predpomnilnik: vendor datoteke za offline", swSrc.includes('"./vendor/jspdf.umd.min.js"') && swSrc.includes('"./vendor/svg2pdf.umd.min.js"') && swSrc.includes('"./vendor/LiberationSans-Regular.ttf"'));
 

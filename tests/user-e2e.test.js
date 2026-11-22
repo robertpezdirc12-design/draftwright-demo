@@ -8,8 +8,9 @@
 const fs = require("fs");
 const path = require("path");
 const { JSDOM } = require("jsdom");
+const { loadAppHtml } = require("./helpers/bootApp");
 
-const html = fs.readFileSync(path.join(__dirname, "..", "tehnicka-risba-pro.html"), "utf8");
+const html = loadAppHtml();
 const errors = [];
 const blobs = [];
 
@@ -67,7 +68,8 @@ function grabLastBlobText() {
   check("račun: masa ≈ 57.1 kg (" + mExpected.toFixed(1) + ")", !!mTxt && Math.abs(parseFloat(mTxt.replace(",", ".")) - mExpected) < 0.5, "dobili " + (mTxt || "?") + " kg");
   /* BOM vrstice: 4 nosilci → 7 vijaki (NP*nbolt=4*4=16), 8 sidra (2*NP=8), 2 lamele (N=12) */
   check("račun: BOM lamela 12 (vrstica 2)", new RegExp("Lamela ROMB-67[\\s\\S]{0,200}?12").test(svgTxt) || svgTxt.includes("×12"));
-  check("račun: BOM nosilci 4 + vijaki 16 + sidra 8", svgTxt.includes("· 12") && /4[\s\S]{0,60}?Steber/.test(svgTxt) === false ? true : /Pritrdilni vijak[\s\S]{0,120}?16/.test(svgTxt) && /Sidro[\s\S]{0,120}?8/.test(svgTxt), "vijaki/sidra");
+  const hasBom = (name, qty) => new RegExp(name + "[\\s\\S]{0,160}?" + qty).test(svgTxt);
+  check("račun: BOM nosilci 4 + vijaki 16 + sidra 8", hasBom("Steber", 4) && hasBom("Pritrdilni vijak", 16) && hasBom("Sidro", 8), "vijaki/sidra");
 
   /* ============ 4. KOSOVNICA (CSV) — konsistentnost z BOM ============ */
   const blob0 = blobs.length;
@@ -137,12 +139,13 @@ function grabLastBlobText() {
   setF("L", "0");
   $("gen").click();
   check("robni: L=0 → opozorilo (brez risbe)", $("prev").innerHTML.includes("Manjkajoče mere") || $("checks").textContent.includes("morajo biti pozitivne"));
-  setF("L", "4200");
+  setF("L", "2000");
   $("koritoList").value = "1100;300\n1400;1900"; fire($("koritoList"), "input");
   $("gen").click();
   const warnC = $("checks").textContent || "";
-  check("robni: korita čez mejo (L=2000) → opozorilo", warnC.includes("presega dolžino ograje") || true, warnC.slice(0, 60)); // L=4200 ne presega — zato OR true
+  check("robni: korita čez mejo (L=2000) → opozorilo", warnC.includes("presega dolžino ograje"), warnC.slice(0, 60));
   $("koritoList").value = ""; fire($("koritoList"), "input");
+  setF("L", "4200");
 
   /* ============ 13. BREZ JS NAPAK ============ */
   check("končno: ni JS napak", errors.length === 0, errors.length ? errors.join(" | ") : "brez napak");

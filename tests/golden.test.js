@@ -8,8 +8,9 @@
 const fs = require("fs");
 const path = require("path");
 const { JSDOM } = require("jsdom");
+const { loadAppHtml } = require("./helpers/bootApp");
 
-const html = fs.readFileSync(path.join(__dirname, "..", "tehnicka-risba-pro.html"), "utf8");
+const html = loadAppHtml();
 const GOLDEN = path.join(__dirname, "golden");
 const errors = [];
 
@@ -72,9 +73,11 @@ const CONFIGS = [
     if (!svg) { check(cfg.name, false, "brez SVG"); continue; }
     const got = norm(svg.outerHTML);
     const file = path.join(GOLDEN, cfg.name + ".svg");
-    if (UPDATE || !fs.existsSync(file)) {
+    if (UPDATE) {
       fs.writeFileSync(file, got);
-      check(cfg.name, true, UPDATE ? "posodobljen zlati posnetek" : "nov zlati posnetek (shranjen)");
+      check(cfg.name, true, "posodobljen zlati posnetek");
+    } else if (!fs.existsSync(file)) {
+      check(cfg.name, false, "manjkajoči zlati posnetek — ni samodejno ustvarjen");
     } else {
       const want = fs.readFileSync(file, "utf8").replace(/\r/g, "");
       if (want === got) { check(cfg.name, true, "identično (" + Math.round(got.length / 1024) + " kB)"); }

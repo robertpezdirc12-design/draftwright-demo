@@ -1,6 +1,6 @@
 # Draftwright — Tehnična risba PRO
 
-**Fotografija → umeritev → parametri → končni tehnični list.** Samostojna spletna aplikacija (ena HTML datoteka, brez odvisnosti, brez strežniške logike) za pripravo tehničnih risb in montažne dokumentacije za ograje, fasade in terase iz sistema **WoodCore (Roksal)** WPC profilov.
+**Fotografija → umeritev → parametri → končni tehnični list.** Samostojna statična spletna aplikacija (brez odvisnosti, brez strežniške logike, brez build koraka) za pripravo tehničnih risb in montažne dokumentacije za ograje, fasade in terase iz sistema **WoodCore (Roksal)** WPC profilov. Aplikacija je modularna: HTML/CSS ovojnica v `tehnicka-risba-pro.html`, JS-logika v oštevilčenih modulih `js/` (klasične skripte, deljen globalni obseg — zaradi `file://` odprtja in jsdom testov).
 
 🔗 Živa demo: [draftwright-demo.vercel.app](https://draftwright-demo.vercel.app)
 
@@ -70,18 +70,20 @@ Risba se ob izvozu vedno znova generira iz trenutnih polj, tako da izvoz vedno o
 
 ### 6. Delovni načini
 - **jezik UI: SL/EN** (gumb v menijski vrstici, shranjeno v brskalniku) — risba in tehnični izpisi ostanejo slovenski (Roksal dokumentacija)
+- **postavitev canvas-first**: stranski panel je privzeto skrit — sklope odpirate iz menijske vrstice (»Plošča ▾«); tehnična risba zasede celoten delovni prostor; tloris in skica se odpreta v velikem prekrivnem platnu (≥ polovica zaslona, zapiranje s »✕« ali klikom na zaslonko)
 - vodeni / strokovni način, izbira vidnih sklopov in polj
 - bližnjice: **Ctrl+G** generiraj · **Ctrl+S** shrani · **Ctrl+E** možnosti izvoza · **Alt+P** izbira plošče · **Ctrl+V** prilepi sliko · **+/−** povečava
 - dostopnost: `aria-live` status, `label for=` na 77 poljih
 - **terenska skica** (sklop 9, Issue #6): popolnoma prazen A4/A3 list (obe orientaciji), prostoročno risanje, elementi (črta/pravokotnik/krog/puščica/besedilo/kotiranje z ročnim vnosom — jasno ločeno od izmerjenih, izo kocka), radirka, premik, Undo/Redo, mreža po želji, tisk v dejanski velikosti, shranjevanje v projektu (shema v3)
 - **interaktivni tloris** (sklop 8): risanje trase po mreži (1 px = 10 mm), dolžine/nosilci po segmentih (Roksal limiti), Undo/Redo (Ctrl+Z/Y), »Uporabi v izračun« → L; trasa v projektu (shema v2) in autosave
 - samodejno shranjevanje stanja + kalibracije (localStorage; fotografija izrazito NE — kvota)
+- **varnost**: strogi CSP (brez inline dogodkovnih atributov), sanitizacija uvoženih projektov in skic na vstopni meji, enotno tolerančno razčlenjevanje števil (vejica ali pika)
 
 ## Samoprevera
 
-Meni **Datoteka → Samoprevera (90 kombinacij)** generira 6 profilov × 5 uporab × 3 različice mer in preveri, da nastane veljaven SVG brez JS napak.
+Meni **Datoteka → Samoprevera (126 kombinacij)** generira 6 profilov × 7 uporab × 3 različice mer in preveri, da nastane veljaven SVG brez JS napak.
 
-Za avtomatske teste je v repozitoriju še [tests/](tests/) (jsdom): `smoke.test.js` (generiranje listov, validacije, izvozi), `export-dialog.test.js` (izvozni dialog — vsi formati, napredne nastavitve in robni primeri), `roksal-p1.test.js` (dilatacije, napušč, pregrade, palete barv, podlage) in `roksal-p2.test.js` (tehnični list, povpraševanje, prodajni pogoji), `issue2-phase1.test.js` (stale-state, orientacija reza), `vision.test.js` (realno pikselno zaznavanje, @napi-rs/canvas), `issue2-phase2.test.js` (DXF sloji, STEP topologija) in `issue2-phase3.test.js`, `tloris.test.js` in `skica.test.js` (stale-state, orientacija reza, enote) in `vision.test.js` + `issue2-phase2.test.js` (realno pikselno zaznavanje, DXF sloji/kodiranje, STEP topologija). Požene jih CI ([.github/workflows/ci.yml](.github/workflows/ci.yml)):
+Za avtomatske teste je v repozitoriju še [tests/](tests/) (jsdom): `modules.test.js` (strukturni testi razbitja monolita — vrstni red modulov, sw.js predpomnilnik), `smoke.test.js` (generiranje listov, validacije, izvozi), `export-dialog.test.js` (izvozni dialog — vsi formati, napredne nastavitve in robni primeri), `roksal-p1.test.js` (dilatacije, napušč, pregrade, palete barv, podlage) in `roksal-p2.test.js` (tehnični list, povpraševanje, prodajni pogoji), `issue2-phase1.test.js` (stale-state, orientacija reza), `vision.test.js` (realno pikselno zaznavanje, @napi-rs/canvas), `issue2-phase2.test.js` (DXF sloji, STEP topologija) in `issue2-phase3.test.js`, `tloris.test.js` in `skica.test.js` (stale-state, orientacija reza, enote) in `vision.test.js` + `issue2-phase2.test.js` (realno pikselno zaznavanje, DXF sloji/kodiranje, STEP topologija). Testi nalagajo aplikacijo prek `tests/helpers/bootApp.js`, ki modulne oznake v HTML nadomesti z inline kodo (jsdom ne nalaga zunanjih skript). Požene jih CI ([.github/workflows/ci.yml](.github/workflows/ci.yml)):
 
 ```bash
 npm install
@@ -92,16 +94,17 @@ npm test
 
 ```
 index.html               preusmeritev na aplikacijo
-tehnicka-risba-pro.html  glavna aplikacija (vse v eni datoteki, vključno z izvoznim dialogom)
+tehnicka-risba-pro.html  glavna aplikacija (CSS + HTML + vendor <script> oznake + naročilo modulov)
+js/                     JS moduli (razbitje monolita) — klasične skripte, deljen globalni obseg; naloženi v oštevilčenem vrstnem redu (00-core … 16-boot); 16-boot.js vsebuje zagon
 manifest.webmanifest      PWA manifest (sl, standalone, ikone, teme)
-sw.js                    Service Worker — stale-while-revalidate, offline način (P3)
+sw.js                    Service Worker — navigacije network-first, ostalo stale-while-revalidate, offline način (P3); različico SW_VERSION povečaj ob spremembi datotek (vključno z novimi moduli v js/)
 icon-192.png / icon-512.png  PWA ikone (192/512, maskable)
 vendor/                  vendored knjižnice (jsPDF + svg2pdf + LiberationSans TTF) za vektorski PDF (P4) — delujejo tudi offline
 samples/                 vzorčni izvozi (SVG/PDF/DXF/STEP) in testni posnetki
 docs/                    dodatna dokumentacija / viri (npr. slike za zaznavanje)
-tests/                   jsdom testi (15 suite; zlati posnetki v tests/golden/)
+tests/                   jsdom testi (21 suit; zlati posnetki v tests/golden/; pomočnik tests/helpers/bootApp.js)
+tools/                   razvojna orodja (split-modules.js, inline-scripts.js, patch-tests.js) — samo za vzdrževanje, ne del aplikacije
 package.json / package-lock.json   odvisnosti in testna skripta (npm test)
-sk-module.js             razvojni modul skice (vkoplčen v glavno datoteko)
 m2-rect.png / m2-src.png  testni viri za zaznavanje/perspektivo
 .github/                 CI (GitHub Actions — smoke test)
 ```

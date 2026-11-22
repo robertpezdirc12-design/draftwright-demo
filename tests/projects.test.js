@@ -7,8 +7,9 @@
 const fs = require("fs");
 const path = require("path");
 const { JSDOM } = require("jsdom");
+const { loadAppHtml } = require("./helpers/bootApp");
 
-const html = fs.readFileSync(path.join(__dirname, "..", "tehnicka-risba-pro.html"), "utf8");
+const html = loadAppHtml();
 const errors = [];
 
 const dom = new JSDOM(html, {
@@ -109,7 +110,7 @@ function check(name, ok, info) {
 
   // 12) Faza 1: regresija — nalaganje z ?view=1#p=<hash> ob inicializaciji NE sme povzročiti JS napake
   //    (prej: $("emptyExample") izgine po restore/generate → crash "Cannot set properties of null")
-  const viewHtml = fs.readFileSync(path.join(__dirname, "..", "tehnicka-risba-pro.html"), "utf8");
+  const viewHtml = loadAppHtml();
   const viewErrs = [];
   const domView = new JSDOM(viewHtml, {
     runScripts: "dangerously", pretendToBeVisual: true,
