@@ -130,7 +130,7 @@ npm install
 npm test
 ```
 
-**23 testnih surov (jsdom)** — testno nalaganje prek `tests/helpers/bootApp.js`, ki modulne `<script src>` oznake v HTML nadomesti z inline kodo (jsdom ne nalaga zunanjih skriptov):
+**24 testnih surov (jsdom)** — testno nalaganje prek `tests/helpers/bootApp.js`, ki modulne `<script src>` oznake v HTML nadomesti z inline kodo (jsdom ne nalaga zunanjih skriptov):
 - `modules.test.js` — strukturni testi razbitja monolita (vrstni red modulov, `sw.js` predpomnilnik)
 - `layout.test.js` — poravnanje/robni primeri postavitev
 - `regression.test.js` — regresijski pokriti koraki javnega API-ja (buildOrder, cutData, orderText)
@@ -148,6 +148,7 @@ npm test
 - `stress.test.js` + `photo-variety.test.js` — obremenitve
 - `auto-l.test.js` — M2: confidence-gated avto-L (prag 45 %; stop-rule pri nizki zanesljivosti)
 - `registry.test.js` — M5: več-znamkovski registar (shema + validator; WoodCore kot prvi registar)
+- `vision-deep.test.js` — M4 (korak 1): evalucijska teža + oziromkovana fiksatura lamel (`tests/fixtures/slats.js`); baseline heuristike
 - `novice-user.test.js` + `golden.test.js` — primerjava s zlatimi posnetki (`tests/golden/`)
 
 CI: `.github/workflows/ci.yml` (Node 22.22.2, `npm ci && npm test`).
@@ -167,7 +168,8 @@ icon-192.png/512.png     PWA ikone
 vendor/                  vendored knjižnice (jsPDF + svg2pdf + LiberationSans TTF)
 samples/                 vzorčni izvozi (SVG/PDF/DXF/STEP)
 docs/                    dodatna dokumentacija / validacija izvozov
-tests/                   jsdom testi (23 surov; zlati posnetki v tests/golden/; pomočnik tests/helpers/bootApp.js)
+tests/                   jsdom testi (24 surov; zlati posnetki v tests/golden/; fiksature v tests/fixtures/; pomočnik tests/helpers/bootApp.js)
+tests/fixtures/          deterministične fiksature (slats.js — oziromkovan dataset M4)
 package.json / package-lock.json   odvisnosti in testna skripta (npm test)
 m2-rect.png / m2-src.png  testni viri za zaznavanje/perspektivo
 .github/                 CI (GitHub Actions — smoke test)

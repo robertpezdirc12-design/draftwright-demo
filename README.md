@@ -102,7 +102,7 @@ icon-192.png / icon-512.png  PWA ikone (192/512, maskable)
 vendor/                  vendored knjižnice (jsPDF + svg2pdf + LiberationSans TTF) za vektorski PDF (P4) — delujejo tudi offline
 samples/                 vzorčni izvozi (SVG/PDF/DXF/STEP) in testni posnetki
 docs/                    dodatna dokumentacija / viri (npr. slike za zaznavanje)
-tests/                   jsdom testi (23 suit; zlati posnetki v tests/golden/; pomočnik tests/helpers/bootApp.js)
+tests/                   jsdom testi (24 suit; zlati posnetki v tests/golden/; fiksature v tests/fixtures/; pomočnik tests/helpers/bootApp.js)
 tools/                   razvojna orodja (split-modules.js, inline-scripts.js, patch-tests.js) — samo za vzdrževanje, ne del aplikacije
 package.json / package-lock.json   odvisnosti in testna skripta (npm test)
 m2-rect.png / m2-src.png  testni viri za zaznavanje/perspektivo
