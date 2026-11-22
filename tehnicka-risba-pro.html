@@ -361,6 +361,7 @@ body.viewmode .viewbar{display:flex}
       <button class="mi" data-call="themeBtn">Tema (svetla/temna)</button>
       <button class="mi" data-call="langBtn">Jezik SL/EN</button>
       <button class="mi" data-call="wnBtn">Zapiski izdaj…</button>
+      <button class="mi" data-call="learnBtn">Vadnice in certifikacija…</button>
       <div class="sep"></div>
       <div class="label">Bližnjice</div>
       <div style="padding:6px 8px;font-size:12px;color:var(--mut);line-height:1.7">
@@ -900,6 +901,21 @@ Konstrukcija odporna na vremenske vplive.</textarea>
     </div>
   </div>
 </div>
+<div class="exp-overlay" id="learnOverlay">
+  <div class="exp-dialog" style="max-width:560px" role="dialog" aria-modal="true" aria-label="Vadnice in certifikacija">
+    <div class="exp-head">
+      <div><h1>Vadnice in certifikacija</h1><p class="exp-sub">Vodeni scenariji + kviz za oznako »Draftwright Certified Installer«.</p></div>
+      <button class="exp-x" id="learnClose" type="button" aria-label="Zapri" title="Zapri (Esc)">×</button>
+    </div>
+    <div class="exp-body">
+      <div class="exp-segs" id="learnTabs" role="tablist">
+        <button class="exp-seg active" data-tab="tuts" type="button">Vadnice</button>
+        <button class="exp-seg" data-tab="quiz" type="button">Certifikacijski kviz</button>
+      </div>
+      <div id="learnPanel" style="margin-top:12px"></div>
+    </div>
+  </div>
+</div>
 <div class="hooks" aria-hidden="true">
   <button id="themeBtn" type="button"></button>
   <button id="langBtn" type="button"></button>
@@ -919,6 +935,7 @@ Konstrukcija odporna na vremenske vplive.</textarea>
   <button id="pdmBtn" type="button"></button>
   <button id="pdmArchiveHook" type="button"></button>
   <button id="wnBtn" type="button"></button>
+  <button id="learnBtn" type="button"></button>
 
   <button id="themeBtn" type="button"></button>
   <button id="langBtn" type="button"></button>
@@ -4103,6 +4120,120 @@ $("wnBtn").onclick=openWhatsNew;
 $("wnClose").onclick=closeWhatsNew;
 document.addEventListener("keydown",function(e){
   if(e.key==="Escape"&&$("wnOverlay")&&$("wnOverlay").classList.contains("on"))closeWhatsNew();
+});
+
+/* P3.4: vadnice + certifikacijski kviz */
+var LEARN_TUTS=[
+  {id:"t1",title:"Od slike do risbe",steps:[
+    {text:"Kliknite »Naloži primer risbe« (Datoteka).",act:"showExample"},
+    {text:"Pritisnite Generiraj risbo (Ctrl+G).",act:"gen"},
+    {text:"Odprite možnosti izvoza (Ctrl+E), nato jih zaprite.",act:"exportDialog"}
+  ]},
+  {id:"t2",title:"Parametri in validacija",steps:[
+    {text:"Izberite profil ROMB-67 in uporabo Prečna ograja.",act:"preset-romb"},
+    {text:"Vnesite L=6000, H=1200, n=20 — opozorila se pojavijo v traku.",act:"set-dims"},
+    {text:"Popravite mere, dokler status ne postane zelen.",act:"fix-dims"}
+  ]},
+  {id:"t3",title:"Izvoz dokumentacije",steps:[
+    {text:"Izračunajte rezalni načrt (Orodja).",act:"buildCut"},
+    {text:"Izračunajte montažni načrt.",act:"makePlan"},
+    {text:"Izvozi kosovnico (Datoteka → Izvozi kosovnico).",act:"dlCsv"}
+  ]}
+];
+var QUIZ=[
+  {q:"Koliko točk potrebuje perspektivna umeritev?",options:["1","2","3","4"],correct:3},
+  {q:"Kateri profil ima največji razpon 1300 mm?",options:["ROMB-67","POLNA-128","DESKA-150","KUBO-80"],correct:2},
+  {q:"Montaža ni primerna pod katero temperaturo?",options:["0 °C","+5 °C","+10 °C","−5 °C"],correct:1},
+  {q:"Kateri izvoz je namenjen CNC obdelavi?",options:["PDF","SVG","DXF","TXT"],correct:2},
+  {q:"Kaj pomeni kerf?",options:["Debelina lamele","Širina reza žage","Razmak stebrov","Višina podnožja"],correct:1}
+];
+var CERT_KEY="draftwright-cert";
+function certStatus(){try{return !!localStorage.getItem(CERT_KEY)}catch(e){return false}}
+function setFieldVal(id,v){var el=$(id);if(el){el.value=v;el.dispatchEvent(new Event("input",{bubbles:true}))}}
+function learnAct(act){
+  if(act==="showExample"){var b=$("showExample");if(b)b.click()}
+  else if(act==="gen"){var g=$("gen");if(g)g.click()}
+  else if(act==="exportDialog"){var ex=$("exportDialog");if(ex)ex.click()}
+  else if(act==="preset-romb"){var pr=document.querySelector('[data-preset="romb"]');if(pr)pr.click()}
+  else if(act==="set-dims"){setFieldVal("L","6000");setFieldVal("H","1200");setFieldVal("n","20")}
+  else if(act==="fix-dims"){setFieldVal("L","3800");setFieldVal("H","1200");setFieldVal("n","16")}
+  else if(act==="buildCut"){var bc=$("buildCut");if(bc)bc.click()}
+  else if(act==="makePlan"){var mp=$("makePlan");if(mp)mp.click()}
+  else if(act==="dlCsv"){var dc=$("menuDlCut")||$("dlCsv");if(dc)dc.click()}
+}
+var TUT={id:null,idx:0};
+function renderLearnTuts(){
+  var panel=$("learnPanel");if(!panel)return;
+  var html='<div class="exp-label">Vadnice</div>';
+  LEARN_TUTS.forEach(function(t){
+    html+='<div class="exp-sec open" style="margin-bottom:8px"><div class="exp-sec-h" style="cursor:default"><span>'+E(t.title)+'</span><span style="flex:1"></span>'+
+      (TUT.id===t.id?'<button class="btn go" data-tut="'+t.id+'" data-act="stop" type="button">Zapri vadnico</button>':'<button class="btn" data-tut="'+t.id+'" data-act="start" type="button">Začni</button>')+
+      '</div></div>';
+  });
+  if(TUT.id){
+    var t=LEARN_TUTS.find(function(x){return x.id===TUT.id});
+    if(t){
+      var s=t.steps[TUT.idx];
+      html+='<div style="border-top:1px solid var(--line);padding-top:10px"><div class="exp-label">Korak '+(TUT.idx+1)+'/'+t.steps.length+' — '+E(t.title)+'</div>'+
+        '<div style="font-size:13px;margin:6px 0">'+E(s.text)+'</div>'+
+        '<div class="exp-actions"><button class="btn" data-tut="'+t.id+'" data-act="prev" type="button">Prejšnji</button> '+
+        '<button class="btn go" data-tut="'+t.id+'" data-act="run" type="button">Izvedi korak</button> '+
+        '<button class="btn" data-tut="'+t.id+'" data-act="next" type="button">Naslednji</button></div></div>';
+    }
+  }
+  panel.innerHTML=html;
+}
+function renderQuiz(){
+  var panel=$("learnPanel");if(!panel)return;
+  var html='<div class="exp-label">Certifikacijski kviz (vsaj 80 % za oznako)</div>';
+  QUIZ.forEach(function(q,qi){
+    html+='<div class="exp-sec open" style="margin-bottom:8px"><div class="exp-sec-h" style="cursor:default">'+E(q.q)+'</div><div class="exp-sec-b" style="display:block;padding:6px 12px">';
+    q.options.forEach(function(o,oi){
+      html+='<label style="display:flex;gap:8px;padding:4px 0;font-size:13px"><input type="radio" name="qz'+qi+'" value="'+oi+'" style="width:auto"> '+E(o)+'</label>';
+    });
+    html+='</div></div>';
+  });
+  html+='<div class="exp-actions"><button class="btn go" id="qzGrade" type="button">Oceni</button></div><div id="qzResult" style="margin-top:8px"></div>';
+  panel.innerHTML=html;
+  var g=$("qzGrade");if(g)g.onclick=quizGrade;
+}
+function quizGrade(answers){
+  var score=0;
+  QUIZ.forEach(function(q,qi){
+    var ans=answers&&answers[qi]!=null?answers[qi]:null;
+    if(ans==null){var sel=document.querySelector('input[name="qz'+qi+'"]:checked');if(sel)ans=Number(sel.value);}
+    if(ans===q.correct)score++;
+  });
+  var pct=score/QUIZ.length;
+  var pass=pct>=0.8;
+  if(pass){try{localStorage.setItem(CERT_KEY,JSON.stringify({date:new Date().toISOString(),score:pct}))}catch(e){}}
+  var res=$("qzResult");if(!res)return pct;
+  res.innerHTML='<div style="color:'+(pass?"var(--ok)":"var(--bad)")+';font-weight:600">'+(pass?"✅ Oznaka »Draftwright Certified Installer« pridobljena ("+Math.round(pct*100)+" %).":"Rezultat "+Math.round(pct*100)+" % — potrebnih vsaj 80 %.")+'</div>';
+  return pct;
+}
+function openLearn(){TUT.id=null;TUT.idx=0;renderLearnTuts();$("learnOverlay").classList.add("on")}
+function closeLearn(){$("learnOverlay").classList.remove("on")}
+window.startTutorial=function(id){TUT.id=id;TUT.idx=0;renderLearnTuts();$("learnOverlay").classList.add("on")};
+window.quizGrade=quizGrade;window.certStatus=certStatus;
+$("learnBtn").onclick=openLearn;
+$("learnClose").onclick=closeLearn;
+$("learnPanel").addEventListener("click",function(e){
+  var b=e.target.closest("[data-tut]");if(!b)return;
+  var act=b.getAttribute("data-act"),id=b.getAttribute("data-tut");
+  if(act==="start"){TUT.id=id;TUT.idx=0}
+  else if(act==="stop"){TUT.id=null;TUT.idx=0}
+  else if(act==="prev"){TUT.idx=Math.max(0,TUT.idx-1)}
+  else if(act==="next"){var t=LEARN_TUTS.find(function(x){return x.id===TUT.id});TUT.idx=Math.min(t.steps.length-1,TUT.idx+1)}
+  else if(act==="run"){var t2=LEARN_TUTS.find(function(x){return x.id===TUT.id});learnAct(t2.steps[TUT.idx].act)}
+  renderLearnTuts();
+});
+$("learnTabs").addEventListener("click",function(e){
+  var b=e.target.closest("[data-tab]");if(!b)return;
+  [].slice.call(this.children).forEach(function(x){x.classList.toggle("active",x===b)});
+  if(b.getAttribute("data-tab")==="quiz")renderQuiz();else renderLearnTuts();
+});
+document.addEventListener("keydown",function(e){
+  if(e.key==="Escape"&&$("learnOverlay")&&$("learnOverlay").classList.contains("on"))closeLearn();
 });
 
 /* ---------- P5: shranjeni projekti (brskalnik) + deljenje po URL povezavi ----------
