@@ -4880,8 +4880,9 @@ mn.addEventListener("drop",function(e){if(e.dataTransfer.files[0])loadPhoto(e.da
   var sh=$('showAside'); if(sh) sh.addEventListener('click', function(){ setAsideVisible(document.body.classList.contains('aside-hidden')); }); /* P3: na mobilnem toggle (odpre/zapre predal) */
   var scrim=$('asideScrim'); if(scrim) scrim.addEventListener('click', closeDrawer);
   var fclose=$('focusClose'); if(fclose) fclose.addEventListener('click', closeDrawer);
-  /* Privzeto je stranski panel skrit (canvas-first) — odpre se samo na zahtevo iz menijske vrstice */
-  try{ var as=localStorage.getItem('tehnicka-risba-pro-aside'); setAsideVisible(as==='visible'); }catch(e){ setAsideVisible(false); }
+  /* Canvas-first: ob vsakem zagonu je stranski panel skrit — odpre se samo na zahtevo
+     iz menijske vrstice (prejšnja shranjena izbira se namenoma NE upošteva). */
+  setAsideVisible(false);
 })();
 
 $("notes").addEventListener("input",function(){notesTouched=true});

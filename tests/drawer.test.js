@@ -42,6 +42,21 @@ check("drawer: privzeto skrit (canvas-first)", body().classList.contains("aside-
 check("drawer: privzeto brez canvas-focus", !body().classList.contains("canvas-focus"));
 check("drawer: #asideScrim in #focusClose obstajata", !!document.getElementById("asideScrim") && !!document.getElementById("focusClose"));
 
+/* Politika: ob zagonu se predal NE odpre niti, če je v localStorage shranjena 'visible' izbira */
+const html2 = fs.readFileSync(path.join(__dirname, "..", "tehnicka-risba-pro.html"), "utf8");
+const dom2 = new JSDOM(html2, {
+  runScripts: "dangerously", pretendToBeVisual: true, url: "https://draftwright-demo.vercel.app/",
+  beforeParse(window2) {
+    try { window2.localStorage.setItem("tehnicka-risba-pro-aside", "visible"); } catch (e) {}
+    window2.HTMLCanvasElement.prototype.getContext = function () {
+      return { drawImage() {}, getImageData(x, y, w, h) { return { data: new Uint8ClampedArray(w * h * 4) }; } };
+    };
+    window2.URL.revokeObjectURL = () => {};
+    window2.HTMLAnchorElement.prototype.click = function () {};
+  },
+});
+check("drawer: skrit tudi pri shranjenem 'visible'", dom2.window.document.body.classList.contains("aside-hidden"));
+
 window.openPanel("dims");
 check("drawer: openPanel(dims) odpre predal", !body().classList.contains("aside-hidden"));
 check("drawer: openPanel(dims) brez canvas-focus", !body().classList.contains("canvas-focus"));
