@@ -484,6 +484,7 @@ body.viewmode .viewbar{display:flex}
 <h2 data-i18n="h_sheet"><i>5</i>List in opombe</h2>
 <div class="row">
 <div><label for="paper">Format</label><select id="paper">><option value="A3">A3 420×297</option><option value="A4">A4 297×210</option><option value="A2">A2 594×420</option></select></div>
+<div><label for="sheetStyle">Slog lista</label><select id="sheetStyle"><option value="klasicen">Klasičen</option><option value="iso">ISO 7200</option><option value="ansi">ANSI</option></select></div>
 <div><label for="scale">Merilo</label><input type="text" id="scale" value="1:20">></div>
 <div><label for="projType">Projekcija</label><select id="projType">><option value="1">Prva (EU)</option><option value="3">Tretja (US)</option></select></div>
 <div><label for="rev">Revizija</label><input type="text" id="rev" value="A">></div>
@@ -1733,7 +1734,7 @@ function generate(){
   checks();
   if(!(L>0&&H>0&&D>0)){$("prev").className="empty";$("prev").innerHTML="<b>Manjkajoče mere</b>L, H in D morajo biti pozitivne.";return}
   var paper=V("paper"),pw=paper==="A3"?420:paper==="A4"?297:594,ph=paper==="A3"?297:paper==="A4"?210:420;
-  var s='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 297" width="'+pw+'mm" height="'+ph+'mm">';
+  var s='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 297" width="'+pw+'mm" height="'+ph+'mm" data-sheet-style="'+E(V("sheetStyle")||"klasicen")+'">';
   s+='<rect width="420" height="297" fill="#fff"/><rect x="7" y="7" width="406" height="283" fill="none" stroke="#111" stroke-width="0.5"/>';
   s+=tx(11,16,E(V("proj")),5.0,"start",500)+tx(409,16,"TEHNIČNA RISBA · "+paper+" · REV "+E(V("rev")),2.6,"end");
 
@@ -1935,20 +1936,23 @@ function generate(){
   var yy=234;nt.slice(0,8).forEach(function(line,idx){s+=tx(259,yy,(idx+1)+". "+line,2.25);yy+=4.2});
 
   /* TITLE BLOCK — 2 vrstici (F3): PROJEKT/RISBA·REV/MERILO/FORMAT/DATUM/RISAL + OBJEKT/TIP/MATERIAL/BARVA */
+  /* P2.4: slog lista — klasičen / ISO 7200 / ANSI (oznake naslovnega bloka) */
+  var sheetStyleV=V("sheetStyle")||"klasicen";
+  var TBL=sheetStyleV==="ansi"?{proj:"PROJECT",risba:"DRAWING NO. / REV",merilo:"SCALE",format:"SHEET",datum:"DATE",risal:"DRAWN BY / CHECKED",objekt:"OBJECT",tip:"TYPE",material:"MATERIAL",barva:"COLOR"}:(sheetStyleV==="iso"?{proj:"PROJEKT",risba:"ŠT. RISBE / REV",merilo:"MERILO",format:"FORMAT",datum:"DATUM",risal:"IZDELAL / KONTROLIRAL",objekt:"OBJEKT",tip:"TIP",material:"MATERIAL",barva:"BARVA"}:{proj:"PROJEKT",risba:"RISBA / REV",merilo:"MERILO",format:"FORMAT",datum:"DATUM",risal:"RISAL / KONT.",objekt:"OBJEKT",tip:"TIP",material:"MATERIAL",barva:"BARVA"});
   var ty=274;
   s+=rc(12,ty,396,12,"none","#111")+ln(12,ty+6,408,ty+6,0.25);
   [110,180,230,270,330].forEach(function(x){s+=ln(x,ty,x,ty+6,0.25)});
   [110,230,330].forEach(function(x){s+=ln(x,ty+6,x,ty+12,0.25)});
-  s+=tx(14,ty+2.6,"PROJEKT",1.7,"start",500,"#444")+tx(14,ty+5.2,E(V("proj")),2.2,"start");
-  s+=tx(112,ty+2.6,"RISBA / REV",1.7,"start",500,"#444")+tx(112,ty+5.2,E(V("drw"))+" / "+E(V("rev")),2.1,"start");
-  s+=tx(182,ty+2.6,"MERILO",1.7,"start",500,"#444")+tx(182,ty+5.2,E(V("scale")),2.1,"start");
-  s+=tx(232,ty+2.6,"FORMAT",1.7,"start",500,"#444")+tx(232,ty+5.2,paper,2.1,"start");
-  s+=tx(272,ty+2.6,"DATUM",1.7,"start",500,"#444")+tx(272,ty+5.2,E(V("date")),2.1,"start");
-  s+=tx(332,ty+2.6,"RISAL / KONT.",1.7,"start",500,"#444")+tx(332,ty+5.2,E(V("aut")||"—")+" / "+E(V("chk")||"—"),2.0,"start");
-  s+=tx(14,ty+8.6,"OBJEKT",1.7,"start",500,"#444")+tx(14,ty+11.2,E(V("objekt")||"—"),2.2,"start");
-  s+=tx(112,ty+8.6,"TIP",1.7,"start",500,"#444")+tx(112,ty+11.2,(USE_NAMES[V("sysUse")]||V("sysUse")).toUpperCase(),2.2,"start",500);
-  s+=tx(232,ty+8.6,"MATERIAL",1.7,"start",500,"#444")+tx(232,ty+11.2,E(V("mat")),2.2,"start");
-  s+=tx(332,ty+8.6,"BARVA",1.7,"start",500,"#444")+tx(332,ty+11.2,E(V("ral")),2.2,"start");
+  s+=tx(14,ty+2.6,TBL.proj,1.7,"start",500,"#444")+tx(14,ty+5.2,E(V("proj")),2.2,"start");
+  s+=tx(112,ty+2.6,TBL.risba,1.7,"start",500,"#444")+tx(112,ty+5.2,E(V("drw"))+" / "+E(V("rev")),2.1,"start");
+  s+=tx(182,ty+2.6,TBL.merilo,1.7,"start",500,"#444")+tx(182,ty+5.2,E(V("scale")),2.1,"start");
+  s+=tx(232,ty+2.6,TBL.format,1.7,"start",500,"#444")+tx(232,ty+5.2,paper,2.1,"start");
+  s+=tx(272,ty+2.6,TBL.datum,1.7,"start",500,"#444")+tx(272,ty+5.2,E(V("date")),2.1,"start");
+  s+=tx(332,ty+2.6,TBL.risal,1.7,"start",500,"#444")+tx(332,ty+5.2,E(V("aut")||"—")+" / "+E(V("chk")||"—"),2.0,"start");
+  s+=tx(14,ty+8.6,TBL.objekt,1.7,"start",500,"#444")+tx(14,ty+11.2,E(V("objekt")||"—"),2.2,"start");
+  s+=tx(112,ty+8.6,TBL.tip,1.7,"start",500,"#444")+tx(112,ty+11.2,(USE_NAMES[V("sysUse")]||V("sysUse")).toUpperCase(),2.2,"start",500);
+  s+=tx(232,ty+8.6,TBL.material,1.7,"start",500,"#444")+tx(232,ty+11.2,E(V("mat")),2.2,"start");
+  s+=tx(332,ty+8.6,TBL.barva,1.7,"start",500,"#444")+tx(332,ty+11.2,E(V("ral")),2.2,"start");
 
   s+='</svg>';
   $("prev").className="sheet";$("prev").innerHTML=s;
@@ -2208,7 +2212,7 @@ function kosovnicaCsv(){
 }
 var PROJ_SCHEMA="draftwright-project",PROJ_VERSION=3;
 $("dlCsv").onclick=function(){saveBlob(V("drw")+"-kosovnica.csv",kosovnicaCsv(),"text/csv;charset=utf-8")};
-var fields=["L","H","D","w2","slabT","segList","koritoH","koritoD","koritoList","n","sw","st","gap","wall","prof","topP","botP","np","postP","bolt","nbolt","zoneTop","zoneMid","zoneBot","zoneBase","innerD","sysUse","sysProfile","sysColor","sysSurface","matSel","rho","paper","scale","projType","rev","proj","drw","mat","tol","fin","aut","date","chk","ral","bracket","anchor","weld","notes","emb","sub","stN","stRise","stGoing","stW","stPosts","stH","stockLen","kerf","priceBoard","pricePost","priceScrew","priceWork","workHours","installTemp","slopeMM","mountType","weldedParts","installer","handoverDate","subType","strankaTip","strankaDav","strankaNaslov","strankaEmail","strankaTel","dobavaMode","dobavitelj","stranka","objekt"];
+var fields=["L","H","D","w2","slabT","segList","koritoH","koritoD","koritoList","n","sw","st","gap","wall","prof","topP","botP","np","postP","bolt","nbolt","zoneTop","zoneMid","zoneBot","zoneBase","innerD","sysUse","sysProfile","sysColor","sysSurface","matSel","rho","paper","sheetStyle","scale","projType","rev","proj","drw","mat","tol","fin","aut","date","chk","ral","bracket","anchor","weld","notes","emb","sub","stN","stRise","stGoing","stW","stPosts","stH","stockLen","kerf","priceBoard","pricePost","priceScrew","priceWork","workHours","installTemp","slopeMM","mountType","weldedParts","installer","handoverDate","subType","strankaTip","strankaDav","strankaNaslov","strankaEmail","strankaTel","dobavaMode","dobavitelj","stranka","objekt"];
 function projectJson(){
   var data={};fields.forEach(function(id){data[id]=V(id)});
   data.refMode=$("refMode").checked;data.photo=S.photoData;data.cal=S.cal;data.calMode=S.calMode;
