@@ -45,12 +45,22 @@ aside section.panel-active>h2{border-left:2px solid var(--ac);padding-left:6px}
 .primarybar:hover{filter:brightness(1.05)}
 .hooks{display:none}
 .kbd{font:11px ui-monospace,monospace;color:var(--mut);background:#101010;border:1px solid var(--line);border-radius:4px;padding:1px 5px}
-/* layout */
-.grid{display:grid;grid-template-columns:400px minmax(0,1fr);min-height:calc(100dvh - 40px)}
-aside{background:var(--panel);border-right:1px solid var(--line);padding:14px 15px 18px;overflow:auto;max-height:calc(100dvh - 40px)}
-main{padding:16px 18px;overflow:auto;background:#0d0d0d;position:relative}
+/* layout — platno kot glavna vsebina; stranski panel je predal, ki se odpira iz menijske vrstice */
+.grid{display:grid;grid-template-columns:1fr;min-height:calc(100dvh - 40px)}
+aside{position:fixed;top:40px;left:0;bottom:0;width:400px;background:var(--panel);border-right:1px solid var(--line);padding:14px 15px 18px;overflow-y:auto;transform:translateX(-104%);transition:transform .22s ease;z-index:70;box-shadow:0 12px 40px #000a}
+main{padding:16px 18px;overflow:auto;background:#0d0d0d;position:relative;display:flex;flex-direction:column;align-items:center}
 body.aside-hidden .grid{grid-template-columns:1fr}
-body.aside-hidden aside{display:none}
+body.aside-hidden aside{transform:translateX(-104%)}
+body:not(.aside-hidden) aside{transform:none}
+/* Zaslonka za predalom — klik zapre predal */
+#asideScrim{position:fixed;inset:0;background:#0006;opacity:0;pointer-events:none;transition:opacity .2s;z-index:65}
+body:not(.aside-hidden) #asideScrim{opacity:1;pointer-events:auto}
+/* Poglobljeni način (skica/tloris): predal postane veliko prekrivno platno */
+body.canvas-focus aside{left:50%;top:48px;bottom:24px;width:min(96vw,1200px);height:auto;transform:translate(-50%,0);border-radius:12px;border:1px solid var(--line);z-index:85}
+body.canvas-focus #asideScrim{z-index:80}
+#focusClose{display:none;position:fixed;top:56px;right:calc(50% - min(48vw,600px) + 14px);z-index:90;background:var(--bar);color:var(--tx);border:1px solid var(--line);border-radius:8px;padding:8px 12px;font:inherit;font-size:12.5px;cursor:pointer;box-shadow:0 6px 18px #0008}
+body.canvas-focus #focusClose{display:inline-flex;align-items:center;gap:6px}
+#focusClose:hover{border-color:var(--ac);color:var(--ac)}
 .show-aside-handle{display:none;position:fixed;left:10px;bottom:18px;z-index:55;background:var(--bar);color:var(--tx);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font:inherit;font-size:12px;cursor:pointer;box-shadow:0 6px 18px #0008}
 .show-aside-handle:hover{border-color:var(--ac);color:var(--ac)}
 body.aside-hidden .show-aside-handle{display:inline-flex;align-items:center;gap:6px}
@@ -620,6 +630,8 @@ Konstrukcija odporna na vremenske vplive.</textarea>
 <div class="sheet"><div id="prev" class="empty"><b>Pripravljen</b>Prilepite sliko (Ctrl+V, povleci datoteko ali gumb »Izberi datoteko« v plošči Slika), izmerite ali vpišite mere in pritisnite Generiraj.<br><span style="display:inline-flex;gap:8px;margin-top:12px"><button class="btn" id="emptyExample">Prikaži primer risbe</button><button class="btn" data-call="openHelp">Kako začeti?</button></span></div></div>
 <div id="errTray" aria-live="polite"></div>
 <div id="propPanel" class="prop-panel" role="dialog" aria-label="Lastnosti dimenzije"></div>
+<div id="asideScrim" title="Zapri ploščo"></div>
+<button id="focusClose" type="button">✕ Zapri</button>
 </main>
 </div>
 
@@ -4790,15 +4802,24 @@ mn.addEventListener("drop",function(e){if(e.dataTransfer.files[0])loadPhoto(e.da
   };
   setMode=function(expert){_setMode(expert); if(typeof updateModeTicks==='function') updateModeTicks();};
 
-  /* aside show/hide */
+  /* aside show/hide — predal se odpre iz menijske vrstice; ob skritju se konča tudi poglobljeni način */
   function setAsideVisible(visible){
     document.body.classList.toggle('aside-hidden', !visible);
+    if(!visible) document.body.classList.remove('canvas-focus');
     var b=$('toggleAside'), t=$('asideTick');
     if(b) b.childNodes[0].nodeValue = visible ? 'Skrij stransko ploščo ' : 'Pokaži stransko ploščo ';
     if(t) t.textContent = visible ? '●' : '';
     try{ localStorage.setItem('tehnicka-risba-pro-aside', visible ? 'visible' : 'hidden'); }catch(e){}
   }
   window.setAsideVisible = setAsideVisible;
+
+  /* Poglobljeni način: skica in tloris se odpreta kot veliko prekrivno platno */
+  function setCanvasFocus(on){
+    document.body.classList.toggle('canvas-focus', !!on);
+  }
+  function closeDrawer(){
+    setAsideVisible(false);
+  }
 
   /* Panel chooser: open one section from the top toolbar (Figma-style tabs + VS Code view picker) */
   var PANEL_GROUPS={
@@ -4817,6 +4838,7 @@ mn.addEventListener("drop",function(e){if(e.dataTransfer.files[0])loadPhoto(e.da
   }
   function openPanel(key){
     setAsideVisible(true);
+    setCanvasFocus(key==='tloris'||key==='skica');
     var secs=[].slice.call(document.querySelectorAll('aside section[data-panel]'));
     if(key==='all'){
       secs.forEach(function(s){s.classList.remove('collapsed')});
@@ -4856,7 +4878,10 @@ mn.addEventListener("drop",function(e){if(e.dataTransfer.files[0])loadPhoto(e.da
 
   var tgl=$('toggleAside'); if(tgl) tgl.addEventListener('click', function(e){ e.preventDefault(); setAsideVisible(document.body.classList.contains('aside-hidden')); closeMenus(); });
   var sh=$('showAside'); if(sh) sh.addEventListener('click', function(){ setAsideVisible(document.body.classList.contains('aside-hidden')); }); /* P3: na mobilnem toggle (odpre/zapre predal) */
-  try{ var as=localStorage.getItem('tehnicka-risba-pro-aside'); if(as==='hidden') setAsideVisible(false); else setAsideVisible(true); }catch(e){ setAsideVisible(true); }
+  var scrim=$('asideScrim'); if(scrim) scrim.addEventListener('click', closeDrawer);
+  var fclose=$('focusClose'); if(fclose) fclose.addEventListener('click', closeDrawer);
+  /* Privzeto je stranski panel skrit (canvas-first) — odpre se samo na zahtevo iz menijske vrstice */
+  try{ var as=localStorage.getItem('tehnicka-risba-pro-aside'); setAsideVisible(as==='visible'); }catch(e){ setAsideVisible(false); }
 })();
 
 $("notes").addEventListener("input",function(){notesTouched=true});
