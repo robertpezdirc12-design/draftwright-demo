@@ -1811,8 +1811,8 @@ function generate(){
   }else{
   s+=rc(fx,fy-fh,fwShow,fh)+rc(fx,fy-topH,fwShow,topH)+rc(fx,fy-fh,fwShow,botH);
   s+=rc(fx,fy-fh+botH-1.5,fwShow,1.5,"#ddd","#111");
-  for(var i=0;i<N;i++){var yy=fy-topH-(i+1)*pitch+gap*fs/2;s+=rc(fx,yy,fwShow,Math.max(0.5,sh),"#e6e6e6","#111");for(var k=1;k<NP;k++){var pxf=bvX(L*k/Math.max(1,NP-1));s+=ln(fx+pxf,yy,fx+pxf,yy+sh,0.15)}}
-  for(k=0;k<NP;k++){var pxb=fx+bvX(L*k/Math.max(1,NP-1));s+=rc(pxb-1,fy-topH,2,topH,"#cfcfcf","#111")}
+  for(var i=0;i<N;i++){var yy=fy-topH-(i+1)*pitch+gap*fs/2;s+=rc(fx,yy,fwShow,Math.max(0.5,sh),"#e6e6e6","#111");for(var k=1;k<NP;k++){var pxf=bvX(L*k/Math.max(1,NP));s+=ln(fx+pxf,yy,fx+pxf,yy+sh,0.15)}}
+  for(k=0;k<NP;k++){var pxb=fx+bvX(L*k/Math.max(1,NP));s+=rc(pxb-1,fy-topH,2,topH,"#cfcfcf","#111")}
   /* P2: korita za rože — box nad lamelami na vrhu ograje (samo enojna ograja); enoten vir getKoritaData() */
   var kdF=getKoritaData();
   if(kdF.active){
@@ -1824,7 +1824,7 @@ function generate(){
     });
   }
   s+=center(fx-4,fy-fh/2,fx+fwShow+4,fy-fh/2);
-  s+=dh(fx,fx+fwShow,fy+5,f(L)+" mm",fy-fh)+dv(fy-fh,fy,fx-7,f(H),fx);
+  s+=dh(fx,fx+fwShow,fy+5,f(L),fy-fh)+dv(fy-fh,fy,fx-7,f(H),fx);
   /* P2.2: oznaka preloma (break view) — dve lomljeni črti na meji kompresije */
   if(bv){
     var bvX1=fx+bvLA*bvS1,bvX2=fx+bvLA*bvS1+bvGap;
