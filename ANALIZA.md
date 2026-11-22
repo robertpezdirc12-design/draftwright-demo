@@ -130,7 +130,7 @@ npm install
 npm test
 ```
 
-**21 testnih surov (jsdom)** — testno nalaganje prek `tests/helpers/bootApp.js`, ki modulne `<script src>` oznake v HTML nadomesti z inline kodo (jsdom ne nalaga zunanjih skriptov):
+**22 testnih surov (jsdom)** — testno nalaganje prek `tests/helpers/bootApp.js`, ki modulne `<script src>` oznake v HTML nadomesti z inline kodo (jsdom ne nalaga zunanjih skriptov):
 - `modules.test.js` — strukturni testi razbitja monolita (vrstni red modulov, `sw.js` predpomnilnik)
 - `layout.test.js` — poravnanje/robni primeri postavitev
 - `regression.test.js` — regresijski pokriti koraki javnega API-ja (buildOrder, cutData, orderText)
@@ -146,6 +146,7 @@ npm test
 - `projects.test.js` + `pwa.test.js` — shranjevanje/PWA
 - `pdf.test.js` + `user-e2e.test.js` — PDF end-to-end
 - `stress.test.js` + `photo-variety.test.js` — obremenitve
+- `auto-l.test.js` — M2: confidence-gated avto-L (prag 45 %; stop-rule pri nizki zanesljivosti)
 - `novice-user.test.js` + `golden.test.js` — primerjava s zlatimi posnetki (`tests/golden/`)
 
 CI: `.github/workflows/ci.yml` (Node 22.22.2, `npm ci && npm test`).
@@ -165,7 +166,7 @@ icon-192.png/512.png     PWA ikone
 vendor/                  vendored knjižnice (jsPDF + svg2pdf + LiberationSans TTF)
 samples/                 vzorčni izvozi (SVG/PDF/DXF/STEP)
 docs/                    dodatna dokumentacija / validacija izvozov
-tests/                   jsdom testi (21 surov; zlati posnetki v tests/golden/; pomočnik tests/helpers/bootApp.js)
+tests/                   jsdom testi (22 surov; zlati posnetki v tests/golden/; pomočnik tests/helpers/bootApp.js)
 package.json / package-lock.json   odvisnosti in testna skripta (npm test)
 m2-rect.png / m2-src.png  testni viri za zaznavanje/perspektivo
 .github/                 CI (GitHub Actions — smoke test)

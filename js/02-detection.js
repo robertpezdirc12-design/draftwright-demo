@@ -70,7 +70,22 @@ function applyDetection(){
       if(prof.gapMed>0&&!ov.gap)$("gap").value=String(Math.round(prof.gapMed*mmPerPx*10)/10);
       if(S.det.bbox){
         var bl=(S.det.bbox.x1-S.det.bbox.x0)*(S.det.rectK?1/S.det.rectK:mmPerPx);
-        if(bl>0&&!ov.L)$("L").value=String(Math.round(bl*10)/10);
+        /* M2 (Issue #2): avto-L iz bbox je ZANESILNO le, kadar je detekcija koraka
+           konsistentna (prag 45 % — isti prag, ki že sproži opozorilo v dt()). Pri nizki
+           zanesljivosti (nagnat pogled, perspektiva, šibek kontrast) se L NE izpolnjuje
+           samodejno (stop-rule: ostane ročno), da ne bi privaril napačne dolžine. Oba
+           uvida označimo z S.det.autoL / autoLNote in ju izpišemo v status. */
+        if(bl>0&&!ov.L){
+          if(S.det.confidence>=45){
+            var lv=Math.round(bl*10)/10;
+            $("L").value=String(lv);
+            S.det.autoL=true;S.det.autoLVal=lv;
+            S.det.autoLNote="L="+lv+" mm avtomatsko iz detekcije (konsistentnost koraka "+S.det.confidence+" %) — preverite ročno";
+          }else{
+            S.det.autoL=false;S.det.autoLVal=null;
+            S.det.autoLNote="L ostane ročno: zanesljivost detekcije "+S.det.confidence+" % (pod pragom 45 %), zato avto-L zavrnjen — vpisite L ročno";
+          }
+        }
       }
       /* Faza 3 (F6): ROMB fazi 15° — vidni temni pas na fotografiji je širši od nominalne mere
          (fazi so vidni pod kotom). Korak lamel (sw+gap) je kotno neodvisen, zato: sw := nominalna
@@ -254,7 +269,9 @@ $("detect").onclick=function(){
   if(S.det.nomNote)msg+=" "+S.det.nomNote+".";
   if(S.det.suggestedProfile)msg+=" Možen profil: "+S.det.suggestedProfile.name+" (izmerjeno "+S.det.suggestedProfile.measured+" mm, odstopanje ±"+S.det.suggestedProfile.err+"%) — kliknite gumb v plošči Slika.";
   if(Math.abs(best.ang)>=4)msg+=" Izrazit naklon: pri perspektivi priporočamo ročno merjenje.";
+  if(S.det.autoLNote)msg+=" "+S.det.autoLNote+".";
   if(!S.calibrated)msg+=" Za milimetre umerite sliko.";
+  /* M2: opozorilo ob nizki zanesljivosti — tam se avto-L tudi zavrne (ista meja 45 %) */
   dt(msg,S.det.confidence<45?"warn":"");
 };
 $("sens").oninput=function(){if(S.det)$("detect").click()};
