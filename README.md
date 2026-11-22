@@ -77,11 +77,29 @@ Risba se ob izvozu vedno znova generira iz trenutnih polj, tako da izvoz vedno o
 - **interaktivni tloris** (sklop 8): risanje trase po mreži (1 px = 10 mm), dolžine/nosilci po segmentih (Roksal limiti), Undo/Redo (Ctrl+Z/Y), »Uporabi v izračun« → L; trasa v projektu (shema v2) in autosave
 - samodejno shranjevanje stanja + kalibracije (localStorage; fotografija izrazito NE — kvota)
 
+### 7. Napredne funkcionalnosti (P1–P3)
+
+Profesionalna nadgradnja produktivnosti in kakovosti, dostavljena v fazah P1–P3:
+
+- **Zgodovina operacij** — undo/redo parametrov (Ctrl+Z/Y, meni Orodja → Zgodovina); omejitev 40 korakov.
+- **Kontekstualni panel** — klik na dimenzijo v risbi odpre desni panel z lastnostmi in neposrednim urejanjem vrednosti (»Uporabi« regenerira risbo).
+- **Trak napak** — klik-za-popravek: vsako opozorilo je povezano s poljem (fokus + skok).
+- **Konfiguracije + dizajn tabela** — shranjevanje/uporaba različic parametrov (meni Konfiguracije) in izvoz celotne tabele kot CSV.
+- **Predloge listov** — slog naslovnega bloka: klasičen / ISO 7200 / ANSI (polje `sheetStyle`).
+- **BOM z interaktivnimi baloni** — klik na balon v risbi prikaže podatke o postavki (register `BOM_ROWS`).
+- **Break view** — dolge ograje (L > 7600 mm) se v sprednjem pogledu prikažejo komprimirano z lomljenima črtama in polno mero.
+- **PDM-lite** — samodejni posnetki stanja projekta (do 20) z obnovitvijo in izvozom arhiva (JSON).
+- **Masne lastnosti** — skupna masa lamel, kg/m² in kg/m v predračunu in montažnem načrtu.
+- **Zaznavanje trkov/prekrivanj** — opozorila (korita+segmenti, negativna reža, nepozitivna širina, negativen kerf, negativne cone).
+- **Oznake »stale«** — proizvodni rezultati so po spremembi parametrov označeni, dokler niso ponovno izračunani.
+- **Vadnice + certifikacija** — tri vodeni vadnice in kviz za oznako »Draftwright Certified Installer« (≥ 80 %).
+- **»What's new«** — popup ob novi različici + zapiski izdaj (Pomoč → Zapiski izdaj).
+
 ## Samoprevera
 
 Meni **Datoteka → Samoprevera (126 kombinacij)** generira 6 profilov × 7 uporab × 3 različice mer in preveri, da nastane veljaven SVG brez JS napak.
 
-Za avtomatske teste je v repozitoriju še [tests/](tests/) (jsdom): `smoke.test.js` (generiranje listov, validacije, izvozi), `export-dialog.test.js` (izvozni dialog — vsi formati, napredne nastavitve in robni primeri), `roksal-p1.test.js` (dilatacije, napušč, pregrade, palete barv, podlage) in `roksal-p2.test.js` (tehnični list, povpraševanje, prodajni pogoji), `issue2-phase1.test.js` (stale-state, orientacija reza), `vision.test.js` (realno pikselno zaznavanje, @napi-rs/canvas), `issue2-phase2.test.js` (DXF sloji, STEP topologija) in `issue2-phase3.test.js`, `tloris.test.js` in `skica.test.js` (stale-state, orientacija reza, enote) in `vision.test.js` + `issue2-phase2.test.js` (realno pikselno zaznavanje, DXF sloji/kodiranje, STEP topologija). Požene jih CI ([.github/workflows/ci.yml](.github/workflows/ci.yml)):
+Za avtomatske teste je v repozitoriju [tests/](tests/) (jsdom) — **34 testnih surov** (vključno z zlatimi posnetki). Poleg jedrnih (smoke, izvozni dialog, Roksal P1/P2, issue2 faze, vision, tloris, skica, projekti, PWA, PDF, E2E, stres, foto-različnost, novice-user, auto-l, registry, vision-deep, golden) so dodani **regresijski in novi surovi**: `issue37` (proizvodna konsistentnost, foto persistence, share fidelity, 3D pariteta), `error-tray`, `property-panel`, `history`, `configurations`, `sheet-templates`, `bom-balloons`, `pdm-snapshots`, `views-break`, `production-metrics`, `clash-detection`, `whats-new`, `learning`. Požene jih CI ([.github/workflows/ci.yml](.github/workflows/ci.yml)):
 
 ```bash
 npm install
@@ -99,7 +117,8 @@ icon-192.png / icon-512.png  PWA ikone (192/512, maskable)
 vendor/                  vendored knjižnice (jsPDF + svg2pdf + LiberationSans TTF) za vektorski PDF (P4) — delujejo tudi offline
 samples/                 vzorčni izvozi (SVG/PDF/DXF/STEP) in testni posnetki
 docs/                    dodatna dokumentacija / viri (npr. slike za zaznavanje)
-tests/                   jsdom testi (21 suite; zlati posnetki v tests/golden/)
+tests/                   jsdom testi (34 suite; zlati posnetki v tests/golden/)
+CHANGELOG.md            zapiski izdaj (What's new)
 package.json / package-lock.json   odvisnosti in testna skripta (npm test)
 m2-rect.png / m2-src.png  testni viri za zaznavanje/perspektivo
 .github/                 CI (GitHub Actions — smoke test)
