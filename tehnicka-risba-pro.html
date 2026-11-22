@@ -279,6 +279,8 @@ body.viewmode .viewbar{display:flex}
       <button class="mi" data-call="save">Shrani projekt… <span class="k">Ctrl+S</span></button>
       <button class="mi" data-call="prjDialogBtn">Shranjeni projekti… <span class="k">brskalnik</span></button>
       <button class="mi" data-call="prjLinkBtn">Kopiraj povezavo projekta</button>
+      <button class="mi" data-call="pdmBtn">Zgodovina posnetkov… <span class="k">PDM</span></button>
+      <button class="mi" data-call="pdmArchiveHook">Izvozi arhiv posnetkov (JSON)</button>
       <div class="sep"></div>
       <div class="label">Izvoz</div>
       <button class="mi" data-call="exportDialog">Izvozi… — možnosti izvoza <span class="k">Ctrl+E</span></button>
@@ -869,6 +871,21 @@ Konstrukcija odporna na vremenske vplive.</textarea>
     </div>
   </div>
 </div>
+<div class="exp-overlay" id="pdmOverlay">
+  <div class="exp-dialog" role="dialog" aria-modal="true" aria-label="Zgodovina posnetkov">
+    <div class="exp-head">
+      <div><h1>Zgodovina posnetkov</h1><p class="exp-sub">Posnetki stanja projekta (avtoshranjevanje) — obnovi poljubno različico ali izvozi arhiv (JSON).</p></div>
+      <button class="exp-x" id="pdmClose" type="button" aria-label="Zapri" title="Zapri (Esc)">×</button>
+    </div>
+    <div class="exp-body">
+      <div class="btns" style="margin-bottom:10px">
+        <button class="btn go" id="pdmNow" type="button">Posnemi zdaj</button>
+        <button class="btn" id="pdmArchiveBtn" type="button">Izvozi arhiv (JSON)</button>
+      </div>
+      <div id="pdmList"></div>
+    </div>
+  </div>
+</div>
 <div class="hooks" aria-hidden="true">
   <button id="themeBtn" type="button"></button>
   <button id="langBtn" type="button"></button>
@@ -885,6 +902,8 @@ Konstrukcija odporna na vremenske vplive.</textarea>
   <button id="cfgSaveBtn" type="button"></button>
   <button id="cfgOpen" type="button"></button>
   <button id="cfgCsvBtn" type="button"></button>
+  <button id="pdmBtn" type="button"></button>
+  <button id="pdmArchiveHook" type="button"></button>
 
   <button id="themeBtn" type="button"></button>
   <button id="langBtn" type="button"></button>
@@ -3782,6 +3801,52 @@ document.addEventListener("keydown",function(e){
   if(!typing&&e.key==="-")setZoom(zoom-10);
 });
 var LSKEY="tehnicka-risba-pro-state",saveTimer=null;
+/* P2.5: PDM-lite — posnetki (checkpoints) stanja projekta */
+var PDM_KEY="draftwright-pdm";
+function pdmAll(){try{return JSON.parse(localStorage.getItem(PDM_KEY)||"[]")}catch(e){return[]}}
+function pdmWrite(list){try{localStorage.setItem(PDM_KEY,JSON.stringify(list))}catch(e){}}
+function pdmCapture(data){
+  var list=pdmAll();
+  if(!data)return null;
+  if(list.length&&JSON.stringify(list[list.length-1].data)===JSON.stringify(data))return list[list.length-1];
+  var snap={id:(list.length?list[list.length-1].id+1:1),ts:new Date().toISOString(),data:data};
+  list.push(snap);
+  if(list.length>20)list=list.slice(-20);
+  pdmWrite(list);
+  return snap;
+}
+function pdmRestore(id){
+  var snap=null;
+  pdmAll().forEach(function(s){if(s.id===Number(id))snap=s});
+  if(!snap||!snap.data)return false;
+  var d=snap.data;
+  fields.forEach(function(f){if(d[f]!=null&&$(f))$(f).value=d[f]});
+  $("refMode").checked=!!d.refMode;
+  if(d.cal){S.cal=d.cal;S.calMode=d.calMode||"linear";S.calibrated=!!d.calibrated}
+  if(d.plan){TLR.walls=(d.plan.walls||[]).slice();TLR.anchor=d.plan.anchor||null;tlrRender()}
+  if(d.sketch){SK.elems=(d.sketch.elems||[]).slice();SK.paper=d.sketch.paper||"A4";SK.orient=d.sketch.orient||"pokoncno";SK.mreza=!!d.sketch.mreza;skRender()}
+  invalidateProduction();checks();
+  return true;
+}
+function pdmDelete(id){pdmWrite(pdmAll().filter(function(s){return s.id!==Number(id)}))}
+function pdmArchiveJson(){return JSON.stringify(pdmAll(),null,1)}
+function pdmRenderList(){
+  var box=$("pdmList");if(!box)return;
+  var list=pdmAll();
+  if(!list.length){box.innerHTML='<div class="empty"><b>Ni posnetkov</b>Posnetek nastane ob vsakem avtoshranjevanju ali na zahtevo.</div>';return}
+  box.innerHTML='<table style="width:100%;font-size:12px;border-collapse:collapse">'+
+    '<tr style="text-align:left"><th style="padding:4px 6px">#</th><th style="padding:4px 6px">Čas</th><th></th></tr>'+
+    list.map(function(s){
+      return '<tr data-pdm="'+s.id+'"><td style="padding:4px 6px">'+s.id+'</td>'+
+        '<td style="padding:4px 6px;color:var(--mut);font-size:11px">'+(s.ts||"").slice(0,16).replace("T"," ")+'</td>'+
+        '<td style="padding:4px 6px;text-align:right"><button class="btn" data-act="restore" type="button">Obnovi</button> '+
+        '<button class="btn" data-act="del" type="button">Briši</button></td></tr>';
+    }).join("")+'</table>';
+}
+function openPdm(){pdmRenderList();$("pdmOverlay").classList.add("on")}
+function closePdm(){$("pdmOverlay").classList.remove("on")}
+window.pdmSnapshotNow=function(){return pdmCapture(function(){var d2={};fields.forEach(function(id){d2[id]=V(id)});d2.refMode=$("refMode").checked;if(S.cal)d2.cal=S.cal;if(S.calMode)d2.calMode=S.calMode;if(S.calibrated)d2.calibrated=1;d2.plan={walls:TLR.walls.slice(),anchor:TLR.anchor};d2.sketch={elems:SK.elems.slice(),paper:SK.paper,orient:SK.orient,mreza:SK.mreza};return d2}())};
+window.pdmRestore=pdmRestore;window.pdmAll=pdmAll;window.pdmDelete=pdmDelete;window.pdmArchiveJson=pdmArchiveJson;
 function saveState(){
   var d={};fields.forEach(function(id){d[id]=V(id)});d.refMode=$("refMode").checked;
   /* pogl. 12: kalibracija se avtomatsko shrani (majhna) — fotografija NE (kvota ~5 MB; izrecno dokumentirano) */
@@ -3791,6 +3856,7 @@ function saveState(){
   try{localStorage.setItem(LSKEY,JSON.stringify(d))}catch(e){
     if(String(e).indexOf("QuotaExceeded")>=0&&$("globalStatus")){ $("globalStatus").textContent="Opozorilo: shramba brskalnika je polna — avtoshranjevanje preskočeno.";$("globalStatus").style.color="var(--wa)"; }
   }
+  pdmCapture(d);
 }
 function restoreState(){
   try{
@@ -3919,6 +3985,26 @@ $("cfgList").addEventListener("click",function(e){
 });
 document.addEventListener("keydown",function(e){
   if(e.key==="Escape"&&$("cfgOverlay")&&$("cfgOverlay").classList.contains("on"))closeCfgs();
+});
+
+/* P2.5: PDM-lite — vezave */
+$("pdmBtn").onclick=openPdm;
+$("pdmArchiveHook").onclick=function(){saveBlob("draftwright-pdm-arhiv.json",pdmArchiveJson(),"application/json")};
+$("pdmClose").onclick=closePdm;
+$("pdmNow").onclick=function(){pdmCapture(function(){var d3={};fields.forEach(function(id){d3[id]=V(id)});d3.refMode=$("refMode").checked;if(S.cal)d3.cal=S.cal;if(S.calMode)d3.calMode=S.calMode;if(S.calibrated)d3.calibrated=1;d3.plan={walls:TLR.walls.slice(),anchor:TLR.anchor};d3.sketch={elems:SK.elems.slice(),paper:SK.paper,orient:SK.orient,mreza:SK.mreza};return d3}());pdmRenderList();toast("Posnetek shranjen","ok")};
+$("pdmArchiveBtn").onclick=function(){saveBlob("draftwright-pdm-arhiv.json",pdmArchiveJson(),"application/json")};
+$("pdmList").addEventListener("click",function(e){
+  var b=e.target.closest("[data-act]");if(!b)return;
+  var tr=b.closest("[data-pdm]");if(!tr)return;
+  var id=Number(tr.getAttribute("data-pdm"));
+  if(b.getAttribute("data-act")==="restore"){
+    if(pdmRestore(id)){toast("Posnetek #"+id+" obnovljen","ok");closePdm()}
+  }else if(b.getAttribute("data-act")==="del"){
+    pdmDelete(id);pdmRenderList();
+  }
+});
+document.addEventListener("keydown",function(e){
+  if(e.key==="Escape"&&$("pdmOverlay")&&$("pdmOverlay").classList.contains("on"))closePdm();
 });
 
 /* ---------- P5: shranjeni projekti (brskalnik) + deljenje po URL povezavi ----------
