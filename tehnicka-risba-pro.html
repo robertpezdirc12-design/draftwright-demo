@@ -1365,6 +1365,19 @@ ovEl.addEventListener("mousemove",function(e){
 window.addEventListener("mouseup",function(){if(S.drag){S.drag=null;applyDetection();dt("Zaznane črte prilagojene ročno.","")}});
 
 /* ---------- validation ---------- */
+/* P3.2: zaznavanje prekrivanj/trkov (clash detection) */
+function detectClashes(){
+  var c=[];
+  var kdC=getKoritaData();
+  if(segsParse().length>=2&&kdC.active&&kdC.items.length){
+    c.push("Korita so izključena iz količin, ker so definirani segmenti (korita veljajo samo za glavno ograjo).");
+  }
+  if(n("gap")<0)c.push("Reža med lamelami ne more biti negativna.");
+  if(n("sw")<=0)c.push("Širina lamele mora biti pozitivna.");
+  if(n("kerf")<0)c.push("Kerf ne more biti negativen.");
+  if(n("zoneTop")<0||n("zoneMid")<0||n("zoneBot")<0||n("zoneBase")<0)c.push("Cone ne morejo biti negativne.");
+  return c;
+}
 function checks(){
   var L=n("L"),H=n("H"),N=n("n"),sw=n("sw"),gap=n("gap"),stn=n("st"),wa=n("wall");
   var ref=!!($("refMode")&&$("refMode").checked);
@@ -1411,6 +1424,8 @@ function checks(){
   }
   /* P2 (Faza 3): korita — opozorila iz enotnega vira getKoritaData() */
   getKoritaData().warnings.forEach(function(w){msgs.push(w)});
+  /* P3.2: zaznavanje prekrivanj/trkov */
+  detectClashes().forEach(function(x){msgs.push(x)});
   var box=$("checks");box.className="warnbox"+(msgs.length?" on":"");box.innerHTML=msgs.map(function(m){return"• "+E(m)}).join("<br>");
   var zoneBad=msgs.some(function(m){return m.indexOf("srednje polje")>=0});
   $("n").classList.toggle("invalid",zoneBad);$("gap").classList.toggle("invalid",zoneBad);
@@ -1431,6 +1446,11 @@ function fieldForMsg(m){
   if(/presega Roksal omejitev/.test(m))return "np";
   if(/KUBO pregrada/.test(m))return "H";
   if(/korito|korita/i.test(m))return "koritoList";
+  if(/izključena iz količin/.test(m))return "segList";
+  if(/Reža med lamelami/.test(m))return "gap";
+  if(/Širina lamele/.test(m))return "sw";
+  if(/Kerf/.test(m))return "kerf";
+  if(/Cone ne morejo biti negativne/.test(m))return "zoneTop";
   if(/pesek|tlakovci|ploščice|hidroizolacija|prane plošče|kovinska konstrukcija/.test(m))return "subType";
   return null;
 }
@@ -1501,7 +1521,7 @@ document.addEventListener("click",function(e){
 document.addEventListener("keydown",function(e){
   if(e.key==="Escape"){var p=$("propPanel");if(p&&p.classList.contains("on"))closePropPanel();}
 });
-["L","H","D","n","sw","gap","st","wall"].forEach(function(id){$(id).addEventListener("input",checks)});
+["L","H","D","n","sw","gap","st","wall","w2","slabT","segList","koritoList"].forEach(function(id){$(id).addEventListener("input",checks)});
 ["zoneTop","zoneMid","zoneBot","zoneBase"].forEach(function(id){$(id).addEventListener("input",checks)});
 ["installTemp","slopeMM"].forEach(function(id){$(id).addEventListener("input",checks)});
 ["weldedParts","subType"].forEach(function(id){$(id).addEventListener("change",checks)});
