@@ -1238,6 +1238,12 @@ function applyDetection(){
               toast("Profil "+bestSugg.name+" uporabljen — preverite mere","ok");
             };
           }
+        }else{
+          /* Neujemanje: zaznana geometrija ni zanesljivo skladna z WPC profili
+             (npr. kovinska/PVC/lesena ograja) — ne vsiljuj WPC profila. */
+          S.det.suggestedProfile=null;
+          var nb2=$("applySuggestedProf");if(nb2)nb2.style.display="none";
+          S.det.nomNote="Zaznana struktura ni zanesljivo skladna z WPC profili (morda druga vrsta ograje) — mere so orientacijske; izberite profil ročno in uporabite umeritev";
         }
       }
     }
@@ -1377,6 +1383,7 @@ $("detect").onclick=function(){
   var msg="Profil: ~"+(S.det.profN||"?")+" lamel (iz svetlostnega profila), naklon "+f(best.ang)+"°, konsistentnost koraka ~"+S.det.confidence+"%.";
   if(rectK>0)msg+=" Zaznava na rektificiranem pregledu (perspektiva odstranjena).";
   msg+=" Širina/reža izmerjeni iz svetlostnega profila — preverite ročno.";
+  if(S.det.confidence<45)msg+=" Nizka zanesljivost zaznavanja — če ograja ni WPC (npr. kovinska/PVC/lesena), mere niso veljavne; uporabite umeritev in izberite profil ročno.";
   if(S.det.nomNote)msg+=" "+S.det.nomNote+".";
   if(S.det.suggestedProfile){
     var sp=S.det.suggestedProfile;
