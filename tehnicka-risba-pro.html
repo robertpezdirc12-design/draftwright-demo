@@ -360,6 +360,7 @@ body.viewmode .viewbar{display:flex}
       <button class="mi" data-call="openHelp">Kako začeti… <span class="k">?</span></button>
       <button class="mi" data-call="themeBtn">Tema (svetla/temna)</button>
       <button class="mi" data-call="langBtn">Jezik SL/EN</button>
+      <button class="mi" data-call="wnBtn">Zapiski izdaj…</button>
       <div class="sep"></div>
       <div class="label">Bližnjice</div>
       <div style="padding:6px 8px;font-size:12px;color:var(--mut);line-height:1.7">
@@ -888,6 +889,17 @@ Konstrukcija odporna na vremenske vplive.</textarea>
     </div>
   </div>
 </div>
+<div class="exp-overlay" id="wnOverlay">
+  <div class="exp-dialog" role="dialog" aria-modal="true" aria-label="Zapiski izdaj">
+    <div class="exp-head">
+      <div><h1>Kaj je novega</h1><p class="exp-sub">Zapiski izdaj Draftwright — združljivost shranjenih projektov je ohranjena.</p></div>
+      <button class="exp-x" id="wnClose" type="button" aria-label="Zapri" title="Zapri (Esc)">×</button>
+    </div>
+    <div class="exp-body">
+      <div id="wnList"></div>
+    </div>
+  </div>
+</div>
 <div class="hooks" aria-hidden="true">
   <button id="themeBtn" type="button"></button>
   <button id="langBtn" type="button"></button>
@@ -906,6 +918,7 @@ Konstrukcija odporna na vremenske vplive.</textarea>
   <button id="cfgCsvBtn" type="button"></button>
   <button id="pdmBtn" type="button"></button>
   <button id="pdmArchiveHook" type="button"></button>
+  <button id="wnBtn" type="button"></button>
 
   <button id="themeBtn" type="button"></button>
   <button id="langBtn" type="button"></button>
@@ -4068,6 +4081,30 @@ document.addEventListener("keydown",function(e){
   if(e.key==="Escape"&&$("pdmOverlay")&&$("pdmOverlay").classList.contains("on"))closePdm();
 });
 
+/* P3.6: »What's new« + zapiski izdaj */
+var APP_VERSION="2026.11";
+var WHATS_NEW=[
+  ["2026.11","P1+P2+P3: trak napak (klik-za-popravek), kontekstualni panel, zgodovina (undo/redo), konfiguracije + dizajn tabela, break view (prelom dolgih ograj), BOM z interaktivnimi baloni, predloge listov ISO/ANSI, PDM-lite (posnetki), masne lastnosti (kg/m²), zaznavanje trkov/prekrivanj. Združljivost shranjenih projektov: ohranjena."],
+  ["2026.10","Predloge listov, PWA, i18n SL/EN, izvozni dialog z nastavitvami."]
+];
+function seenVersion(){try{return localStorage.getItem("draftwright-seen-version")||""}catch(e){return ""}}
+function setSeenVersion(){try{localStorage.setItem("draftwright-seen-version",APP_VERSION)}catch(e){}}
+function renderWhatsNew(){
+  var box=$("wnList");if(!box)return;
+  box.innerHTML=WHATS_NEW.map(function(r){
+    return '<div style="padding:8px 0;border-bottom:1px solid var(--line)"><b style="color:var(--ac)">'+E(r[0])+'</b><div style="font-size:12.5px;margin-top:3px">'+E(r[1])+'</div></div>';
+  }).join("");
+}
+function openWhatsNew(){renderWhatsNew();$("wnOverlay").classList.add("on")}
+function closeWhatsNew(){$("wnOverlay").classList.remove("on")}
+window.openWhatsNew=openWhatsNew;
+function maybeShowWhatsNew(){if(seenVersion()!==APP_VERSION){renderWhatsNew();$("wnOverlay").classList.add("on");setSeenVersion();}}
+$("wnBtn").onclick=openWhatsNew;
+$("wnClose").onclick=closeWhatsNew;
+document.addEventListener("keydown",function(e){
+  if(e.key==="Escape"&&$("wnOverlay")&&$("wnOverlay").classList.contains("on"))closeWhatsNew();
+});
+
 /* ---------- P5: shranjeni projekti (brskalnik) + deljenje po URL povezavi ----------
    Projekti so lokalni (localStorage) BREZ fotografije (kvota ~5 MB; cal/trasa/skica ostanejo).
    Povezava: projekt kodiran v #p=<base64url> — prejemnik odpre povezavo in projekt se naloži. */
@@ -4695,6 +4732,7 @@ $("notes").addEventListener("input",function(){notesTouched=true});
 restoreState();restoreFieldState();
 if(!$("date").value){var td=new Date();$("date").value=("0"+td.getDate()).slice(-2)+"."+("0"+(td.getMonth()+1)).slice(-2)+"."+td.getFullYear()}
 setMode(false);applyFieldVisibility();applySystem();checks();
+maybeShowWhatsNew();
 var _rm=$("refModeMenu"); if(_rm) _rm.checked=!!$("refMode").checked;
 if(typeof updateModeTicks==="function") updateModeTicks();
 })();
