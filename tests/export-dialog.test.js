@@ -157,7 +157,7 @@ async function runExportAndWait() {
   check("DXF: besedila nazaj pri samo-geometriji off", !!dxfLo && dxfLo.includes("\nTEXT\n"));
   check("DXF: status brez trditve o vodnem žigu", $("globalStatus").textContent.includes("Izvoz končan") && !$("globalStatus").textContent.includes("(z vodnim žigom)"), $("globalStatus").textContent);
 
-  // 9) PDF: vsebina @page + vodni žig v natisljivem HTML
+  // 9) PDF: velikost papirja (podatek + CSSOM) in vodni žig v natisljivem HTML
   openDlg();
   document.querySelector('[data-exp-preset="minimalno"]').click();
   document.querySelector('[data-exp-format="PDF"]').click();
@@ -165,7 +165,7 @@ async function runExportAndWait() {
   $("expWmText").value = "OSNUTEK";
   $("expPaper").value = "A4"; fire($("expPaper"), "change");
   dl = await runExportAndWait();
-  check("PDF: pojavno okno z @page A4", printWindows.length === 1 && printWindows[0].html.includes("@page{size:297mm 210mm"));
+  check("PDF: pojavno okno z velikostjo A4 (CSP varno)", printWindows.length === 1 && printWindows[0].html.includes('data-print-size="297mm 210mm"') && printWindows[0].html.includes('href="print.css"'));
   check("PDF: vodni žig v HTML", printWindows.length === 1 && printWindows[0].html.includes("OSNUTEK"));
 
   // 10) PDF z blokiranim pojavnim okvirjem → risba neuspešna, priloge pa se še vedno izvozijo

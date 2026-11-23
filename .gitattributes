@@ -1,0 +1,5 @@
+# CSP hashes are computed over the exact bytes of inline script/style content.
+# Force LF checkouts on every platform so a CRLF checkout cannot invalidate them.
+* text=auto eol=lf
+*.png binary
+*.ttf binary

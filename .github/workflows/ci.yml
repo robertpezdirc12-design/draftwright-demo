@@ -14,3 +14,14 @@ jobs:
           node-version: 24.x
       - run: npm ci
       - run: npm test
+      - name: Tests must not modify the working tree
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "Tests modified tracked files or generated untracked files:"
+            git status --porcelain
+            exit 1
+          fi
+      - name: CSP hashes must match the committed source
+        run: |
+          node scripts/generate-csp.js
+          git diff --exit-code -- tehnicka-risba-pro.html vercel.json

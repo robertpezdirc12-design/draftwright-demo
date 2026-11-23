@@ -121,11 +121,11 @@ function wallCountImpl() { return [...svg().querySelectorAll("line")].filter((l)
   let printHtml = null;
   window.open = () => ({ document: { write(h) { printHtml = h; }, close() {} }, focus() {}, print() {} });
   $("skPrint").click();
-  check("tisk: @page A3 ležeče (420mm 297mm)", !!printHtml && printHtml.includes("@page{size:420mm 297mm"));
+  check("tisk: velikost A3 ležeče (420mm 297mm, CSP varno)", !!printHtml && printHtml.includes('data-print-size="420mm 297mm"') && printHtml.includes('href="print.css"'));
   $("skPaper").value = "A4"; fire($("skPaper"), "change");
   $("skOrient").value = "pokoncno"; fire($("skOrient"), "change");
   $("skPrint").click();
-  check("tisk: @page A4 pokončno (210mm 297mm)", !!printHtml && printHtml.includes("@page{size:210mm 297mm"));
+  check("tisk: velikost A4 pokončno (210mm 297mm, CSP varno)", !!printHtml && printHtml.includes('data-print-size="210mm 297mm"'));
   check("tisk: brez odrezane vsebine (svg cel)", !!printHtml && printHtml.includes("</svg>"));
 
   // ---- kriterij 5: persistenca (shema v3) ----
