@@ -1,6 +1,6 @@
 # Matrika sposobnosti in validacija izvozov (Issue #2, pogl. 6)
 
-Stanje: Faza 2. Neodvisna validacija: **ezdxf 1.4.5** (DXF), **steputils 0.1** + lasten ISO-10303-21 topološki preverjevalnik (STEP), jsdom strukturni testi (`tests/issue2-phase2.test.js`). Reprodukcija: `npm test` + spodnji postopki.
+Stanje: Faza 2. Neodvisna validacija: **ezdxf 1.4.5** (DXF), **steputils 0.1** + lasten ISO-10303-21 topološki preverjevalnik (STEP), **jsdom + neodvisen XML/DOM parse** (SVG), **jsPDF** (PDF); strukturni in mejni testi (`tests/issue2-phase2.test.js`, `tests/exports-cad-boundary.test.js`). Reprodukcija: `npm test` + spodnji postopki.
 
 ## DXF R12 (AC1009, ANSI_1250)
 
@@ -48,6 +48,20 @@ Pravi tisk ni jsdom-testabilen — ročni postopek: Orodja → Izvozi PDF → br
 ## SVG
 
 Vektorski list 420×297; opcijsko vodni žig (prosojni diagonalni tekst) + metapodatki `<title>/<desc>`; `width/height` po formatu lista. Round-trip: SVG ↔ ni cilj (izvozna format).
+
+| Zmožnost | Status | Opomba |
+|---|---|---|
+| Well-formed XML | ✅ | neodvisen parse (`DOMParser`/jsdom brez `parsererror`) — `tests/exports-cad-boundary.test.js` |
+| Pravilni SVG namespace + viewBox | ✅ | `http://www.w3.org/2000/svg`, A3 = `0 0 420 297` |
+| Koordinatni sistem / enote | ✅ | vse x/y/cx/cy finite; geometrija ostane v mejah lista (± tolerantno za kote); ni ničelnih/negativnih |
+| Skladnost izvoženih mer s prikazanimi | ✅ | vnešena L=3800 → koten v SVG **in** rezalna dolžina lamele `3800 mm` v CSV kosovnici (`cutLen()=L` za prečno) |
+
+## CAD jedro — izrazna meja (§3.C)
+
+Izvozi so **dokumentacijsko/referenčni**, ne proizvodni:
+- **STEP** izrecno prizna v `FILE_DESCRIPTION`: *"Simplified box-solid approximation (not production CAD)"* — preverja samo ISO-10303-21 sintakso, AP214 shemo, skupno topologijo in pomanjkanje nedoločenih referenc. **Geometrijske natančnosti, trdnosti ali proizvodne primernosti ni mogoče potrditi brez pravega CAD jedra / zunanjega CAD programa** (steputils/ezdxf so dev-only).
+- **DXF/PDF** sta neodvisno potrjena (ezdxf `audit` 0 napak; jsPDF + `dxf-parser`).
+- Aplikacija **nikjer ne tvrdi**, da je izvoz CNC/proizvodno primeren.
 
 ## CSV/TXT/JSON
 
