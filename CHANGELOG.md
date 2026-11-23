@@ -2,6 +2,18 @@
 
 Vse pomembnejše spremembe projekta **Draftwright — Tehnična risba PRO** so dokumentirane v tej datoteki. Oblika sledi [Keep a Changelog](https://keepachangelog.com/sl/1.1.0/); različica je enaka `APP_VERSION` v aplikaciji.
 
+## [2026.11.5] — 2026-11-23
+
+### Dodano (Issue #41 §3.C — CAD/izvozi, neodvisna validacija)
+
+**Neodvisna SVG validacija + skladnost mer + izrazna CAD-jedro meja**
+- `tests/exports-cad-boundary.test.js` (18 preverjanj) pokrije pomanjkanje, ki ga DXF/PDF/STEP testi niso pokrivali:
+  - **SVG neodvisno**: well-formed XML (neodvisen parse brez `parsererror`), pravilen SVG namespace + `viewBox` A3 (`0 0 420 297`), **vse koordinate finite**, geometrija v mejah lista (± tolerantno za kote), brez ničelnih/negativnih.
+  - **Skladnost izvoženih mer s prikazanimi**: vnesti `L=3800` (prečna) → ista dolžina nastane kot koten v SVG **in** kot rezalna dolžina lamele `3800 mm` v CSV kosovnici (`cutLen()=L`); profil ROMB-67 se ujema med SVG BOM in CSV.
+  - **CAD-jedro MEJA (zaklenjena)**: STEP `FILE_DESCRIPTION` izrecno prizna *"simplified box-solid approximation (not production CAD)"* + brez nedoločenih `#N` referenc — test dokaza, da aplikacija ne tvrdi proizvodne primernosti, kje pa je meja.
+- Posodobljen `docs/validacija-izvozov.md` (SVG matrika + razdelek »CAD jedro — izrazna meja«).
+- Skupaj **52 testnih surov** (prej 51). Brez spremembe aplikacijske kode — test le **dokazuje** obstoječe obnašanje.
+
 ## [2026.11.4] — 2026-11-23
 
 ### Dodano (Issue #41 §3.D — varnost/podatki)
