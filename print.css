@@ -7,6 +7,7 @@ table{border-collapse:collapse;width:100%}
 td,th{border:1px solid #ccc;padding:6px}
 
 /* CSP: previously inline style attributes -> utility rules; no style-src unsafe-inline. */
+/*__UTILITY_CSS_START__*/
 [data-s="s1"]{align-self:center!important;}
 [data-s="s2"]{background:#111!important;}
 [data-s="s3"]{background:#ffffff!important;border-radius:10px!important;overflow:hidden!important;cursor:grab!important;}
@@ -81,3 +82,4 @@ td,th{border:1px solid #ccc;padding:6px}
 [data-s="s72"]{width:100%!important;font-size:12px!important;border-collapse:collapse!important;}
 [data-s="s73"]{width:100%!important;padding:7px 9px!important;border-radius:8px!important;border:1px solid var(--line)!important;background:var(--bg)!important;color:var(--tx)!important;}
 [data-s="s74"]{width:auto!important;}
+/*__UTILITY_CSS_END__*/
