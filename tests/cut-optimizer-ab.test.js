@@ -1,7 +1,8 @@
 /**
  * DEV-ONLY A/B benchmark (not part of `npm test`): compares the app's production
- * cut optimiser with the MIT-licensed `maxrects-packer` on real DOM-driven
- * scenarios. Run with: npm run bench:cut
+ * cut optimiser (hybrid: FFD baseline + best-fit multi-order challenger since the
+ * benchmark results were integrated) with the MIT-licensed `maxrects-packer` on
+ * real DOM-driven scenarios. Run with: npm run bench:cut
  *
  * It never modifies the app. Metric: total purchased stock length (mm), which is
  * comparable across different stock lengths; board count is reported as context.
@@ -125,8 +126,8 @@ scenarios.forEach((c) => {
 
 check("single-length case matches the DP optimum", results[0] && results[0].app.used === results[0].mr.used,
   results[0] ? results[0].app.used + " / " + results[0].mr.used : "no result");
-check("mixed 4000+1200: MaxRects buys less stock than current FFD", results[1] && results[1].mr.used < results[1].app.used,
-  results[1] ? results[1].mr.used + " < " + results[1].app.used : "no result");
+check("mixed 4000+1200: hybrid app is no worse than MaxRects", results[1] && results[1].app.used <= results[1].mr.used,
+  results[1] ? results[1].app.used + " <= " + results[1].mr.used : "no result");
 check("no JS errors during benchmark", errors.length === 0, errors.join("; "));
 
 /* Deterministic broader sample (seeded LCG) — reporting only, no app changes. */

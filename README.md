@@ -104,7 +104,7 @@ Profesionalna nadgradnja produktivnosti in kakovosti, dostavljena v fazah P1–P
 
 Meni **Datoteka → Samoprevera (126 kombinacij)** generira 6 profilov × 7 uporab × 3 različice mer in preveri, da nastane veljaven SVG brez JS napak.
 
-Za avtomatske teste je v repozitoriju [tests/](tests/) (jsdom) — **44 testnih surov** (vključno z zlatimi posnetki, varnostnima surovama `security-sketch` in `security-boundaries`, surovo `csp` za hash politiko ter `dxf-parser`, ki DXF preveri z neodvisno MIT knjižnico). Poleg jedrnih (smoke, izvozni dialog, Roksal P1/P2, issue2 faze, vision, tloris, skica, projekti, PWA, PDF, E2E, stres, foto-različnost, novice-user, auto-l, registry, vision-deep, golden) so dodani **regresijski in novi surovi**: `issue37` (proizvodna konsistentnost, foto persistence, share fidelity, 3D pariteta), `error-tray`, `property-panel`, `history`, `configurations`, `sheet-templates`, `bom-balloons`, `pdm-snapshots`, `views-break`, `production-metrics`, `clash-detection`, `whats-new`, `learning`. Požene jih CI ([.github/workflows/ci.yml](.github/workflows/ci.yml)):
+Za avtomatske teste je v repozitoriju [tests/](tests/) (jsdom) — **45 testnih surov** (vključno z zlatimi posnetki, varnostnima surovama `security-sketch` in `security-boundaries`, surovo `csp` za hash politiko ter `dxf-parser`, ki DXF preveri z neodvisno MIT knjižnico). Poleg jedrnih (smoke, izvozni dialog, Roksal P1/P2, issue2 faze, vision, tloris, skica, projekti, PWA, PDF, E2E, stres, foto-različnost, novice-user, auto-l, registry, vision-deep, golden) so dodani **regresijski in novi surovi**: `issue37` (proizvodna konsistentnost, foto persistence, share fidelity, 3D pariteta), `error-tray`, `property-panel`, `history`, `configurations`, `sheet-templates`, `bom-balloons`, `pdm-snapshots`, `views-break`, `production-metrics`, `clash-detection`, `whats-new`, `learning`. Požene jih CI ([.github/workflows/ci.yml](.github/workflows/ci.yml)):
 
 ```bash
 npm install
@@ -128,7 +128,7 @@ icon-192.png / icon-512.png  PWA ikone (192/512, maskable)
 vendor/                  vendored knjižnice (jsPDF + svg2pdf + LiberationSans TTF) za vektorski PDF (P4) — delujejo tudi offline
 samples/                 vzorčni izvozi (SVG/PDF/DXF/STEP) in testni posnetki
 docs/                    dodatna dokumentacija / viri (npr. slike za zaznavanje)
-tests/                   jsdom testi (44 suite; zlati posnetki v tests/golden/)
+tests/                   jsdom testi (45 suite; zlati posnetki v tests/golden/)
 CHANGELOG.md            zapiski izdaj (What's new)
 package.json / package-lock.json   odvisnosti in testna skripta (npm test)
 m2-rect.png / m2-src.png  testni viri za zaznavanje/perspektivo

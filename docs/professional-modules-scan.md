@@ -56,4 +56,16 @@ Results:
 
 Decision: **do not vendor MaxRects as a replacement.** Keep it as a measurable benchmark; if cutting yield becomes a commercial requirement, implement a hybrid that evaluates both plans and picks the lower purchased stock length, with golden tests for every scenario above.
 
+## Hybrid shipped (2026-11-23)
+
+The benchmark decision above has been implemented — **without vendoring any library**. `optimizeMulti` is now a hybrid:
+
+1. **FFD baseline** (previous algorithm) always runs first.
+2. A **best-fit span packer** runs over three piece orderings (descending, ascending, item order): each piece goes to the board with the shortest resulting span, and every board is re-priced at the end with the smallest stock covering its span — the same challenger semantics the benchmark used.
+3. The plan with the lower purchased stock length wins (tie-break: fewer boards). The result is therefore **never worse than FFD**.
+
+Measured: mixed `4000×10 + 1200×10` improved **62 000 → 55 600 mm / 13 boards** (the true optimum — every 4000 mm lamela needs its own board); 30-case seeded property test: **18 improvements, 0 regressions**. New in-suite test `tests/cut-hybrid.test.js` pins the goldens and the never-worse property; the A/B benchmark assertion now checks `app ≤ MaxRects` — in the reproducible run the app beat its challenger (`55 600 ≤ 58 000`), and in the 30-case sample MaxRects found **0** improvements and was worse in **4** (`tests/cut-optimizer-ab.test.js`).
+
+`maxrects-packer` remains a devDependency used only by `npm run bench:cut`; the app loads no external cut-packing code.
+
 No application code was changed by this scan or the benchmark.

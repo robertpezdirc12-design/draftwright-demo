@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- CSP: strict script allowlist by hash. No unsafe-inline / unsafe-eval. frame-ancestors is set in vercel.json (unsupported in meta). -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-ol6Pjv+ocOcjhI2x1ov69EYqvncF9jkLBztUZmAu4z8='; style-src 'self' 'sha256-cJCZVkcJ08a2d/Hy4ZBf8m1m9SqS+CkOI7QkSv+J+Hk='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-MzpVHiDPacNYHUB08aEsC4IiOUSI+fps3XlXNX4rnvo='; style-src 'self' 'sha256-cJCZVkcJ08a2d/Hy4ZBf8m1m9SqS+CkOI7QkSv+J+Hk='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Tehnična risba PRO – fotografija do končnega lista</title>
 <meta name="theme-color" content="#141c24">
 <link rel="manifest" href="manifest.webmanifest">
@@ -2928,14 +2928,25 @@ function cutItems(){
   }
   return items.filter(function(it){return it.len>0&&it.qty>0});
 }
-/* Faza 3: večdolžinski nesting — FFD (first-fit-decreasing, padajoče dolžine) prek obstoječih desk;
-   enodolžinski primeri ostanejo na DP (optimalen). Odpadek šteje k−1 rezov na desko. */
-function optimizeMulti(items,stocks,kerf){
-  var pieces=[];
-  items.slice().sort(function(a,b){return b.len-a.len}).forEach(function(it){
-    for(var i=0;i<it.qty;i++)pieces.push({len:it.len,name:it.name});
+/* Faza 3: večdolžinski nesting — hibridni optimizator: obdržimo FFD (first-fit-decreasing)
+   kot baseline in mu pridružimo best-fit razponski pakirnik prek več vrstnih redov kosov z
+   vnovično oceno zaloge (najmanjša zaloga, ki še pokrije razpon deske — kot izzivalnik v
+   A/B benchmarku tests/cut-optimizer-ab.test.js). Izberemo cenejši načrt (skupna nabavljena
+   dolžina, pri izenačenju manj desk), zato rezultat nikoli ni slabši od FFD.
+   Enodolžinski primeri ostanejo na DP (optimalen). Odpadek šteje k−1 rezov na desko. */
+function cutRowsFor(boards,kerf){
+  var rows=[];
+  boards.forEach(function(b,i3){
+    var usedLen=b.segs.reduce(function(a,s2){return a+s2.len},0);
+    var waste=b.B-usedLen-(b.segs.length>0?b.segs.length-1:0)*kerf;
+    var content=b.segs.map(function(s2){return s2.name+" "+s2.len+" mm"}).join(" + ");
+    var counts={};b.segs.forEach(function(s2){counts[s2.name]=(counts[s2.name]||0)+1});
+    var partStr=Object.keys(counts).map(function(k2){return counts[k2]+" kos "+k2}).join(" + ");
+    rows.push(["DESKA "+(i3+1),b.B+" mm",partStr,content,waste+" mm"]);
   });
-  var uniq=stocks.filter(function(v,i2,a){return a.indexOf(v)===i2}).sort(function(a,b){return a-b});
+  return rows;
+}
+function optimizeMultiFFD(pieces,uniq,kerf){
   var boards=[];
   pieces.forEach(function(pc2){
     var best=null;
@@ -2955,17 +2966,52 @@ function optimizeMulti(items,stocks,kerf){
     }
     best.b.segs.push({len:pc2.len,name:pc2.name});
   });
-  var rows=[];
-  boards.forEach(function(b,i3){
-    var usedLen=b.segs.reduce(function(a,s2){return a+s2.len},0);
-    var waste=b.B-usedLen-(b.segs.length>0?b.segs.length-1:0)*kerf;
-    var content=b.segs.map(function(s2){return s2.name+" "+s2.len+" mm"}).join(" + ");
-    var counts={};b.segs.forEach(function(s2){counts[s2.name]=(counts[s2.name]||0)+1});
-    var partStr=Object.keys(counts).map(function(k2){return counts[k2]+" kos "+k2}).join(" + ");
-    rows.push(["DESKA "+(i3+1),b.B+" mm",partStr,content,waste+" mm"]);
+  return boards;
+}
+function optimizeMultiBestFit(pieces,uniq,kerf,maxStock){
+  /* Kos postavimo na desko z najkrajšim nastalim razponom; zaloga se dodeli ŠELE na koncu
+     (najmanjša, ki pokrije razpon). Vrnemo null, če kos ne gre niti v najdaljšo zalogo. */
+  var boards=[];
+  for(var i=0;i<pieces.length;i++){
+    var pc=pieces[i];
+    if(pc.len>maxStock)return null;
+    var best=null,bestSpan=0;
+    for(var j=0;j<boards.length;j++){
+      var ns=boards[j].span+(boards[j].segs.length>0?kerf:0)+pc.len;
+      if(ns<=maxStock&&(best===null||ns<bestSpan)){best=boards[j];bestSpan=ns}
+    }
+    if(best){best.span=bestSpan;best.segs.push({len:pc.len,name:pc.name})}
+    else boards.push({span:pc.len,segs:[{len:pc.len,name:pc.name}]});
+  }
+  boards.forEach(function(b){
+    for(var s=0;s<uniq.length;s++)if(uniq[s]+1e-6>=b.span){b.B=uniq[s];return}
+    b.B=uniq[uniq.length-1]; // varianta, ki ne bi smela nastopiti (razpon ≤ maxStock)
   });
-  var unfilled=pieces.length-boards.reduce(function(a,b){return a+b.segs.length},0);
-  return {rows:rows,unfilled:unfilled,boards:boards,pieces:pieces.length};
+  return boards;
+}
+function optimizeMulti(items,stocks,kerf){
+  var pieces=[];
+  items.forEach(function(it){for(var i=0;i<it.qty;i++)pieces.push({len:it.len,name:it.name})});
+  var uniq=stocks.filter(function(v,i2,a){return a.indexOf(v)===i2}).sort(function(a,b){return a-b});
+  var maxStock=uniq.length?uniq[uniq.length-1]:0;
+  var ffd=optimizeMultiFFD(pieces.slice().sort(function(a,b){return b.len-a.len}),uniq,kerf);
+  var bestBoards=ffd,bestRows=cutRowsFor(ffd,kerf);
+  var bestPurchased=ffd.reduce(function(a,b){return a+b.B},0);
+  var orders=[
+    pieces.slice().sort(function(a,b){return b.len-a.len}),  // padajoče
+    pieces.slice().sort(function(a,b){return a.len-b.len}),  // naraščajoče
+    pieces.slice()                                            // vrstni red postavk
+  ];
+  for(var o=0;o<orders.length;o++){
+    var boards=optimizeMultiBestFit(orders[o],uniq,kerf,maxStock);
+    if(!boards||!boards.length)continue;
+    var purchased=boards.reduce(function(a,b){return a+b.B},0);
+    if(purchased<bestPurchased||(purchased===bestPurchased&&boards.length<bestBoards.length)){
+      bestBoards=boards;bestRows=cutRowsFor(boards,kerf);bestPurchased=purchased;
+    }
+  }
+  var unfilled=pieces.length-bestBoards.reduce(function(a,b){return a+b.segs.length},0);
+  return {rows:bestRows,unfilled:unfilled,boards:bestBoards,pieces:pieces.length};
 }
 function buildCut(){
   var p=WC[$("sysProfile").value];

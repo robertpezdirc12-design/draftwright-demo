@@ -48,7 +48,7 @@ function check(name, ok, info) {
   const cut = $("cutOut").textContent;
   check("nesting: lamela 12×940 + ročaj 2×3931", cut.includes("12 kos × 940 mm") && cut.includes("2 kos × 3931 mm"), cut.slice(0, 110));
   check("nesting: ročajev v 4000 (ostanek 69)", cut.includes("Ročaj (naklon) 3931 mm") && cut.includes("69 mm"), cut.match(/DESKA 1[^<]*/)?.[0]);
-  check("nesting: lamele 2 na desko 2200 (optimalno)", (cut.match(/2 kos Lamela/g) || []).length >= 5, "nabava " + (cut.match(/nabava \d+ desk/)?.[0] || ""));
+  check("nesting: hibrid — 6 lamel na desko 5800 (optimalno, prej FFD 2/2200)", (cut.match(/6 kos Lamela/g) || []).length === 2 && cut.includes("nabava 4 desk") && cut.includes("19.60 m"), "nabava " + (cut.match(/nabava \d+ desk/)?.[0] || ""));
   check("nesting: brez neizrezljivih", !cut.includes("ni mogoče izrezati"));
 
   // regresija: enodolžinski DP še vedno optimalen (16×500 → 4×2200)
