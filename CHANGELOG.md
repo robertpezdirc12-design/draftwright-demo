@@ -2,6 +2,26 @@
 
 Vse pomembnejše spremembe projekta **Draftwright — Tehnična risba PRO** so dokumentirane v tej datoteki. Oblika sledi [Keep a Changelog](https://keepachangelog.com/sl/1.1.0/); različica je enaka `APP_VERSION` v aplikaciji.
 
+## [2026.11.2] — 2026-11-23
+
+### Dodano
+
+**Celovit pregled s 4 agenti → implementirani popravki** (povzetek v `docs/review-2026-11-23.md`)
+- **P0 (terenska blokada):** ročno prilagajanje zaznanih lamelnih črt se je odvijalo samo z miško (mousedown/move/up) — jedrna kalibracija na tabličnih napravah ni delovala. Prelomljeno na pointer dogodke (`pointerdown/move/up` + `setPointerCapture` + `touch-action:none`).
+- **P0 (trojni Ctrl+Z/Y):** trije dokumentni undo skladi (parametri / tloris / skica) so se sprožali hkrati. Dodana diskriminacija po zadnjem domenu interakcije (`LAST_EDIT`, `seedDomain` na `pointerdown`+`click`).
+- **P1 (tiha mutacija formata):** sprememba izvozne papirne velikosti se ob **preklicu** izvoznega dialoga vrne — format risbe se tiho ne spremeni. Uspešen izvoz ohrani dvosmerno sinhronizacijo.
+- **P1 (SW `undefined` odgovor):** service worker pri manjkajočem predpomnisku + omrežnem padu se je rešil v `undefined`. Zdaj fallback na domov (`./`).
+- **P2 (robustnost izvozov):** sanitizacija — STEP projektne oznake (`safeStepName`), DXF TEXT (kontrolni znaki), CSV formula-injection (`csvCell`/`csvRow` v vseh 4 CSV izvozih, omiljenje vodilnih `= + - @`). Nedokumentiran sink `:3558` (QR `insertAdjacentHTML`) dopoljen v `security-innerhtml-inventory`.
+
+### Dodano (testi)
+
+- `tests/review-2026-11-23.test.js` (regresija za zgoraj, 22 preverjanj).
+- `tests/homography-math.test.js` — numerična pravilnost 4-točkovne umeritve (skrena mreža → mm znotraj 1e-4, afina točnost, zavrnitev izrojenih točk).
+- `tests/dilatation-table.test.js` — sweep cele dilatacijske matrike (1–5 m × −25…+35 °C: monotoničnost po T in dolžini, interpolacija, meje).
+- `tests/sw-offline.test.js` — behavioral test service workerja (VM + fake CacheStorage: SWR, offline fallback, navigacija, preskoki POST/zunanji izvor).
+- Kalibracijske funkcije (`solve/homography/dilatacija/toMM/mmDist`) izvožene na `window` kot testno dostopne.
+- Skupaj **49 testnih surov** (prej 46); CSP hash-ji regenerirani, zlata posnetka ostanejo byte-identična.
+
 ## [2026.11.1] — 2026-11-23
 
 ### Spremenjeno

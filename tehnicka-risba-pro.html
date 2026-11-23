@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- CSP: strict script allowlist by hash. No unsafe-inline / unsafe-eval. frame-ancestors is set in vercel.json (unsupported in meta). -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-MzpVHiDPacNYHUB08aEsC4IiOUSI+fps3XlXNX4rnvo='; style-src 'self' 'sha256-cJCZVkcJ08a2d/Hy4ZBf8m1m9SqS+CkOI7QkSv+J+Hk='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-s2J5tnX/XmcFKNhqg7mL9LYaEoUk7uJoP/8R2JxbFM0='; style-src 'self' 'sha256-sAiLhRQfEVQ+SeT/OcFVCNyEUxB/auw2WwDxVC/3yvI='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Tehnična risba PRO – fotografija do končnega lista</title>
 <meta name="theme-color" content="#141c24">
 <link rel="manifest" href="manifest.webmanifest">
@@ -79,7 +79,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--ac)}textarea{min-heig
 .hint{font-size:11px;color:var(--mut);margin:6px 0 0}
 .status{font-size:12px;color:var(--ok);min-height:17px;margin-top:6px}.status.warn{color:var(--wa)}.status.bad{color:var(--bad)}
 .photo{position:relative;width:100%;display:none;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#000}
-.photo.on{display:block}.photo img{display:block;width:100%;height:auto}#ov{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair}
+.photo.on{display:block}.photo img{display:block;width:100%;height:auto}#ov{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair;touch-action:none}
 .sheet{background:#fff;display:inline-block;min-width:100%;box-shadow:0 12px 40px #0009}#prev{width:100%;height:auto;display:block}
 .empty{padding:36px 20px;text-align:center;color:var(--mut);border:1px dashed var(--line);border-radius:8px;cursor:pointer}.empty b{display:block;color:var(--tx);font-weight:500;margin-bottom:8px}
 .warnbox{margin-top:8px;padding:8px;border:1px solid #7a5a22;background:#2a2113;border-radius:6px;font-size:11px;color:var(--wa);display:none}
@@ -1479,16 +1479,18 @@ $("detect").onclick=function(){
 $("sens").oninput=function(){if(S.det)$("detect").click()};
 $("minsep").onchange=function(){if(S.det)$("detect").click()};
 
-/* drag detected lines */
+/* drag detected lines — pointer dogodki (P0 iz pregleda 2026-11-23): tablice/dotik delujejo,
+   mousedown/mousemove so bili zamenjani s pointer* (kazneje pokrivajo tudi miško); setPointerCapture
+   zagotovi, da vlečenje ne prekine ob zapustitvi elementa med premikom prsta */
 var ovEl=$("ov");
-ovEl.addEventListener("mousedown",function(e){
+ovEl.addEventListener("pointerdown",function(e){
   if(!S.det||!S.img)return;
   var r=ovEl.getBoundingClientRect(),p={x:(e.clientX-r.left)*S.img.naturalWidth/r.width,y:(e.clientY-r.top)*S.img.naturalHeight/r.height};
   var tg=Math.tan((S.det.ang||0)*Math.PI/180),best=-1,bd=1e9;
   S.det.lines.forEach(function(L,i){var d=Math.abs(p.y-(L.y0+tg*(p.x-S.det.cx)));if(d<bd){bd=d;best=i}});
-  if(bd<14){S.drag={i:best};e.preventDefault()}
+  if(bd<14){S.drag={i:best};try{ovEl.setPointerCapture(e.pointerId)}catch(err){}e.preventDefault()}
 });
-ovEl.addEventListener("mousemove",function(e){
+ovEl.addEventListener("pointermove",function(e){
   if(!S.drag||!S.img)return;
   var r=ovEl.getBoundingClientRect(),x=(e.clientX-r.left)*S.img.naturalWidth/r.width,y=(e.clientY-r.top)*S.img.naturalHeight/r.height;
   var tg=Math.tan((S.det.ang||0)*Math.PI/180);
@@ -1496,7 +1498,7 @@ ovEl.addEventListener("mousemove",function(e){
   S.det.lines[S.drag.i].y0=Math.max(0,Math.min(S.img.naturalHeight,y-tg*(x-S.det.cx)));
   S.lines=S.det.lines.map(function(q){return q.y0});drawOverlay();
 });
-window.addEventListener("mouseup",function(){if(S.drag){S.drag=null;applyDetection();dt("Zaznane črte prilagojene ročno.","")}});
+window.addEventListener("pointerup",function(){if(S.drag){S.drag=null;applyDetection();dt("Zaznane črte prilagojene ročno.","")}});
 
 /* ---------- validation ---------- */
 /* P3.2: zaznavanje prekrivanj/trkov (clash detection) */
@@ -1515,53 +1517,58 @@ function detectClashes(){
 function checks(){
   var L=n("L"),H=n("H"),N=n("n"),sw=n("sw"),gap=n("gap"),stn=n("st"),wa=n("wall");
   var ref=!!($("refMode")&&$("refMode").checked);
+  /* Pregled 2026-11-23 (točka 5): opozorila so STRUKTIRANA {m, f} — besedilo (m) in polje
+     (f) sta priložena na MESTU NASTANKA, zato sprememba besedila več tiho ne prekine
+     povezave v traku napak. Polje je eksplicitno (ne re-izpeljano iz proze po regexu). */
   var msgs=[];
+  function pushW(text,field){msgs.push({m:text,f:field==null?fieldForMsg(text):field})}
+  function pushStrings(arr){arr.forEach(function(w){pushW(w)})}
   var use0=V("sysUse");
   if(use0==="pokoncna"){
-    if(!ref&&N*(sw+gap)>n("zoneMid")*1.05)msgs.push("Vsota širin navpičnih lamel in rež ("+f(N*(sw+gap))+" mm) presega srednje polje ("+f(n("zoneMid"))+" mm).");
+    if(!ref&&N*(sw+gap)>n("zoneMid")*1.05)pushW("Vsota širin navpičnih lamel in rež ("+f(N*(sw+gap))+" mm) presega srednje polje ("+f(n("zoneMid"))+" mm).","zoneMid");
   }else if(use0==="terasa"){
-    if(N*(sw+gap)>n("D")*1.05)msgs.push("Vsota globin lamel in rež ("+f(N*(sw+gap))+" mm) presega globino D ("+f(n("D"))+" mm).");
+    if(N*(sw+gap)>n("D")*1.05)pushW("Vsota globin lamel in rež ("+f(N*(sw+gap))+" mm) presega globino D ("+f(n("D"))+" mm).","D");
   }else if(use0==="stopniscna"){
     /* stopnice: lamele sledijo naklonu — vsota čez H ni uporabna (lažni alarm) */
   }else if(!ref&&N*(sw+gap)>H*1.05){
-    msgs.push("Vsota lamel in rež ("+f(N*(sw+gap))+" mm) presega višino H ("+f(H)+" mm).");
+    pushW("Vsota lamel in rež ("+f(N*(sw+gap))+" mm) presega višino H ("+f(H)+" mm).","H");
   }
-  if(wa*2>=Math.min(sw,stn))msgs.push("Stena profila je predebela za izbrane mere lamele.");
-  if(L<=0||H<=0||n("D")<=0)msgs.push("Mere L, H in D morajo biti pozitivne.");
-  if(ref&&gap*N>=n("zoneMid"))msgs.push("Pri "+N+" lamelah in reži "+gap+" mm srednje polje ("+f(n("zoneMid"))+" mm) ne zadošča — zmanjšajte število lamel ali režo.");
+  if(wa*2>=Math.min(sw,stn))pushW("Stena profila je predebela za izbrane mere lamele.","wall");
+  if(L<=0||H<=0||n("D")<=0)pushW("Mere L, H in D morajo biti pozitivne.","L");
+  if(ref&&gap*N>=n("zoneMid"))pushW("Pri "+N+" lamelah in reži "+gap+" mm srednje polje ("+f(n("zoneMid"))+" mm) ne zadošča — zmanjšajte število lamel ali režo.","zoneMid");
   if(ref){var zs=n("zoneTop")+n("zoneMid")+n("zoneBot")+n("zoneBase");
-    if(Math.abs(zs-H)>0.5)msgs.push("Vsota con ("+f(zs)+" mm) se ne ujema z višino H ("+f(H)+" mm) — razlika "+f(H-zs)+" mm je na listu prikazana kot odmik.");
+    if(Math.abs(zs-H)>0.5)pushW("Vsota con ("+f(zs)+" mm) se ne ujema z višino H ("+f(H)+" mm) — razlika "+f(H-zs)+" mm je na listu prikazana kot odmik.","H");
   }
   if(typeof WC!=="undefined"&&$("sysProfile")){
     var pc=WC[$("sysProfile").value],use=V("sysUse");
     if(pc){
-      if(use!=="stopniscna"&&(pc.allowed||[]).indexOf(use)<0)msgs.push("Profil "+pc.n+" ni predviden za "+(USE_NAMES[use]||use)+".");
+      if(use!=="stopniscna"&&(pc.allowed||[]).indexOf(use)<0)pushW("Profil "+pc.n+" ni predviden za "+(USE_NAMES[use]||use)+".","sysProfile");
       var lim=roksalLimit(pc,use,H),npv=Math.max(1,Math.round(n("np"))),span=L/Math.max(1,npv-1);
-      if(npv>1&&span>lim.v+0.5)msgs.push("Razmak "+lim.label.toLowerCase()+" "+Math.round(span)+" mm presega Roksal omejitev "+lim.v+" mm.");
-      if(use==="terasa"&&n("slopeMM")<10)msgs.push("Padec podlage je manjši od 10 mm/m — Roksal zahteva vsaj 1 cm/m.");
-      if((use==="terasa"||use==="precna"||use==="pokoncna")&&n("installTemp")<5)msgs.push("Montaža pod +5 °C ni primerna — preverite temperaturo.");
-      if((use==="precna"||use==="pokoncna")&&V("weldedParts")==="neznano")msgs.push("Varjeni deli na obstoječih stebrih niso preverjeni — odstraniti jih je treba pred montažo.");
+      if(npv>1&&span>lim.v+0.5)pushW("Razmak "+lim.label.toLowerCase()+" "+Math.round(span)+" mm presega Roksal omejitev "+lim.v+" mm.","np");
+      if(use==="terasa"&&n("slopeMM")<10)pushW("Padec podlage je manjši od 10 mm/m — Roksal zahteva vsaj 1 cm/m.","slopeMM");
+      if((use==="terasa"||use==="precna"||use==="pokoncna")&&n("installTemp")<5)pushW("Montaža pod +5 °C ni primerna — preverite temperaturo.","installTemp");
+      if((use==="precna"||use==="pokoncna")&&V("weldedParts")==="neznano")pushW("Varjeni deli na obstoječih stebrih niso preverjeni — odstraniti jih je treba pred montažo.","weldedParts");
       if(use==="terasa"){
         var lenM=Math.max(1,Math.min(5,L/1000)),rec=dilatacija(lenM,n("installTemp"));
-        if(Math.abs(n("gap")-rec)>0.75)msgs.push("Dilatacija (tabela WoodCore): priporočen razmak "+f(rec)+" mm za deske "+f(lenM)+" m pri "+f(n("installTemp"))+" °C — trenutno "+f(n("gap"))+" mm.");
+        if(Math.abs(n("gap")-rec)>0.75)pushW("Dilatacija (tabela WoodCore): priporočen razmak "+f(rec)+" mm za deske "+f(lenM)+" m pri "+f(n("installTemp"))+" °C — trenutno "+f(n("gap"))+" mm.","gap");
         var stv=V("subType");
-        if(stv==="pesek")msgs.push("Pesek/prodec: Roksal ne izvaja montaž in ne priporoča — potrebna prana betonska plošča (min. 6 cm) s padcem 1 cm/m.");
-        else if(stv==="tlakovci")msgs.push("Tlakovci: obvezno alu podložne cevi + mreža; preveriti višino do vrat (min. 4,5 cm).");
-        else if(stv==="plocice")msgs.push("Ploščice: montaža brez vrtanja v tla; preveriti višino do vrat; odstopajoče ploščice odstraniti.");
-        else if(stv==="beton_hidro")msgs.push("Hidroizolacija: podložne letvi ne pritrditi v tla — pod njiju guma/filc; podkonstrukcijo povezati s kotniki.");
-        else if(stv==="prane")msgs.push("Prane plošče: minimalna rešitev — priporočena betonska plošča s padcem 1 cm/m.");
-        else if(stv==="kovina")msgs.push("Obstoječa kovinska konstrukcija: razmak letvic max 33–35 cm (center); pod dolžinskim spojem konstrukcija na vsaki strani.");
+        if(stv==="pesek")pushW("Pesek/prodec: Roksal ne izvaja montaž in ne priporoča — potrebna prana betonska plošča (min. 6 cm) s padcem 1 cm/m.","subType");
+        else if(stv==="tlakovci")pushW("Tlakovci: obvezno alu podložne cevi + mreža; preveriti višino do vrat (min. 4,5 cm).","subType");
+        else if(stv==="plocice")pushW("Ploščice: montaža brez vrtanja v tla; preveriti višino do vrat; odstopajoče ploščice odstraniti.","subType");
+        else if(stv==="beton_hidro")pushW("Hidroizolacija: podložne letvi ne pritrditi v tla — pod njiju guma/filc; podkonstrukcijo povezati s kotniki.","subType");
+        else if(stv==="prane")pushW("Prane plošče: minimalna rešitev — priporočena betonska plošča s padcem 1 cm/m.","subType");
+        else if(stv==="kovina")pushW("Obstoječa kovinska konstrukcija: razmak letvic max 33–35 cm (center); pod dolžinskim spojem konstrukcija na vsaki strani.","subType");
       }
-      if(use!=="terasa"&&V("mountType")==="kovinska konstrukcija")msgs.push("Obstoječa kovinska konstrukcija: montaža na okrogle cevi NI dovoljena (potrebne ravne pritrdilne površine); garancija na izvedbo na obstoječi konstrukciji se ne prizna (kondenz).");
-      if(use==="pregrada"&&pc.n.indexOf("KUBO")>=0&&H>2500)msgs.push("KUBO pregrada: brez vmesnih nosilcev (pritrditev zgoraj in spodaj) samo do višine 2500 mm — dodajte vmesne nosilce.");
+      if(use!=="terasa"&&V("mountType")==="kovinska konstrukcija")pushW("Obstoječa kovinska konstrukcija: montaža na okrogle cevi NI dovoljena (potrebne ravne pritrdilne površine); garancija na izvedbo na obstoječi konstrukciji se ne prizna (kondenz).","mountType");
+      if(use==="pregrada"&&pc.n.indexOf("KUBO")>=0&&H>2500)pushW("KUBO pregrada: brez vmesnih nosilcev (pritrditev zgoraj in spodaj) samo do višine 2500 mm — dodajte vmesne nosilce.","H");
     }
   }
-  /* P2 (Faza 3): korita — opozorila iz enotnega vira getKoritaData() */
-  getKoritaData().warnings.forEach(function(w){msgs.push(w)});
-  /* P3.2: zaznavanje prekrivanj/trkov */
-  detectClashes().forEach(function(x){msgs.push(x)});
-  var box=$("checks");box.className="warnbox"+(msgs.length?" on":"");box.innerHTML=msgs.map(function(m){return"• "+E(m)}).join("<br>");
-  var zoneBad=msgs.some(function(m){return m.indexOf("srednje polje")>=0});
+  /* P2 (Faza 3): korita — opozorila iz enotnega vira getKoritaData() (besedilni vir → f po fieldForMsg) */
+  pushStrings(getKoritaData().warnings);
+  /* P3.2: zaznavanje prekrivanj/trkov (besedilni vir → f po fieldForMsg) */
+  pushStrings(detectClashes());
+  var box=$("checks");box.className="warnbox"+(msgs.length?" on":"");box.innerHTML=msgs.map(function(it){return"• "+E(it.m)}).join("<br>");
+  var zoneBad=msgs.some(function(it){return it.m.indexOf("srednje polje")>=0});
   $("n").classList.toggle("invalid",zoneBad);$("gap").classList.toggle("invalid",zoneBad);
   renderErrTray(msgs);updateGlobalStatus(msgs);syncSteps()
 }
@@ -1591,8 +1598,11 @@ function fieldForMsg(m){
 function renderErrTray(msgs){
   var tray=$("errTray");if(!tray)return;
   if(!msgs.length){tray.className="err-tray";tray.innerHTML="";return}
-  var list=msgs.map(function(m){
-    var fid=fieldForMsg(m);
+  var list=msgs.map(function(it){
+    /* Pregled 2026-11-23 (točka 5): polje je priloženo na nastanku opozorila (it.f).
+       it.f je lahko null (opozorilo ni povezano s poljem) ali manjkajoče (besedilni vir)
+       — v tem primeru se še vedno izpade na fieldForMsg (rešitev), ne da bi tiho pokvarilo povezavo. */
+    var m=it.m,fid=it.f!==undefined?it.f:fieldForMsg(m);
     return '<button type="button" class="et-item" data-field="'+(fid||"")+'" title="'+(fid?"Klikni za skok na polje":"")+'">'+E(m)+'</button>';
   }).join("");
   tray.className="err-tray on";
@@ -2265,7 +2275,9 @@ function dxfString(opts){
       if(opts.geomOnly)continue;
       var tr=e.getAttribute("transform")||"",rot=0,mm=tr.match(/rotate\((-?[\d.]+)/);if(mm)rot=-parseFloat(mm[1]); // SVG y-navzdol → DXF y-navzgor: obrnjen predznak
       var anchor=e.getAttribute("text-anchor")||"start",h72=(anchor==="middle")?1:(anchor==="end")?2:0;
-      var txt=(e.textContent||"").trim().replace(/≤/g,"<=").replace(/≥/g,">=");
+      /* P2 iz pregleda 2026-11-23: DXF TEXT (skupina 1) ne prenese pomikov vrstic/kontrolnih znakov —
+         nezaupan projekt (deljena povezava) bi sicer pokvaril ali "vpakiral" dodatne entitete. */
+      var txt=(e.textContent||"").trim().replace(/≤/g,"<=").replace(/≥/g,">=").replace(/[\r\n\t]+/g," ").replace(/[\x00-\x1f]/g,"");
       var rec=["0","TEXT","8","TEKST","10",num(A("x")),"20",num(flip(A("y"))),"30","0","40",num(A("font-size")||2.6),"1",txt,"50",num(rot)];
       if(h72)rec.push("72",String(h72),"11",num(A("x")),"21",num(flip(A("y"))),"31","0");
       add.apply(null,rec);
@@ -2291,6 +2303,9 @@ $("dlDxf").onclick=dxf;
 
 /* ---------- STEP model export ---------- */
 function stepString(){
+  /* P2 iz pregleda 2026-11-23: projektne oznake prihajajo iz nezaupanega vira (deljena povezava #p=,
+     uvožen JSON) — v STEP literalih so poleg ' nevarni še \ in pomiki vrstic (pokvarijo ISO-10303 zapis). */
+  function safeStepName(){return V("drw").replace(/[\r\n\t]+/g," ").replace(/['\\]/g,"")}
   var ents=[],id=0;
   function add(s){ents.push("#"+(++id)+" = "+s+";");return "#"+id}
   function dim(str,fallback){var a=(String(str||"").match(/\d+(?:\.\d+)?/g)||[]).map(Number);return a.length>=2?[a[0],a[1]]:fallback}
@@ -2377,7 +2392,7 @@ function stepString(){
   var appctx=add("APPLICATION_CONTEXT('core data for automotive mechanical design processes')");
   add("APPLICATION_PROTOCOL_DEFINITION('international standard','automotive_design',2000,"+appctx+")");
   var pctx=add("PRODUCT_CONTEXT('',"+appctx+",'mechanical')");
-  var prod=add("PRODUCT('"+V("drw").replace(/'/g,"")+"','"+V("drw").replace(/'/g,"")+"','',("+pctx+"))");
+  var prod=add("PRODUCT('"+safeStepName()+"','"+safeStepName()+"','',("+pctx+"))");
   var form=add("PRODUCT_DEFINITION_FORMATION('','',"+prod+")");
   var pdefctx=add("PRODUCT_DEFINITION_CONTEXT('part definition',"+appctx+",'design')");
   var pdef=add("PRODUCT_DEFINITION('design','',"+form+","+pdefctx+")");
@@ -2392,7 +2407,7 @@ function stepString(){
   add("PRODUCT_RELATED_PRODUCT_CATEGORY('part',$,("+prod+"))");
   var desc=isStair?"Stepped stair infill approximation (simplified box solids, not production CAD)":"Simplified box-solid approximation (not production CAD)";
   var out="ISO-10303-21;\nHEADER;\nFILE_DESCRIPTION(('"+desc+"'),'2;1');\n";
-  out+="FILE_NAME('"+V("drw").replace(/'/g,"")+"','"+(new Date()).toISOString().slice(0,19)+"',(''),'','','');\n";
+  out+="FILE_NAME('"+safeStepName()+"','"+(new Date()).toISOString().slice(0,19)+"',(''),'','','');\n";
   out+="FILE_SCHEMA(('AUTOMOTIVE_DESIGN { 1 0 10303 214 1 1 1 1 }'));\nENDSEC;\nDATA;\n";
   out+=ents.join("\n")+"\nENDSEC;\nEND-ISO-10303-21;\n";
   return out;
@@ -2413,6 +2428,15 @@ var DW_COMPONENTS={
   korito:{naziv:"Cvetlično korito za rože",material:"WPC/alu (ocena — potrditi pri Roksalu)",dim:function(){var k=getKoritaData();return f(k.D)+"x"+f(k.H)+" — širine: "+(k.items.map(function(kt){return f(kt.w)}).join(", ")||"—")},qty:function(){return getKoritaData().items.length},izracun:"1 na korito — po razponih (P2)"},
   koritoNosilec:{naziv:"Konzolni nosilec korita",material:"Jeklo",dim:function(){return V("bracket")},qty:function(){return getKoritaData().items.reduce(function(a,kt){return a+koritoNosilci(kt.w)},0)},izracun:"max(2, ceil(širina/600)+1) na korito — ocena, potrditi pri Roksalu"}
 };
+/* P2 iz pregleda 2026-11-23: skupno omiljanje CSV celic (formula-injection). Celice iz
+   nezaupanega vira (deljena povezava #p=, uvožen projekt) z vodilnim = + - @ se v
+   Excelu/LibreOffice izvrstijo kot formula; standardno omiljenje: predpona '.
+   Enote za VSE CSV izvoze (kosovnica, rezalni načrt, predračun, montažni načrt),
+   da omiljenje ostane usklajeno. Čiste celice (ne začinajo s = + - @) ostanejo
+   byte-identične. */
+function csvCell(c){var s=String(c);if(/^[=+\-@\t\r]/.test(s))s="'"+s;return '"'+s.replace(/"/g,'""')+'"'}
+function csvRow(arr){return arr.map(csvCell).join(";")}
+window.csvCell=csvCell;
 function kosovnicaCsv(){
   var prof=WC[$("sysProfile").value]||WC.romb67;
   var use=V("sysUse");
@@ -2444,7 +2468,7 @@ function kosovnicaCsv(){
   }
   rows.push(["","Masa lamel (ocena; brez profilov)","",f(mass())+" kg","","area·len·n·ρ"]);
   rows.push(["","Vrata WoodCore (TBI — ni v BOM)","TBI — podatki proizvajalca","TBI","TBI","potrebna specifikacija Roksala"]);
-  return bomfeff+rows.map(function(r){return r.map(function(c){return '"'+String(c).replace(/"/g,'""')+'"'}).join(";")}).join("\n");
+  return bomfeff+rows.map(csvRow).join("\n");
 }
 var PROJ_SCHEMA="draftwright-project",PROJ_VERSION=3;
 $("dlCsv").onclick=function(){saveBlob(V("drw")+"-kosovnica.csv",kosovnicaCsv(),"text/csv;charset=utf-8")};
@@ -2473,7 +2497,6 @@ function restoreProjectString(txt){
   }
   else if(d&&d.schema&&d.schema!==PROJ_SCHEMA)throw new Error("nepodprta shema "+d.schema+" (pričakovana "+PROJ_SCHEMA+")");
   /* legacy (v0): ravna struktura brez ovojnice — sprejeto */
-  var unknown=0;
   fields.forEach(function(id){if(d[id]!=null)$(id).value=d[id]});
   $("refMode").checked=!!d.refMode;var _rm3=$("refModeMenu");if(_rm3)_rm3.checked=$("refMode").checked;
   S.calMode=d.calMode==="plane"?"plane":"linear";S.cal=normalizeCal(d.cal);S.calibrated=!!d.calibrated&&!!S.cal;S.lines=d.lines||[];
@@ -2484,7 +2507,9 @@ function restoreProjectString(txt){
   if(d.photo){var im=new Image();im.onload=function(){S.img=im;$("img").src=im.src;$("photoBox").classList.add("on");drawOverlay()};im.src=d.photo}
   else{S.img=null;$("photoBox").classList.remove("on");}
   invalidateProduction();drawOverlay();checks();generate();
-  return "Projekt naložen"+(unknown?" ("+unknown+" nepoznanih polj preskočenih)":"")+".";
+  /* Pregled 2026-11-23: odstranjen mrtev `unknown` (nikoli ni ni povečan) —
+     sufiks "(N nepoznanih polj)" se nikoli ni izrisal; obnova je vedno popolna. */
+  return "Projekt naložen.";
 }
 $("loadFile").onchange=function(e){
   var file=e.target.files[0];if(!file)return;
@@ -2735,6 +2760,8 @@ function setRegistryBrand(id){if(REGISTRY[id]){REGISTRY_ACTIVE=id;return true}re
 /* Testno dostopno (monolit): IIFE-razlogi za tests/auto-l.test.js, registry.test.js in
    vision-deep.test.js — enaka konvencija kot window.exportPdf / window.prjRestoreFromHash. */
 window.WC=WC;window.DIL=DIL;window.USE_NAMES=USE_NAMES;window.PAL_KLASIK=PAL_KLASIK;window.PAL_RUSTIK=PAL_RUSTIK;
+/* testno dostopni izvozi za numerično preverjanje (pregled 2026-11-23, točka 4) */
+window.solve=solve;window.homography=homography;window.dilatacija=dilatacija;window.toMM=toMM;window.mmDist=mmDist;
 window.roksalLimit=roksalLimit;window.REGISTRY_SCHEMA=REGISTRY_SCHEMA;window.validateRegistry=validateRegistry;
 window.woodcoreRegistry=woodcoreRegistry;window.REGISTRY=REGISTRY;window.registryBrands=registryBrands;
 window.activeRegistry=activeRegistry;window.setRegistryBrand=setRegistryBrand;
@@ -3277,7 +3304,7 @@ $("buildCut").onclick=function(){buildCut();showResult("cutOut","Rezalni načrt"
 $("buildQuote").onclick=function(){buildQuote();showResult("quoteOut","Orientacijski predračun")};
 function cutCsv(){
   return "\ufeff"+"Vir;Deska (mm);Kosov;Št. kosov;Ostanek (mm)\n"+
-    cutData.rows.map(function(r){return '"'+r.join('";"')+'"'}).join("\n")+
+    cutData.rows.map(csvRow).join("\n")+
     "\n\nSkupaj;kosa "+cutData.count+" × "+cutData.piece+" mm;;;"+cutData.waste+" mm\nIzkoristek;"+cutData.yield+"%;";
 }
 $("menuDlCut").onclick=function(){
@@ -3287,7 +3314,7 @@ $("menuDlCut").onclick=function(){
 $("menuDlOrder").onclick=function(){if(!orderText)buildOrder();saveBlob(V("drw")+"-narocilo.txt",orderText,"text/plain;charset=utf-8")};
 function quoteCsv(){
   return "\ufeff"+"Postavka;Količina;Znesek (EUR)\n"+
-    quoteData.items.map(function(x){return '"'+x[0]+'";"'+x[1]+'";"'+x[2].toFixed(2)+'"'}).join("\n")+
+    quoteData.items.map(function(x){return csvCell(x[0])+";"+csvCell(x[1])+";"+csvCell(x[2].toFixed(2))}).join("\n")+
     "\n\nSKUPAJ (brez DDV);;"+quoteData.total.toFixed(2)+"\nOPOMBA: predračun je orientacijski in ni ponudba.";
 }
 $("menuDlQuote").onclick=function(){
@@ -3354,7 +3381,7 @@ function buildPlan(){
 }
 $("makePlan").onclick=function(){buildPlan();showResult("planOut","Montažni načrt")};
 function planCsv(){
-  return "\ufeff"+"Postavka;Specifikacija;Količina\n"+planData.map(function(r){return '"'+r.join('";"')+'"'}).join("\n");
+  return "\ufeff"+"Postavka;Specifikacija;Količina\n"+planData.map(csvRow).join("\n");
 }
 $("dlPlan").onclick=function(){
   if(!planData)buildPlan();
@@ -3483,6 +3510,7 @@ function exportPdf(sv,paper){
   function openExport(){
     lastFocus=document.activeElement;
     EXP.open=true;
+    EXP.paperBefore=V("paper");
     expRenderItems();expRenderAdv();
     $("expPaper").value=V("paper");
     [].forEach.call(document.querySelectorAll("[data-exp-preset]"),function(b){b.classList.toggle("active",b.getAttribute("data-exp-preset")===(EXP.preset||""))});
@@ -3494,6 +3522,14 @@ function exportPdf(sv,paper){
     EXP.open=false;$("expOverlay").classList.remove("on");
     if(lastFocus&&document.body.contains(lastFocus)&&lastFocus!==document.body){try{lastFocus.focus()}catch(e){}}
     lastFocus=null;
+  }
+  /* P1 iz pregleda 2026-11-23: ob PREKLICU izvoznega dialoga se format lista obnovi —
+     sprememba formata v dialogu naj tiho ne spremeni risbe, če uporabnik ne izvozi.
+     Ob uspešnem izvozu ostane usklajevanje (dvosmerna sinhronizacija po README). */
+  function cancelExport(){
+    var pb=EXP.paperBefore;
+    if(pb&&$("expPaper").value!==pb){$("paper").value=pb;expUpdate()}
+    closeExport();
   }
   function expBase(){
     var b=String(V("drw")||"").replace(/[\\/:*?"<>|]+/g,"-").trim().slice(0,80)||"izvoz";
@@ -3669,9 +3705,9 @@ function exportPdf(sv,paper){
     })();
   }
   $("expGo").onclick=expRun;
-  $("expCancel").onclick=closeExport;
-  $("expClose").onclick=closeExport;
-  $("expOverlay").addEventListener("click",function(e){if(e.target===this)closeExport()});
+  $("expCancel").onclick=cancelExport;
+  $("expClose").onclick=cancelExport;
+  $("expOverlay").addEventListener("click",function(e){if(e.target===this)cancelExport()});
   $("expPaper").addEventListener("change",function(){$("paper").value=this.value;expUpdate()});
   [].forEach.call(document.querySelectorAll("[data-exp-preset]"),function(b){
     b.addEventListener("click",function(){
@@ -3702,7 +3738,7 @@ function exportPdf(sv,paper){
     });
   });
   $("exportDialog").onclick=openExport;
-  document.addEventListener("keydown",function(e){if(EXP.open&&e.key==="Escape")closeExport()});
+  document.addEventListener("keydown",function(e){if(EXP.open&&e.key==="Escape")cancelExport()});
   document.addEventListener("keydown",function(e){
     if(!/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)&&(e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="e"){e.preventDefault();openExport()}
   });
@@ -3786,6 +3822,7 @@ function tlrRedo(){if(!TLR.redo.length)return;TLR.undo.push(JSON.stringify({w:TL
     var typing=/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName);
     var tlSec=document.querySelector('section[data-panel="tloris"]');
     if(!tlSec||tlSec.classList.contains("collapsed"))return;
+    if(LAST_EDIT!=="tloris")return;
     if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="z"&&!typing){e.preventDefault();tlrUndo()}
     if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="y"&&!typing){e.preventDefault();tlrRedo()}
     if(e.key==="Escape"&&TLR.anchor&&!$("expOverlay").classList.contains("on")){TLR.anchor=null;tlrRender()}
@@ -4028,6 +4065,7 @@ document.addEventListener("keydown",function(e){
   if(typing)return;
   var skSec=document.querySelector('section[data-panel="skica"]');
   if(!skSec||skSec.classList.contains("collapsed"))return;
+  if(LAST_EDIT!=="skica")return;
   if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="z"){e.preventDefault();$("skUndo").click()}
   if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="y"){e.preventDefault();$("skRedo").click()}
 });
@@ -4227,6 +4265,20 @@ function histRedo(){
   if(HIST.idx<HIST.stack.length-1){HIST.idx++;histRestore(HIST.stack[HIST.idx]);syncSteps();$("globalStatus").textContent="Redo: ponovno uporabljeno stanje parametrov.";}
 }
 window.histUndo=histUndo;window.histRedo=histRedo;
+/* P0 iz pregleda 2026-11-23: diskriminacija undo domen (parametri / tloris / skica).
+   Zadnji domain nastavijo: (a) capture pointerdown znotraj sklopa tloris/skica,
+   (b) input/change glede na to, katero polje je urejano. */
+var LAST_EDIT="params";
+Object.defineProperty(window,"LAST_EDIT",{enumerable:true,configurable:true,get:function(){return LAST_EDIT},set:function(v){LAST_EDIT=v}});
+/* Zadnji domain nastavi vseh interakcij: pointerdown (pravo risanje v tlorisu/skici) in
+   click (gumbi/polja — sintetizirani dogodek v testih, podklic za pointerdown v brskalniku).
+   Klik v polje parametrov ponastavi na "params"; klik v sklopu tloris/skica ustrezno preklopi. */
+document.addEventListener("pointerdown",function(e){seedDomain(e.target)},true);
+document.addEventListener("click",function(e){seedDomain(e.target)},true);
+function seedDomain(t){
+  var s=t&&t.closest?t.closest('section[data-panel="tloris"],section[data-panel="skica"]'):null;
+  LAST_EDIT=s?s.getAttribute("data-panel"):"params";
+}
 document.addEventListener("keydown",function(e){
   if(!(e.ctrlKey||e.metaKey))return;
   var k=(e.key||"").toLowerCase();
@@ -4234,6 +4286,11 @@ document.addEventListener("keydown",function(e){
   if(/INPUT|TEXTAREA|SELECT/.test(tg))return;
   var inCanvas=!!(e.target&&e.target.closest&&e.target.closest("#skSvg,#tlorisSvg"));
   if(inCanvas)return;
+  /* P0 iz pregleda 2026-11-23: trije document-level handlerji (zgodovina, tloris, skica) so se
+     odzvali na isti Ctrl+Z/Y hkrati — guard `closest("#skSvg,#tlorisSvg")` nikoli ne ujame, ker
+     je keydown target body (SVG canvas ni fokusabilen), sklopa tloris/skica pa sta privzeto razprta.
+     Diskriminacija: undo/redo sledi ZADNJEMU domenu interakcije (LAST_EDIT). */
+  if(LAST_EDIT!=="params")return;
   if(k==="z"){e.preventDefault();histUndo()}
   else if(k==="y"){e.preventDefault();histRedo()}
 });

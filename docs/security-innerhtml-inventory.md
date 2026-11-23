@@ -33,6 +33,7 @@ Scope: `tehnicka-risba-pro.html` at branch `integrate-remote-modular`, working t
 | 4645 | `svg.innerHTML` | `renderIso3D()` | 4 | Built from validated numeric geometry (`collectSolids()`), no text/link attributes. |
 | 4708 / 4710 / 4711 | i18n swap | translation constants / `textContent` | 2 | Static dictionary values and DOM text content, restored verbatim. |
 | 4740 | result window | existing DOM subtree | 4 | Copies already-rendered markup, does not introduce new untrusted data. |
+| 3558 (main, 2026-11-23) | `clone.insertAdjacentHTML("beforeend",qs)` | QR group builder in SVG export | 4 | `qs` interpolates only numeric values (`qx/qy/qcell/qc/qr0` from `qr-approval` encoder over numeric rects). Missing from the original 36-site sweep (found in the 2026-11-23 review, `docs/review-2026-11-23.md`); verified safe by inspection — no text or user-string interpolation. |
 
 **Summary:** 0 class-3 (untrusted and unsafe) sinks remain; 0 class-5 (unknown) sinks remain. Before the corrections, lines 1055, 3593, 3743, 4023 and 4348 were class 3. Three of those were demonstrated exploitable (1055, 3743 in exported SVG, and the 3743 sibling export path); the others were latent.
 
