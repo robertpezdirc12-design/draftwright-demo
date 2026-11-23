@@ -2,6 +2,17 @@
 
 Vse pomembnejše spremembe projekta **Draftwright — Tehnična risba PRO** so dokumentirane v tej datoteki. Oblika sledi [Keep a Changelog](https://keepachangelog.com/sl/1.1.0/); različica je enaka `APP_VERSION` v aplikaciji.
 
+## [2026.11.1] — 2026-11-23
+
+### Spremenjeno
+
+**Hibridni rezalni optimizator (večdolžinski primeri)**
+- `optimizeMulti` je zdaj hibrid: FFD (prejšnji algoritem) ostane baseline, hkrati teče best-fit razponski pakirnik prek treh vrstnih redov kosov z vnovično oceno zaloge (najmanjša zaloga, ki pokrije razpon deske). Izbran je cenejši načrt — rezultat nikoli ni slabši od FFD.
+- Mešani primer 4000×10 + 1200×10: **62 000 → 55 600 mm** (nabava 20 → 13 desk); stopnišče 940×12 + ročaj 3931×2: **21 200 → 19 600 mm** (8 → 4 deske).
+- Preverjeno proti A/B benchmarku (`npm run bench:cut`): aplikacija zdaj prekaša MaxRects izzivalca (55 600 ≤ 58 000; v 30-seed vzorcu 0 izboljšav / 4 regresije na strani izzivalca).
+- Brez zunanjih knjižnic v brskalniku — `maxrects-packer` ostane samo dev odvisnost za benchmark.
+- Nov test `tests/cut-hybrid.test.js` (goldeni + lastnost »nikoli slabši od FFD« na 30 primerih: 18 izboljšav, 0 regresij).
+
 ## [2026.11] — 2026-11-22
 
 ### Dodano
