@@ -48,7 +48,16 @@ self.addEventListener("fetch", function (e) {
           if (res && res.status === 200 && res.type === "basic") cache.put(e.request, res.clone());
           return res;
         }).catch(function () { return hit; });
-        return hit || net;
+        if (hit) {
+          /* stale-while-revalidate: hit se vrne takoj, osvežitev teče v ozadju (ne blokira odziva) */
+          return hit;
+        }
+        /* brez predpomniska: počakaj na omrežje; če pade (in ni hit), namesto undefined
+           vrni domov (navigacijski fallback) — sicer se odziv reši v undefined (pregled 2026-11-23). */
+        return net.then(function (res) {
+          if (res && res.status === 200) return res;
+          return caches.match("./");
+        });
       });
     })
   );

@@ -45,7 +45,8 @@ function pngSize(file) {
   try { new vm.Script(fs.readFileSync(swPath, "utf8"), { filename: "sw.js" }); } catch (e) { swOk = false; }
   check("sw.js: sintaksa veljavna", swOk);
   const sw = fs.existsSync(swPath) ? fs.readFileSync(swPath, "utf8") : "";
-  check("sw.js: stale-while-revalidate (hit takoj, osvežitev v ozadju)", sw.includes("cache.match") && sw.includes("hit || net") && sw.includes("cache.put"));
+  check("sw.js: stale-while-revalidate (hit takoj, osvežitev v ozadju)", sw.includes("cache.match") && sw.includes("if (hit)") && sw.includes("cache.put"));
+  check("sw.js: brez predpomniska + omrežna napaka → fallback na domov (ne undefined)", sw.includes('caches.match("./")') && !sw.includes("hit || net"));
   check("sw.js: samo isti izvor (GET)", sw.includes('e.request.method !== "GET"') && sw.includes("url.origin !== self.location.origin"));
   check("sw.js: čiščenje starih različic ob aktivaciji", sw.includes("caches.delete") && sw.includes("skipWaiting") && sw.includes("clients.claim"));
 
