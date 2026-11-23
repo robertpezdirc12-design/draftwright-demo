@@ -3,8 +3,8 @@
    - navigacije (dokumenti): network-first → če splet pade, stalna različica;
    - ostalo: stale-while-revalidate — iz predpomnilnika takoj, osvežitev v ozadju.
    Različico cache dvigni ob večjih spremembah (stari cache se ob aktivaciji počisti). */
-var SW_CACHE = "risba-pro-v2";
-var SW_ASSETS = ["./", "./index.html", "./tehnicka-risba-pro.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./vendor/jspdf.umd.min.js", "./vendor/svg2pdf.umd.min.js", "./vendor/qr-core.js", "./vendor/LiberationSans-Regular.ttf"];
+var SW_CACHE = "risba-pro-v3";
+var SW_ASSETS = ["./", "./index.html", "./tehnicka-risba-pro.html", "./print.css", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./vendor/jspdf.umd.min.js", "./vendor/svg2pdf.umd.min.js", "./vendor/qr-core.js", "./vendor/LiberationSans-Regular.ttf"];
 
 self.addEventListener("install", function (e) {
   e.waitUntil(

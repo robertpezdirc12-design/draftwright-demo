@@ -52,8 +52,26 @@ const CONFIGS = [
 ];
 
 (async () => {
-  if (!fs.existsSync(GOLDEN)) fs.mkdirSync(GOLDEN, { recursive: true });
-  const UPDATE = !!process.env.UPDATE_GOLDENS;
+  // Verification is read-only: only an explicit UPDATE_GOLDENS=1 may create
+  // directories or rewrite fixtures. Anything else must only read and compare.
+  const UPDATE = process.env.UPDATE_GOLDENS === "1";
+  if (UPDATE && !fs.existsSync(GOLDEN)) fs.mkdirSync(GOLDEN, { recursive: true });
+
+  function verifyGolden(name, file, got) {
+    if (UPDATE) {
+      fs.writeFileSync(file, got);
+      check(name, true, "posodobljen zlati posnetek");
+      return;
+    }
+    if (!fs.existsSync(file)) {
+      check(name, false, "manjkajoči zlati posnetek " + path.relative(process.cwd(), file) + " — posodobite z UPDATE_GOLDENS=1");
+      return;
+    }
+    const want = fs.readFileSync(file, "utf8").replace(/\r/g, "");
+    if (want === got) { check(name, true, "identično (" + Math.round(got.length / 1024) + " kB)"); return; }
+    let i = 0; while (i < Math.min(want.length, got.length) && want[i] === got[i]) i++;
+    check(name, false, "razlika @ " + i + " — željeno: …" + want.slice(Math.max(0, i - 30), i + 30) + " · dobljeno: …" + got.slice(Math.max(0, i - 30), i + 30));
+  }
 
   for (const cfg of CONFIGS) {
     const dom = makeDom();
@@ -71,20 +89,7 @@ const CONFIGS = [
     const svg = $("prev").querySelector("svg");
     if (!svg) { check(cfg.name, false, "brez SVG"); continue; }
     const got = norm(svg.outerHTML);
-    const file = path.join(GOLDEN, cfg.name + ".svg");
-    if (UPDATE) {
-      fs.writeFileSync(file, got);
-      check(cfg.name, true, "posodobljen zlati posnetek");
-    } else if (!fs.existsSync(file)) {
-      check(cfg.name, false, "manjkajoči zlati posnetek — posodobite z UPDATE_GOLDENS=1");
-    } else {
-      const want = fs.readFileSync(file, "utf8").replace(/\r/g, "");
-      if (want === got) { check(cfg.name, true, "identično (" + Math.round(got.length / 1024) + " kB)"); }
-      else {
-        let i = 0; while (i < Math.min(want.length, got.length) && want[i] === got[i]) i++;
-        check(cfg.name, false, "razlika @ " + i + " — željeno: …" + want.slice(Math.max(0, i - 30), i + 30) + " · dobljeno: …" + got.slice(Math.max(0, i - 30), i + 30));
-      }
-    }
+    verifyGolden(cfg.name, path.join(GOLDEN, cfg.name + ".svg"), got);
   }
 
   /* kosovnica (CSV) — zlati posnetek za precna-osnovna */
@@ -101,13 +106,10 @@ const CONFIGS = [
     window.URL.createObjectURL = (b) => { blob = b; return "blob:test"; };
     $("dlCsv").click();
     window.URL.createObjectURL = oc;
-    const got = blob ? norm(await blob.text()) : "";
-    const file = path.join(GOLDEN, "kosovnica-osnovna.csv");
-    if (UPDATE || !fs.existsSync(file)) { fs.writeFileSync(file, got); check("kosovnica-osnovna", true, "nov zlati posnetek (shranjen)"); }
-    else {
-      const want = fs.readFileSync(file, "utf8").replace(/\r/g, "");
-      if (want === got) check("kosovnica-osnovna", true, "identično");
-      else { let i = 0; while (i < Math.min(want.length, got.length) && want[i] === got[i]) i++; check("kosovnica-osnovna", false, "razlika @ " + i + ": …" + want.slice(i, i + 50) + " vs …" + got.slice(i, i + 50)); }
+    if (!blob) {
+      check("kosovnica-osnovna", false, "CSV blob ni bil ustvarjen");
+    } else {
+      verifyGolden("kosovnica-osnovna", path.join(GOLDEN, "kosovnica-osnovna.csv"), norm(await blob.text()));
     }
   }
 
