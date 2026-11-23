@@ -2,6 +2,18 @@
 
 Vse pomembnejše spremembe projekta **Draftwright — Tehnična risba PRO** so dokumentirane v tej datoteki. Oblika sledi [Keep a Changelog](https://keepachangelog.com/sl/1.1.0/); različica je enaka `APP_VERSION` v aplikaciji.
 
+## [2026.11.6] — 2026-11-23
+
+### Popravljen (Issue #41 §2 — odvisnosti: higiena)
+
+**Odstranitev mrtve pisave + avdit odvisnosti, zaklenjen s testom**
+- **Izbris `vendor/Roboto-Regular.ttf`** — 14-bajtni placeholder `404: Not Found`, referenca **nič** (ni v SW predpomnilniku, HTML, nobenem testu, ne v dokumentaciji). Čista mrtva teža.
+- **Upravičenost vseh 7 devDependencies** (`dependencies` ostane prazen — zero-install PWA, brez runtime omrežnih odvisnosti):
+  - dejansko `require`-vane v testih: `@napi-rs/canvas` (canvas sinteza/foto fixtures), `dxf-parser` (neodvisna DXF validacija), `jsdom` (vsi surovi), `maxrects-packer` (A/B optimizerja rezov);
+  - verzionični **pin** za brskalnisko naložene **vendor UMD pakete** (test eval-uje bralno `vendor/*.js` datoteko, ne Node paket): `jspdf`↔`vendor/jspdf.umd.min.js`, `svg2pdf.js`↔`vendor/svg2pdf.umd.min.js`, `qrcode-generator`↔`vendor/qr-core.js`.
+- `tests/dependency-audit.test.js` (17 preverjanj) ujemeta: `dependencies` prazen, nobena devDependency ni neuporabljena, nobena mrtva pisava, prava pisava (LiberationSans) prisotna in SW-referenca, aplikacija se naloži brez JS napak.
+- `npm ci` čisto (62 paketov, 0 ranljivosti). Skupaj **53 testnih surov** (prej 52).
+
 ## [2026.11.5] — 2026-11-23
 
 ### Dodano (Issue #41 §3.C — CAD/izvozi, neodvisna validacija)
