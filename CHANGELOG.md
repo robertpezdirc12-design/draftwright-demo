@@ -2,6 +2,21 @@
 
 Vse pomembnejše spremembe projekta **Draftwright — Tehnična risba PRO** so dokumentirane v tej datoteki. Oblika sledi [Keep a Changelog](https://keepachangelog.com/sl/1.1.0/); različica je enaka `APP_VERSION` v aplikaciji.
 
+## [2026.11.4] — 2026-11-23
+
+### Dodano (Issue #41 §3.D — varnost/podatki)
+
+**Dokaz, da aplikacija ne pošilja fotografij ali podatkov na zunanje strežnike** (egress audit)
+- `tests/egress-privacy.test.js` (11 preverjanj) zaklene dejstvo, da aplikacija:
+  - ima **ravno 1 `fetch`** — lokalni `vendor/LiberationSans-Regular.ttf` (same-origin, predpomnjen v SW);
+  - **nima** `XMLHttpRequest`/`WebSocket`/`sendBeacon`/`EventSource`;
+  - **nima senzorskih virov** (`getUserMedia`/kamera, `geolocation`, mikrofon, baterija, BLE, USB, serial);
+  - **skupni povezavi** (`prjSnapshot()` in `prjViewPayload()`) **ne vsebujeta fotografije** (explicit `photo=null` oziroma beli seznam brez `photo`);
+  - **nima zunanjih `<a href>`/`<img src>`** (poleg SVG imenskih prostorov);
+  - **SW prestreža samo isti izvor** (`url.origin !== self.location.origin → return`);
+  - **CSP `connect-src 'self'`** blokira katerikoli runtime egress.
+- Skupaj **51 testnih surov** (prej 50). Brez spremembe aplikacijske kode — test le **dokazuje** obstoječe obnašanje in ujam morebitno egress regresijo.
+
 ## [2026.11.3] — 2026-11-23
 
 ### Spremenjeno (refaktor — Issue #41 §3.F)
