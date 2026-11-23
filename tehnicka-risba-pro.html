@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- CSP: strict script allowlist by hash. No unsafe-inline / unsafe-eval. frame-ancestors is set in vercel.json (unsupported in meta). -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-s2J5tnX/XmcFKNhqg7mL9LYaEoUk7uJoP/8R2JxbFM0='; style-src 'self' 'sha256-sAiLhRQfEVQ+SeT/OcFVCNyEUxB/auw2WwDxVC/3yvI='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-p2z2G5FF/b1IqSCLQ9yTMmgn20M1n8FWbb5eMc3txWU='; style-src 'self' 'sha256-qdTPGCo9ClqvaTTCnpl+IhEZceBb5o82jT8kCt7nT6Y='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Tehnična risba PRO – fotografija do končnega lista</title>
 <meta name="theme-color" content="#141c24">
 <link rel="manifest" href="manifest.webmanifest">
@@ -242,6 +242,7 @@ body.viewmode .viewbar{display:flex}
 .stale{outline:2px dashed var(--wa);outline-offset:2px}
 
 /* CSP: previously inline style attributes -> utility rules; no style-src unsafe-inline. */
+/*__UTILITY_CSS_START__*/
 [data-s="s1"]{align-self:center!important;}
 [data-s="s2"]{background:#111!important;}
 [data-s="s3"]{background:#ffffff!important;border-radius:10px!important;overflow:hidden!important;cursor:grab!important;}
@@ -316,6 +317,7 @@ body.viewmode .viewbar{display:flex}
 [data-s="s72"]{width:100%!important;font-size:12px!important;border-collapse:collapse!important;}
 [data-s="s73"]{width:100%!important;padding:7px 9px!important;border-radius:8px!important;border:1px solid var(--line)!important;background:var(--bg)!important;color:var(--tx)!important;}
 [data-s="s74"]{width:auto!important;}
+/*__UTILITY_CSS_END__*/
 </style>
 </head>
 <body>
@@ -1675,6 +1677,9 @@ $("refMode").addEventListener("change",function(){var m=$("refModeMenu");if(m)m.
 function ln(x1,y1,x2,y2,w,extra){return '<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="#111" stroke-width="'+(w||0.25)+'" '+(extra||"")+'/>'}
 function rc(x,y,w,h,fill,stroke){return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" fill="'+(fill||"none")+'" stroke="'+(stroke||"#111")+'" stroke-width="0.3"/>'}
 function tx(x,y,s,z,a,w,c,rot,extra){var tr=rot?' transform="rotate('+rot+' '+x+' '+y+')"':'';return '<text x="'+x+'" y="'+y+'" font-family="Arial,Helvetica,sans-serif" font-size="'+(z||2.6)+'" text-anchor="'+(a||"start")+'" font-weight="'+(w||400)+'" fill="'+(c||"#111")+'"'+tr+(extra?" "+extra:"")+'>'+E(s)+'</text>'}
+/* Refaktor (Issue #41 §3.F): skupna naslovna značka za vse liste — prej podvojena lokalno v
+   generateReference in stopničnem listu (isti rc+tx, enaka matematika). Ena definicija. */
+function vt(x,y,t){return rc(x,y,t.length*1.62+5,5.4,"#141c24","#141c24")+tx(x+2.5,y+3.8,t,2.7,"start",600,"#fff")}
 function dh(x1,x2,y,label,ey){var a=Math.min(x1,x2),b=Math.max(x1,x2),t=(a+b)/2,s="";
   s+=ln(a,ey,a,y+2,0.18)+ln(b,ey,b,y+2,0.18)+ln(a,y,b,y,0.25);
   s+='<path d="M'+a+' '+y+' L'+(a+2)+' '+(y-0.8)+' L'+(a+2)+' '+(y+0.8)+' Z" fill="#111"/>';
@@ -1727,7 +1732,6 @@ function generateReference(){
   var paper=V("paper"),pw=paper==="A3"?420:paper==="A4"?297:594,ph=paper==="A3"?297:paper==="A4"?210:420;
   var s='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 297" width="'+pw+'mm" height="'+ph+'mm">';
   s+='<rect width="420" height="297" fill="#fff"/><rect x="6" y="6" width="408" height="285" fill="none" stroke="#111" stroke-width="0.6"/>';
-  function vt(x,y,t){var w=t.length*1.62+5;return rc(x,y,w,5.4,"#141c24","#141c24")+tx(x+2.5,y+3.8,t,2.7,"start",600,"#fff")}
   function circ(x,y,r){return '<circle cx="'+x+'" cy="'+y+'" r="'+r+'" fill="#fff" stroke="#777" stroke-width="0.25" stroke-dasharray="1.2 1"/>'}
 
   var fx=28,fy=32,fs=196/L,fw=L*fs,fh=H*fs,fb=fy+fh;
@@ -1877,7 +1881,6 @@ function generateStair(){
   var paper=V("paper"),pw=paper==="A3"?420:paper==="A4"?297:594,ph=paper==="A3"?297:paper==="A4"?210:420;
   var s='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 297" width="'+pw+'mm" height="'+ph+'mm">';
   s+='<rect width="420" height="297" fill="#fff"/><rect x="6" y="6" width="408" height="285" fill="none" stroke="#111" stroke-width="0.6"/>';
-  function vt(x,y,t){return rc(x,y,t.length*1.62+5,5.4,"#141c24","#141c24")+tx(x+2.5,y+3.8,t,2.7,"start",600,"#fff")}
   function ty(x,es,ey){return ey-((x-20)/(going*es))*rise*es}
   s+=vt(14,14,"STOPNIŠČNA OGRAJA — POGLED PO STOPNICAH");
   var ex=20,ey=162,es=Math.min(380/run,132/(tot+rh));
@@ -2308,7 +2311,7 @@ function stepString(){
   function safeStepName(){return V("drw").replace(/[\r\n\t]+/g," ").replace(/['\\]/g,"")}
   var ents=[],id=0;
   function add(s){ents.push("#"+(++id)+" = "+s+";");return "#"+id}
-  function dim(str,fallback){var a=(String(str||"").match(/\d+(?:\.\d+)?/g)||[]).map(Number);return a.length>=2?[a[0],a[1]]:fallback}
+  /* dim() je skupna (Issue #41 §3.F): uporabljena top-level dim — prej lokalno podvojena. */
   function r(v){v=Math.round(v*1e6)/1e6;return v%1===0?v.toFixed(1):String(v)}
   function pt(x,y,z){return add("CARTESIAN_POINT('',("+r(x)+","+r(y)+","+r(z)+"))")}
   function solidBox(x0,y0,z0,x1,y1,z1,label){

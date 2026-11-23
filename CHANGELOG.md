@@ -2,6 +2,20 @@
 
 Vse pomembnejše spremembe projekta **Draftwright — Tehnična risba PRO** so dokumentirane v tej datoteki. Oblika sledi [Keep a Changelog](https://keepachangelog.com/sl/1.1.0/); različica je enaka `APP_VERSION` v aplikaciji.
 
+## [2026.11.3] — 2026-11-23
+
+### Spremenjeno (refaktor — Issue #41 §3.F)
+
+**Odstranjevanje podvojenih pomožnih funkcij + enovirni generator CSS**
+- Skupni `dim()` in `vt()` — prej podvojena lokalno v večih funkcijah (`stepString`, `generateReference`, stopnični list). Zdaj ena top-level definicija; lokalne podvojene odstranjene, klice rešujejo skupna.
+- `ip()`/`ibox()` so **namenoma podvojena** (različna izometrična matematika `kx/ky` proti `ik`) — refaktor jih ni združil, da izometrični listi ohranijo pravilno projekcijo.
+- Nov `scripts/generate-utility-css.js`: **en vir** za 74 CSS utilitetskih pravil `[data-s]`, ki prej obstajala byte-identično v dveh mestih (inline `<style>` v HTML in povezan `print.css`). Generator med markerjema `__UTILITY_CSS__` zapiše blok v obe datoteki in z `--check` zazna drift. Pisanje je idempotentno.
+
+### Dodano (testi)
+
+- `tests/refactor-utility-css.test.js` (16 preverjanj): statični vir (ena `dim`, ena top-level `vt`, noben lokalni; `ip` namenoma ×2 kot zaščita pred prepisom), sinhronizacija HTML ↔ `print.css` bloka, `--check` exit 0, idempotentnost pisanja in byte-copy vira.
+- Skupaj **50 testnih surov** (prej 49); CSP hash-ji regenerirani, zlata posnetka ostanejo byte-identična.
+
 ## [2026.11.2] — 2026-11-23
 
 ### Dodano
