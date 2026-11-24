@@ -21,6 +21,10 @@ jobs:
             git status --porcelain
             exit 1
           fi
+      - name: Inline module must match committed js/core.js
+        run: |
+          node scripts/sync-modules.js
+          git diff --exit-code -- tehnicka-risba-pro.html
       - name: CSP hashes must match the committed source
         run: |
           node scripts/generate-csp.js

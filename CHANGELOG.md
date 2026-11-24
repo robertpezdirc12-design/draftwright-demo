@@ -2,6 +2,15 @@
 
 Vse pomembnejše spremembe projekta **Draftwright — Tehnična risba PRO** so dokumentirane v tej datoteki. Oblika sledi [Keep a Changelog](https://keepachangelog.com/sl/1.1.0/); datumski sufiksi v oznakah (npr. `[2026.11.15]`) so zaporedne podrazličice mesečne različice `APP_VERSION` (trenutno `2026.11`).
 
+## [2026.11.16] — 2026-11-24
+
+### Dodano (postopna modularizacija — korak 2)
+
+**`js/core.js` kot izvirna datoteka, generirana inline kopija**
+- Čisti modul iz koraka 1 ima zdaj resnično izvorno datoteko `js/core.js`. Aplikacija ostane zero-install PWA z enim HTML-jem, zato se modul ne naloži prek `<script src>` (tudi jsdom testi brez `resources:"usable"` ga ne bi). Med oznaki `>>> GENERATED: js/core.js` / `<<< END GENERATED` se vstavi **bajtovno identična kopija**.
+- Nov `scripts/sync-modules.js` (`npm run modules:sync`) je idempotenten in popravi drift. CI ima nov korak `Inline module must match committed js/core.js`, zato se razlika med izvorom in kopijo ujame v PR-ju.
+- **Test:** nov `tests/module-sync.test.js` (13 preverjanj) — prisotnost izvora in generatorja, registriran npm script, natanko en par oznak, bajtovno ujemanje, odsotnost DOM odvisnosti, idempotenca in popravilo drift-a v začasni kopiji; **na stari kodi pade z 2 FAIL**. Skupaj **63 testnih surov**. CSP hash-i regenerirani.
+
 ## [2026.11.15] — 2026-11-24
 
 ### Dodano (postopna modularizacija — korak 1)
