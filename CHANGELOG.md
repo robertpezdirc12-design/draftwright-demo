@@ -2,6 +2,18 @@
 
 Vse pomembnejše spremembe projekta **Draftwright — Tehnična risba PRO** so dokumentirane v tej datoteki. Oblika sledi [Keep a Changelog](https://keepachangelog.com/sl/1.1.0/); različica je enaka `APP_VERSION` v aplikaciji.
 
+## [2026.11.10] — 2026-11-24
+
+### Dodano (Issue #41 — Subresource Integrity za runtime vendor skripte)
+
+**SHA-384 `integrity` atribute za 3 vendored runtime skripte (supply-chain obramba)**
+- **Ugotovitev:** trije runtime skripti (`vendor/jspdf.umd.min.js`, `vendor/svg2pdf.umd.min.js`, `vendor/qr-core.js`) so se naložili iz istega izvora brez integrity atribute. SRI (SHA-384) doda obrambo pred **tiho spremenjeno/kompromitirano vendor datoteko**: če se hash ne ujemá, brskalnik zavrne izvajanje skripta namesto da tiho zažene spremenjeno kodo. Ne spreminja CSP inline hash-i (skripti so `script-src 'self'`; integrity je ločen mehanizem) → `vercel.json` / `generate-csp.js` nista prizadeta.
+- **Popravek:** vsak vendor `<script>` tag v `tehnicka-risba-pro.html` pridobi `integrity="sha384-…"` (3× 71-znak hash, preverjeno, da točno ujema datoteko na disku).
+- **Testi:**
+  - `tests/sri.test.js` (16 preverjanj) — **AVTORITATIVNI PIN**: recomputira SHA-384 iz resnične `vendor/*.js` datoteke in ugotovi točno ujemanje s HTML `integrity` atributom (katerakoli tiha sprememba vendor/ → FAIL); preveri SRI prisotnost na vseh 3, da je SHA-384 (ne slabšega), da noben vendor skript NI brez SRI, in da je natanko 3 pini. **Na stari kodi (brez integrity) bi PADO.**
+  - `tests/dependency-audit.test.js` + `tests/pdf.test.js` — obstoječa `htmlSig` preverjanja za vendor skripte nadgrajena na SRI-obliko tag-a (prej so pričakovala `defer></script>` brez integrity).
+- Skupaj **57 testnih surov** (prej 56).
+
 ## [2026.11.9] — 2026-11-24
 
 ### Dodano (Issue #41 §3.E — dostopnost: WCAG 4.1.2 "Name")
