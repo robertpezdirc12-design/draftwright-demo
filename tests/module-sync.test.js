@@ -37,6 +37,8 @@ function finish() {
 }
 
 check("scripts/sync-modules.js obstaja (stara koda bi PADO)", fs.existsSync(generatorPath));
+/* Vsi viri so preverjeni PRED morebitnim izstopom — stara koda zato poroča
+   natanko 5 FAIL (generator + 4 izvori), ne le prvega. */
 let allSources = true;
 for (const file of MODULES) {
   const ok = fs.existsSync(path.join(root, file));
