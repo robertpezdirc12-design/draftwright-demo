@@ -21,7 +21,7 @@ jobs:
             git status --porcelain
             exit 1
           fi
-      - name: Inline module must match committed js/core.js
+      - name: Inline modules must match committed js/*.js
         run: |
           node scripts/sync-modules.js
           git diff --exit-code -- tehnicka-risba-pro.html

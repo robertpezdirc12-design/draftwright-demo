@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- CSP: strict script allowlist by hash. No unsafe-inline / unsafe-eval. frame-ancestors is set in vercel.json (unsupported in meta). -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-4J8yX4PukaqJ6RtxK3OWpRU0icMqZ8UL9o022qwuSU0='; style-src 'self' 'sha256-xOmD8s5jUsW4WSPzf+U5h6XcMTu2SRV0M8LoZ3nZar8='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-8eWVLvSBTYC/IMKp7PMy+0HiMYjNsPDMKETMQSarrxM='; style-src 'self' 'sha256-xOmD8s5jUsW4WSPzf+U5h6XcMTu2SRV0M8LoZ3nZar8='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Tehnična risba PRO – fotografija do končnega lista</title>
 <meta name="theme-color" content="#141c24">
 <link rel="manifest" href="manifest.webmanifest">
@@ -2658,6 +2658,11 @@ function dilatacija(lenM,tempC){
   return a*(1-fr)+b*fr;
 }
 /* <<< END GENERATED: js/dilatation.js */
+/* >>> GENERATED: js/roksal.js — uredi izvorno datoteko, ne to kopijo */
+/* js/roksal.js — izvorni modul uporab in omejitev razmika WoodCore.
+   Vir je ta datoteka; `npm run modules:sync` vstavi vsebino v označeni blok
+   znotraj tehnicka-risba-pro.html. Podatki in funkciji so čisti (brez DOM,
+   brez stanja obrazca); roksalUseNotes() ostane v HTML-ju, ker uporablja stanje obrazca. */
 var USE_NAMES={precna:"prečna ograja",pokoncna:"pokončna ograja",fasada:"fasada",terasa:"terasa",pregrada:"pregradna stena",napusc:"napušč",stopniscna:"stopniščna ograja"};
 function roksalLimit(p,use,H){
   if(!p)return {v:1500,label:"razmak nosilcev"};
@@ -2677,6 +2682,7 @@ function roksalLimit(p,use,H){
   return {v:1500,label:"razmak nosilcev"};
 }
 function roksalRailLimit(p){return (p&&p.rail&&p.rail.pokoncna)||1000}
+/* <<< END GENERATED: js/roksal.js */
 function roksalUseNotes(p,use,H){
   var lim=roksalLimit(p,use,H),rail=roksalRailLimit(p),rows=Math.max(2,Math.ceil(H/rail)+1);
   if(use==="precna"){
@@ -2832,7 +2838,7 @@ window.WC=WC;window.DIL=DIL;window.USE_NAMES=USE_NAMES;window.PAL_KLASIK=PAL_KLA
 /* testno dostopni izvozi za numerično preverjanje (pregled 2026-11-23, točka 4) */
 window.solve=solve;window.homography=homography;window.dilatacija=dilatacija;window.toMM=toMM;window.mmDist=mmDist;
 window.numParse=numParse;window.n=n;
-window.roksalLimit=roksalLimit;window.REGISTRY_SCHEMA=REGISTRY_SCHEMA;window.validateRegistry=validateRegistry;
+window.roksalLimit=roksalLimit;window.roksalRailLimit=roksalRailLimit;window.REGISTRY_SCHEMA=REGISTRY_SCHEMA;window.validateRegistry=validateRegistry;
 window.woodcoreRegistry=woodcoreRegistry;window.REGISTRY=REGISTRY;window.registryBrands=registryBrands;
 window.activeRegistry=activeRegistry;window.setRegistryBrand=setRegistryBrand;
 window.S=S;window.applyDetection=applyDetection;window.svetlostniStolpci=svetlostniStolpci;
