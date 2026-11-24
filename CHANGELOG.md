@@ -2,6 +2,20 @@
 
 Vse pomembnejše spremembe projekta **Draftwright — Tehnična risba PRO** so dokumentirane v tej datoteki. Oblika sledi [Keep a Changelog](https://keepachangelog.com/sl/1.1.0/); različica je enaka `APP_VERSION` v aplikaciji.
 
+## [2026.11.7] — 2026-11-23
+
+### Popravljeno (Issue #41 §3.A — geometrija/matematika: decimalna vejica)
+
+**Lokalizacijsko varna številksa razlaga mer in kalibracijskih referenc**
+- Pred: številksa polja (`L`, `H`, `D`, `gap`, `sw`, `st`, …) in kalibracijski referenci (`refA`/`refB`) so bile razlagovali s `parseFloat` — v slovenski lokalizaciji je decimalni ločilec **vejica**, zato je vnos `3,8` tiho okrnjen v `3`, `3800,5` v `3800` → **napačno merilo = napačna risba, BOM, reznica in predračun** (tiha napaka brez opozorila).
+- Popravek: nov `numParse()` — `n()` in `refA`/`refB` zdaj sprejmejo:
+  - decimalno vejico `3,8` → 3.8, `3800,5` → 3800.5;
+  - tisoči-piko + decimalno vejico `3.000,5` → 3000.5, `1.500` → 1500;
+  - ASCII piko `3.8` → 3.8 (brez regresije), cela `42` → 42;
+  - smeti/prazno → `NaN`, klicatelj `n()` dobi privzeto `0` (isFinite varno, brez tihega `+∞`).
+- `tests/decimal-comma.test.js` (26 preverjanj): semantika `numParse` (vejica/tisoči/pika/cela/NaN/prazno/prostori) + behavioral `n()` prek prostega besedilnega polja `#stockLen` (jsdom razčisti number-inpute, zato se dejanska vejica dokazuje prek text-inputa) + ASCII pika/cela/NaN/Infinity prek `#L` + statični dokaz, da so `n()`/`refA`/`refB` posameznjena prek `numParse` in da ni ostanka raw `parseFloat(V("refA|refB"))`. Na stari kodi bi PADO.
+- CSP hash-i ponovno izgenerirani (`scripts/generate-csp.js`) — inline koda se je spremenila. Skupaj **54 testnih surov** (prej 53).
+
 ## [2026.11.6] — 2026-11-23
 
 ### Popravljen (Issue #41 §2 — odvisnosti: higiena)
