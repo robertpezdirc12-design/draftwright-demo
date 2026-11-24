@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- CSP: strict script allowlist by hash. No unsafe-inline / unsafe-eval. frame-ancestors is set in vercel.json (unsupported in meta). -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-LZ4rU0ihc0fmvfG8CDXubtzhr8U3QywGM6ShkTdB684='; style-src 'self' 'sha256-qdTPGCo9ClqvaTTCnpl+IhEZceBb5o82jT8kCt7nT6Y='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-gM3o6U0D7+Rk663YYzeh62NRhv+TBLi+vVGrosS8GlU='; style-src 'self' 'sha256-qdTPGCo9ClqvaTTCnpl+IhEZceBb5o82jT8kCt7nT6Y='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Tehnična risba PRO – fotografija do končnega lista</title>
 <meta name="theme-color" content="#141c24">
 <link rel="manifest" href="manifest.webmanifest">
@@ -1258,6 +1258,11 @@ function suggestProfiles(wMM,pitchMM){
 }
 function applyDetection(){
   invalidateProduction();
+  /* Issue #41 §3.B: detekcija polja z ORIENTACIJSKO razlago (auto-L/n/H/sw/gap prek .value=)
+     NE sproži document input/change poslušalca, zato markStale() ročno — enakovredno ročnemu
+     vnosu (ki s sproži). Sicer bi stare proizvodni izračuni (cut/plan/quote/checklist) ostali
+     neoznačeni, kot da so potrjeni — orientacijska mera ne sme izgledati kot potrjena mera. */
+  markStale();
   if(!S.det||S.det.lines.length<2)return;
   S.det.suggestedProfile=null;
   var sb=$("applySuggestedProf");if(sb)sb.style.display="none";

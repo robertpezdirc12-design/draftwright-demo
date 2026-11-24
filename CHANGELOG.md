@@ -2,6 +2,16 @@
 
 Vse pomembnejše spremembe projekta **Draftwright — Tehnična risba PRO** so dokumentirane v tej datoteki. Oblika sledi [Keep a Changelog](https://keepachangelog.com/sl/1.1.0/); različica je enaka `APP_VERSION` v aplikaciji.
 
+## [2026.11.8] — 2026-11-24
+
+### Popravljeno (Issue #41 §3.B — detekcija fotografij: orientacija ≠ potrjena mera)
+
+**Detekcija zdaj označi stare proizvodne izračune kot zastarele (».stale«)**
+- **Ugotovitev (reprodukcija):** `applyDetection()` samodejno polja polja `n`/`H`/`sw`/`gap`/`L` prek programatskega `.value=` (ORIENTACIJSKA mera). Ker programatski vnos **ne sproži** `document input/change` poslušalca (ki sicer klice `invalidateProduction();markStale()`), so stare proizvodni izhodi (`#cutOut`/`#planOut`/`#quoteOut`/`#checklistOut`) po detekciji ostali **neoznačeni** — uporabnik bi videl stare rezi/kosovnico, ki odgovarjajo starih meram, kot da bi bila še veljavna. §3.B izrecno zahteva: »orientacijskih meritev ne predstavljaj kot potrjenih proizvodnih mer.«
+- **Popravek:** `applyDetection()` ročno klice `markStale()` — enakovredno ročnemu vnosu. Vsi štirje proizvodni izhodi zdaj dobijo razred `.stale` takoj po detekciji.
+- `tests/photo-stale-guard.test.js` (8 preverjanj): pred detekcijo izhodi sveži → po detekciji **vsi 4 `.stale`** + vsebina ohranjena + `clearStale()` sanity + statično da `applyDetection()` vsebuje `markStale()`. **Na stari kodi bi PADO (2 FAIL).**
+- CSP hash-i ponovno izgenerirani (`scripts/generate-csp.js`). Skupaj **55 testnih surov** (prej 54).
+
 ## [2026.11.7] — 2026-11-23
 
 ### Popravljeno (Issue #41 §3.A — geometrija/matematika: decimalna vejica)

@@ -5,7 +5,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-LZ4rU0ihc0fmvfG8CDXubtzhr8U3QywGM6ShkTdB684='; style-src 'self' 'sha256-qdTPGCo9ClqvaTTCnpl+IhEZceBb5o82jT8kCt7nT6Y='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+          "value": "default-src 'self'; script-src 'self' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-gM3o6U0D7+Rk663YYzeh62NRhv+TBLi+vVGrosS8GlU='; style-src 'self' 'sha256-qdTPGCo9ClqvaTTCnpl+IhEZceBb5o82jT8kCt7nT6Y='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
         },
         {
           "key": "X-Content-Type-Options",
