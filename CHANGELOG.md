@@ -2,6 +2,16 @@
 
 Vse pomembnejše spremembe projekta **Draftwright — Tehnična risba PRO** so dokumentirane v tej datoteki. Oblika sledi [Keep a Changelog](https://keepachangelog.com/sl/1.1.0/); datumski sufiksi v oznakah (npr. `[2026.11.15]`) so zaporedne podrazličice mesečne različice `APP_VERSION` (trenutno `2026.11`).
 
+## [2026.11.21] — 2026-11-24
+
+### Dodano (postopna modularizacija — korak 7)
+
+**`js/registry.js` — registrska abstrakcija kot izvirna datoteka**
+- `REGISTRY_SCHEMA`, `validateRegistry()`, `woodcoreRegistry()`, `REGISTRY`/`REGISTRY_ACTIVE` in helperji (`registryBrands`, `activeRegistry`, `setRegistryBrand`) so izvzeti v `js/registry.js`. Modul je brez DOM in omrežja; WoodCore vnos se sklicuje na vire `WC`, `DIL`, `PAL_KLASIK`, `PAL_RUSTIK`, `USE_NAMES` in `roksalLimit`, ki so v HTML-ju opredeljeni pred generiranim blokom. Vsi obstoječi izvozi ostanejo nedotaknjeni, stop-rule »samo WoodCore« pa ohranjen.
+- `scripts/sync-modules.js` in `tests/module-sync.test.js` pokrivata zdaj šest modulov; `tests/module-sync.test.js` ima **58 preverjanj** (prej 49). Na neposredni predhodni kodi pade z **1 FAIL** (manjka le `js/registry.js`), preverjeno v začasni delovni kopiji.
+- Nov `tests/registry-module.test.js` (**30 preverjanj**) — shema, vse veje validatorja, identiteta WoodCore virov, kontaktni podatki, helperji znamk in vrstni red odvisnosti. Na predhodni kodi pade z **5 FAIL**. Skupaj **65 testnih surov** (prej 64). CSP hash-i regenerirani.
+- **Odziv na cubic review (P3):** prepovedani tokeni v preverjanjih čistosti razširjeni z `window`, `WebSocket`, `navigator` in `sendBeacon` (v `registry-module`, `roksal-module` in skupnem `module-sync` testu). V slednjem je izrecno dovoljen le obstoječi izvoz `window.DWCore=DWCore;` iz koraka 1.
+
 ## [2026.11.20] — 2026-11-24
 
 ### Dodano (postopna modularizacija — korak 6)

@@ -52,7 +52,7 @@ check("natanko en urejen par oznak",
 check("inline kopija vsebinsko enaka izvoru",
   hasSource && i >= 0 && j >= 0 && html.slice(i + start.length, j).trim() === source.replace(/\s+$/, ""));
 check("vir nima DOM/storage/obrazčnih odvisnosti",
-  source.length > 0 && !/\bdocument\b|\b(?:local|session)Storage\b|\$\(|\bV\(|\bn\(|\bf\(/.test(source));
+  source.length > 0 && !/\bdocument\b|\bwindow\b|\b(?:local|session)Storage\b|\$\(|\bV\(|\bn\(|\bf\(|\bfetch\(|\bXMLHttpRequest\b|\bWebSocket\b|\bnavigator\b|\bsendBeacon\b/.test(source));
 
 check("window.USE_NAMES ostane izvožen", typeof window.USE_NAMES === "object" && window.USE_NAMES !== null);
 check("USE_NAMES pokriva vseh 7 uporab", Object.keys(window.USE_NAMES || {}).length === 7);
