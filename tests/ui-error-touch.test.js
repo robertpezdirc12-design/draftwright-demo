@@ -84,6 +84,16 @@ function check(name, ok, info) {
   H.value = hOriginal;
   if (typeof window.checks === "function") window.checks();
 
+  const D = $("D"), dOriginal = D.value;
+  D.value = "0";
+  if (typeof window.checks === "function") window.checks();
+  check("D neveljavna → aria-invalid na D", D.getAttribute("aria-invalid") === "true",
+    String(D.getAttribute("aria-invalid")));
+  check("D neveljavna → L in H ostaneta brez aria-invalid",
+    !L.hasAttribute("aria-invalid") && !H.hasAttribute("aria-invalid"));
+  D.value = dOriginal;
+  if (typeof window.checks === "function") window.checks();
+
   /* Svetovalno opozorilo za veljavno izbiro podlage ne sme pomeniti neveljavnega polja. */
   const use = $("sysUse"), sub = $("subType"), useOriginal = use.value, subOriginal = sub.value;
   use.value = "terasa";
@@ -93,14 +103,31 @@ function check(name, ok, info) {
     ($("checks").textContent || "").includes("Ploščice"));
   check("svetovalno opozorilo ne označi veljavnega polja z aria-invalid",
     !sub.hasAttribute("aria-invalid"), String(sub.getAttribute("aria-invalid")));
+  check("pesek ni svetovalen — nepripravljiva podlaga označi polje",
+    (() => {
+      sub.value = "pesek";
+      if (typeof window.checks === "function") window.checks();
+      return sub.getAttribute("aria-invalid") === "true";
+    })());
+
+  const mount = $("mountType"), mountOriginal = mount.value;
+  use.value = "fasada";
+  mount.value = "kovinska konstrukcija";
+  if (typeof window.checks === "function") window.checks();
+  check("mountType: svetovalno opozorilo ostane vidno",
+    ($("checks").textContent || "").includes("Obstoječa kovinska konstrukcija"));
+  check("mountType: svetovalno opozorilo ne označi polja z aria-invalid",
+    !mount.hasAttribute("aria-invalid"), String(mount.getAttribute("aria-invalid")));
+
   use.value = useOriginal;
   sub.value = subOriginal;
+  mount.value = mountOriginal;
   if (typeof window.checks === "function") window.checks();
 
   /* --- dotikova področja --- */
   const mobile = (html.match(/@media\(max-width:760px\)\{[\s\S]*?\n\}/) || [""])[0];
   check("mobil: gumbi in menijske postavke vsaj 44 px",
-    mobile.includes(".btn,.mi,.show-aside-handle,.exp-cancel,.exp-go,.primarybar,.menu>button{min-height:44px}"));
+    mobile.includes(".btn,.mi,.show-aside-handle,.exp-cancel,.exp-go,.primarybar,.menu>button{min-height:44px;min-width:44px}"));
   check("mobil: ročaj predala in gumb traka napak vsaj 44 px",
     mobile.includes(".err-tray .et-toggle{") && mobile.includes("min-width:44px") &&
     mobile.includes("min-height:44px"));
