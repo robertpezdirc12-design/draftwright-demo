@@ -2,6 +2,16 @@
 
 Vse pomembnejše spremembe projekta **Draftwright — Tehnična risba PRO** so dokumentirane v tej datoteki. Oblika sledi [Keep a Changelog](https://keepachangelog.com/sl/1.1.0/); datumski sufiksi v oznakah (npr. `[2026.11.15]`) so zaporedne podrazličice mesečne različice `APP_VERSION` (trenutno `2026.11`).
 
+## [2026.11.20] — 2026-11-24
+
+### Dodano (postopna modularizacija — korak 6)
+
+**`js/roksal.js` — uporabe in omejitve razmika kot izvirna datoteka**
+- `USE_NAMES`, `roksalLimit()` in `roksalRailLimit()` so izvzeti v `js/roksal.js` (čisti podatki in funkcije, brez DOM ali stanja obrazca). `roksalUseNotes()` in `applySystem()` ostaneta v HTML-ju, ker uporabljata `V()`/`n()` oziroma DOM. Obstoječa izvoza `window.USE_NAMES` in `window.roksalLimit` ostaneta; dodan je testno dostopen `window.roksalRailLimit` po obstoječi konvenciji.
+- `scripts/sync-modules.js` pokriva zdaj pet modulov (`core`, `geometry`, `dilatation`, `csv`, `roksal`); CI korak je preimenovan v `Inline modules must match committed js/*.js`. CSP hash-i regenerirani.
+- `tests/module-sync.test.js` razširjen z 40 na **49 preverjanj** (urejen par oznak, vsebinsko ujemanje, odsotnost DOM odvisnosti in popravilo drift-a za vsak od petih modulov; globalna idempotenca; zavrnitev manjkajoče končne oznake na `core`). Na neposredni predhodni kodi pade z **1 FAIL** (manjka `js/roksal.js`); preverjeno v začasni delovni kopiji. Popravljen tudi komentar o obnašanju stare kode — ločuje neposredno predhodno različico od stanja pred celotno modularizacijo.
+- Nov `tests/roksal-module.test.js` (**27 preverjanj**) — vseh 7 uporab, vse veje `roksalLimit()` (terasa, napušč, pregrada KUBO/druga, fasada s/padcem, prečna s/padcem, pokončna z min mejo, neznana uporaba), `roksalRailLimit()`, identiteta registra ter čistost vira. Na stari kodi pade z **8 FAIL**. Skupaj **64 testnih surov** (prej 63).
+
 ## [2026.11.19] — 2026-11-24
 
 ### Dodano (postopna modularizacija — korak 5)
