@@ -64,7 +64,7 @@ for (const file of MODULES) {
   check(file + ": inline kopija vsebinsko enaka izvoru", inline === source,
     inline === source ? "" : `html=${inline && inline.length} src=${source.length}`);
   check(file + ": izvor nima DOM/storage odvisnosti",
-    !/\bdocument\b|\blocalStorage\b|\$\(/.test(source));
+    !/\bdocument\b|\b(?:local|session)Storage\b|\$\(/.test(source));
 }
 const coreSource = fs.readFileSync(path.join(root, "js/core.js"), "utf8");
 const geoSource = fs.readFileSync(path.join(root, "js/geometry.js"), "utf8");
