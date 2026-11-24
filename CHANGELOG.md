@@ -2,6 +2,16 @@
 
 Vse pomembnejše spremembe projekta **Draftwright — Tehnična risba PRO** so dokumentirane v tej datoteki. Oblika sledi [Keep a Changelog](https://keepachangelog.com/sl/1.1.0/); različica je enaka `APP_VERSION` v aplikaciji.
 
+## [2026.11.11] — 2026-11-24
+
+### Dodano (Issue #41 — dostopnost: fokus-trap v modalnih dialogih)
+
+**Tab / Shift+Tab ostane v odprtem modalnem dialogu (WCAG 2.1.2 "No Keyboard Trap" + 4.7.2)**
+- **Ugotovitev:** vsi 10 modalnih dialogov (`role=dialog`+`aria-modal=true`, znotraj `.exp-overlay`) so imeli `Escape` + obnovo fokusa, a **brez osnade za krmiljenje Tab** — s tipkovnico bi se fokus (Shift+Tab) lahko umaknil v ozadje, za modalnim oknom.
+- **Popravek:** en **centraliziran focus-trap** (konca glavnega skripta) — ko je odprt vsaj en modal (overlay z `.on`, ki vsebuje `[role=dialog][aria-modal=true]`), Tab ob zadnjem fokusabilnem elementu povrže na prvi, Shift+Tab ob prvem na zadnji; brez odprtega modala je obnašanje privzeto. `#propPanel` (11. `role=dialog`) ni `aria-modal` → pravilno izven osaade.
+- **Test:** `tests/focus-trap.test.js` (13 preverjanj) — izvoz `window.fwFocusTrap` (regresija: stare kodi bi PADO); `topOpenDialog()` cilja odprt dialog; na sintetičnem dialogu 3 gumbi: **TAB ob zadnjem → prvi**, **SHIFT+TAB ob prvem → zadnji**, ter da **sredinski in brez-modala trap NE premakne fokusa**. **Na stari kodi bi PADO.**
+- CSP hash-i ponovno izgenerirani (`scripts/generate-csp.js`). Skupaj **58 testnih surov** (prej 57, po SRI #49).
+
 ## [2026.11.10] — 2026-11-24
 
 ### Dodano (Issue #41 — Subresource Integrity za runtime vendor skripte)
