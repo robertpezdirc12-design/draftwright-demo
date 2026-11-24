@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- CSP: strict script allowlist by hash. No unsafe-inline / unsafe-eval. frame-ancestors is set in vercel.json (unsupported in meta). -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-laaDx1WLYZiZi8WHlyZYSosTCszbOMRJ3h8FUulTtsU='; style-src 'self' 'sha256-xOmD8s5jUsW4WSPzf+U5h6XcMTu2SRV0M8LoZ3nZar8='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-tMmQGBSbDcoU9Q0m6gdCIuqVoFhz3TtXYFFvdmBO+RI='; style-src 'self' 'sha256-xOmD8s5jUsW4WSPzf+U5h6XcMTu2SRV0M8LoZ3nZar8='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Tehnična risba PRO – fotografija do končnega lista</title>
 <meta name="theme-color" content="#141c24">
 <link rel="manifest" href="manifest.webmanifest">
@@ -2622,6 +2622,11 @@ var WC={
     drill:"alu cev 20×60×2 mm, pritrditev zgoraj/spodaj do 2500 mm",
     palette:["Amazon wood","Oak wood"].concat(PAL_RUSTIK)}
 };
+/* >>> GENERATED: js/dilatation.js — uredi izvorno datoteko, ne to kopijo */
+/* js/dilatation.js — izvorni modul dilatacijske tabele in interpolacije.
+   Vir je ta datoteka; `npm run modules:sync` vstavi vsebino v označeni blok
+   znotraj tehnicka-risba-pro.html. Tabela in funkcija ne uporabljata DOM. */
+
 /* Dilatacijska tabela WoodCore — uradni PDF »Navodila za montažo WPC terasnih desk«
    (zahodna/vzhodna Evropa): priporočen razmak (mm) glede na dolžino deske (1–5 m)
    in temperaturo ob montaži. Vrstica −25 °C/1 m je v PDF natisnjena kot 2,27;
@@ -2646,6 +2651,7 @@ function dilatacija(lenM,tempC){
   var b=poDolzini(DIL.vals[ti+1]),fr=(t-DIL.temps[ti])/(DIL.temps[ti+1]-DIL.temps[ti]);
   return a*(1-fr)+b*fr;
 }
+/* <<< END GENERATED: js/dilatation.js */
 var USE_NAMES={precna:"prečna ograja",pokoncna:"pokončna ograja",fasada:"fasada",terasa:"terasa",pregrada:"pregradna stena",napusc:"napušč",stopniscna:"stopniščna ograja"};
 function roksalLimit(p,use,H){
   if(!p)return {v:1500,label:"razmak nosilcev"};
