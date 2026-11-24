@@ -54,8 +54,16 @@ for (const f of EXPECTED_VENDOR) {
 }
 
 /* ============ 2) AVTORITATIVNI PIN: recomputed hash === HTML integrity ============ */
+// KLJUČNO: SRI hash mora biti izračunan iz **strežanih bajtov** — to so git-commitane
+// bajtote (LF), ker `* text=auto eol=lf` v .gitattributes. Na Windowsu git pri checkout-u
+// pretvori v CRLF (lokalno delovno kopijo), zato brskalnik v produkciji prejme LF bajte.
+// Zato normaliziramo CRLF→LF pred hash-iranjem: na CI (že LF) je brez učinka, na Windowsu
+// da strežane (LF) bajte — enaka vrednost integrity v HTML. Brez tega bi bil SRI hash
+// iz CRLF bajtov in brskalnik bi ZAVRNIL vse vendor skripte v produkciji.
 function sha384Base64(file) {
-  return "sha384-" + crypto.createHash("sha384").update(fs.readFileSync(path.join(root, file))).digest("base64");
+  const bytes = fs.readFileSync(path.join(root, file)).toString("latin1");
+  const served = bytes.replace(/\r\n/g, "\n"); // CRLF → LF (strežani/git bajti)
+  return "sha384-" + crypto.createHash("sha384").update(served, "latin1").digest("base64");
 }
 for (const f of EXPECTED_VENDOR) {
   if (!fs.existsSync(path.join(root, f))) { check(f + " prisotna na disku", false, "datoteka manjka"); continue; }
