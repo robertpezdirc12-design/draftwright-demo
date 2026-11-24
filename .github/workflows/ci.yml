@@ -25,3 +25,7 @@ jobs:
         run: |
           node scripts/generate-csp.js
           git diff --exit-code -- tehnicka-risba-pro.html vercel.json
+      - name: SRI hashes must match the committed source
+        run: |
+          node scripts/generate-sri.js
+          git diff --exit-code -- tehnicka-risba-pro.html
