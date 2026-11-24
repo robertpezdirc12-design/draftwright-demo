@@ -2,6 +2,15 @@
 
 Vse pomembnejše spremembe projekta **Draftwright — Tehnična risba PRO** so dokumentirane v tej datoteki. Oblika sledi [Keep a Changelog](https://keepachangelog.com/sl/1.1.0/); datumski sufiksi v oznakah (npr. `[2026.11.15]`) so zaporedne podrazličice mesečne različice `APP_VERSION` (trenutno `2026.11`).
 
+## [2026.11.17] — 2026-11-24
+
+### Dodano (postopna modularizacija — korak 3)
+
+**`js/geometry.js` — kalibracijska matematika kot izvirna datoteka**
+- Čisti funkciji `solve()` (Gaussova eliminacija s pivotiranjem) in `homography()` sta izvzeti v `js/geometry.js`. `toMM()`/`mmDist()` ostaneta inline, ker sta odvisni od stanja `S.cal`. Obstoječa izvoza `window.solve` in `window.homography` ter ves E2E `homography-math` (13 preverjanj) ostanejo nedotaknjeni.
+- `scripts/sync-modules.js` je posplošen na seznam modulov (`js/core.js`, `js/geometry.js`); vsak ima svoj urejen par oznak in neodvisno validacijo. `npm run modules:sync` in CI drift-check pokrivata oba.
+- `tests/module-sync.test.js` razširjen z **24 preverjanji** (prej 15): za vsak modul posebej urejen par oznak, vsebinsko ujemanje, odsotnost DOM odvisnosti ter popravilo drift-a v začasni kopiji. Skupaj ostane **63 testnih surov**. CSP hash-i regenerirani.
+
 ## [2026.11.16] — 2026-11-24
 
 ### Dodano (postopna modularizacija — korak 2)
@@ -9,7 +18,7 @@ Vse pomembnejše spremembe projekta **Draftwright — Tehnična risba PRO** so d
 **`js/core.js` kot izvirna datoteka, generirana inline kopija**
 - Čisti modul iz koraka 1 ima zdaj resnično izvorno datoteko `js/core.js`. Aplikacija ostane zero-install PWA z enim HTML-jem, zato se modul ne naloži prek `<script src>` (tudi jsdom testi brez `resources:"usable"` ga ne bi). Med oznaki `>>> GENERATED: js/core.js` / `<<< END GENERATED` se vstavi **vsebinsko enaka kopija** (generator doda le ločilni novi vrstici; primerjava ju odstrani).
 - Nov `scripts/sync-modules.js` (`npm run modules:sync`) je idempotenten in popravi drift. CI ima nov korak `Inline module must match committed js/core.js`, zato se razlika med izvorom in kopijo ujame v PR-ju.
-- **Test:** nov `tests/module-sync.test.js` (**15 preverjanj**) — prisotnost izvora in generatorja, registriran npm script, natanko en **urejen** par oznak, vsebinsko ujemanje po odstranitvi ločilnih novih vrstic, odsotnost DOM odvisnosti, idempotenca, popravilo drift-a in **zavrnitev manjkajoče končne oznake** v začasni kopiji; **na stari kodi pade z 2 FAIL**. Skupaj **63 testnih surov**. CSP hash-i regenerirani.
+- **Test:** nov `tests/module-sync.test.js` (15 preverjanj ob uvedbi, **zdaj 24** po vključitvi `js/geometry.js`) — prisotnost izvora in generatorja, registriran npm script, natanko en **urejen** par oznak, vsebinsko ujemanje po odstranitvi ločilnih novih vrstic, odsotnost DOM odvisnosti, idempotenca, popravilo drift-a in **zavrnitev manjkajoče končne oznake** v začasni kopiji; **na stari kodi pade z 2 FAIL**. Skupaj **63 testnih surov**. CSP hash-i regenerirani.
 - **Odziv na cubic review:** generator zdaj pred pisanjem preveri natančno en `start` in `end` marker v pravilnem vrstnem redu — prej je manjkajoča končna oznaka povzročila tihi no-op z napačnim sporočilom »already current«. Popravek je pokrit z novima preverjanjema.
 
 ## [2026.11.15] — 2026-11-24
