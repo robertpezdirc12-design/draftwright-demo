@@ -94,5 +94,19 @@ check("generator popravi driftano inline kopijo",
 check("popravilo je minimalno: ostanek HTML je identičen committed različici",
   fs.readFileSync(path.join(drifted, "tehnicka-risba-pro.html"), "utf8") === html);
 
+/* Manjkajoča končna oznaka mora biti napaka, ne tihi no-op. */
+const brokenMarkers = workspace((dir) => {
+  const p = path.join(dir, "tehnicka-risba-pro.html");
+  fs.writeFileSync(p, fs.readFileSync(p, "utf8").replace(END, "/* END MARKER REMOVED */"));
+});
+const rejected = cp.spawnSync(process.execPath,
+  [path.join(brokenMarkers, "scripts", "sync-modules.js"), brokenMarkers],
+  { encoding: "utf8", cwd: root });
+check("generator zavrne manjkajočo končno oznako (ne tihi no-op)",
+  rejected.status !== 0 && /ordered generated core marker pair/.test(rejected.stderr || ""),
+  "exit=" + rejected.status + " " + (rejected.stderr || "").slice(0, 140));
+check("zavrnitev ne spremeni HTML-ja",
+  fs.readFileSync(path.join(brokenMarkers, "tehnicka-risba-pro.html"), "utf8").includes("/* END MARKER REMOVED */"));
+
 for (const dir of tempDirs) fs.rmSync(dir, { recursive: true, force: true });
 finish();

@@ -28,9 +28,14 @@ const markerRe = new RegExp(
   "[\\s\\S]*?" +
   end.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
 );
-const matches = html.match(new RegExp(start.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g")) || [];
-if (matches.length !== 1) {
-  throw new Error("Expected exactly one generated core marker in " + htmlPath + ", found " + matches.length + ".");
+const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const startCount = (html.match(new RegExp(escapeRe(start), "g")) || []).length;
+const endCount = (html.match(new RegExp(escapeRe(end), "g")) || []).length;
+if (startCount !== 1 || endCount !== 1 || html.indexOf(start) > html.indexOf(end)) {
+  throw new Error(
+    "Expected exactly one ordered generated core marker pair in " + htmlPath +
+    " (start=" + startCount + ", end=" + endCount + "). Refusing to write stale inline code."
+  );
 }
 const block = start + "\n" + source + "\n" + end;
 const updated = html.replace(markerRe, () => block);

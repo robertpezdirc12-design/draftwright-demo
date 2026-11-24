@@ -7,9 +7,10 @@ Vse pomembnejše spremembe projekta **Draftwright — Tehnična risba PRO** so d
 ### Dodano (postopna modularizacija — korak 2)
 
 **`js/core.js` kot izvirna datoteka, generirana inline kopija**
-- Čisti modul iz koraka 1 ima zdaj resnično izvorno datoteko `js/core.js`. Aplikacija ostane zero-install PWA z enim HTML-jem, zato se modul ne naloži prek `<script src>` (tudi jsdom testi brez `resources:"usable"` ga ne bi). Med oznaki `>>> GENERATED: js/core.js` / `<<< END GENERATED` se vstavi **bajtovno identična kopija**.
+- Čisti modul iz koraka 1 ima zdaj resnično izvorno datoteko `js/core.js`. Aplikacija ostane zero-install PWA z enim HTML-jem, zato se modul ne naloži prek `<script src>` (tudi jsdom testi brez `resources:"usable"` ga ne bi). Med oznaki `>>> GENERATED: js/core.js` / `<<< END GENERATED` se vstavi **vsebinsko enaka kopija** (generator doda le ločilni novi vrstici; primerjava ju odstrani).
 - Nov `scripts/sync-modules.js` (`npm run modules:sync`) je idempotenten in popravi drift. CI ima nov korak `Inline module must match committed js/core.js`, zato se razlika med izvorom in kopijo ujame v PR-ju.
-- **Test:** nov `tests/module-sync.test.js` (13 preverjanj) — prisotnost izvora in generatorja, registriran npm script, natanko en par oznak, bajtovno ujemanje, odsotnost DOM odvisnosti, idempotenca in popravilo drift-a v začasni kopiji; **na stari kodi pade z 2 FAIL**. Skupaj **63 testnih surov**. CSP hash-i regenerirani.
+- **Test:** nov `tests/module-sync.test.js` (**15 preverjanj**) — prisotnost izvora in generatorja, registriran npm script, natanko en **urejen** par oznak, vsebinsko ujemanje po odstranitvi ločilnih novih vrstic, odsotnost DOM odvisnosti, idempotenca, popravilo drift-a in **zavrnitev manjkajoče končne oznake** v začasni kopiji; **na stari kodi pade z 2 FAIL**. Skupaj **63 testnih surov**. CSP hash-i regenerirani.
+- **Odziv na cubic review:** generator zdaj pred pisanjem preveri natančno en `start` in `end` marker v pravilnem vrstnem redu — prej je manjkajoča končna oznaka povzročila tihi no-op z napačnim sporočilom »already current«. Popravek je pokrit z novima preverjanjema.
 
 ## [2026.11.15] — 2026-11-24
 
