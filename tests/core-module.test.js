@@ -56,9 +56,9 @@ if (C) {
     JSON.stringify(centers));
   check("dim: para iz poljubnega besedila", JSON.stringify(C.dim("L=3800 H=1200", [0, 0])) === "[3800,1200]");
   check("dim: fallback ko manjkata dve števili", JSON.stringify(C.dim("x", [1, 2])) === "[1,2]");
-  check("escapeHtml: vsi posebni znaki",
-    C.escapeHtml('<a href="x">&') === "&lt;a href=&quot;x&quot;&gt;&amp;",
-    C.escapeHtml('<a href="x">&'));
+  check("escapeHtml: vsi posebni znaki (vključno z apostrofom)",
+    C.escapeHtml("<a href=\"x\">&'") === "&lt;a href=&quot;x&quot;&gt;&amp;&apos;",
+    C.escapeHtml("<a href=\"x\">&'"));
 
   /* --- modul je res čist: nobene DOM/localStorage odvisnosti --- */
   const body = (html.match(/var DWCore=\(function\(\)\{[\s\S]*?\n\}\)\(\);/) || [""])[0];
