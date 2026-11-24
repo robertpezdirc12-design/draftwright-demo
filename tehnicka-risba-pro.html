@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- CSP: strict script allowlist by hash. No unsafe-inline / unsafe-eval. frame-ancestors is set in vercel.json (unsupported in meta). -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-tMmQGBSbDcoU9Q0m6gdCIuqVoFhz3TtXYFFvdmBO+RI='; style-src 'self' 'sha256-xOmD8s5jUsW4WSPzf+U5h6XcMTu2SRV0M8LoZ3nZar8='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-4J8yX4PukaqJ6RtxK3OWpRU0icMqZ8UL9o022qwuSU0='; style-src 'self' 'sha256-xOmD8s5jUsW4WSPzf+U5h6XcMTu2SRV0M8LoZ3nZar8='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Tehnična risba PRO – fotografija do končnega lista</title>
 <meta name="theme-color" content="#141c24">
 <link rel="manifest" href="manifest.webmanifest">
@@ -2491,8 +2491,14 @@ var DW_COMPONENTS={
    Enote za VSE CSV izvoze (kosovnica, rezalni načrt, predračun, montažni načrt),
    da omiljenje ostane usklajeno. Čiste celice (ne začinajo s = + - @) ostanejo
    byte-identične. */
+/* >>> GENERATED: js/csv.js — uredi izvorno datoteko, ne to kopijo */
+/* js/csv.js — izvorni modul skupnega CSV omiljanja (formula-injection).
+   Vir je ta datoteka; `npm run modules:sync` vstavi vsebino v označeni blok
+   znotraj tehnicka-risba-pro.html. Funkciji sta čisti, brez DOM odvisnosti. */
+
 function csvCell(c){var s=String(c);if(/^[=+\-@\t\r]/.test(s))s="'"+s;return '"'+s.replace(/"/g,'""')+'"'}
 function csvRow(arr){return arr.map(csvCell).join(";")}
+/* <<< END GENERATED: js/csv.js */
 window.csvCell=csvCell;
 function kosovnicaCsv(){
   var prof=WC[$("sysProfile").value]||WC.romb67;

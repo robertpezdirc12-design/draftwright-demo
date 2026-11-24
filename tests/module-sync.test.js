@@ -15,7 +15,7 @@ const cp = require("child_process");
 const root = path.join(__dirname, "..");
 const htmlPath = path.join(root, "tehnicka-risba-pro.html");
 const generatorPath = path.join(root, "scripts", "sync-modules.js");
-const MODULES = ["js/core.js", "js/geometry.js", "js/dilatation.js"];
+const MODULES = ["js/core.js", "js/geometry.js", "js/dilatation.js", "js/csv.js"];
 const markers = (file) => ({
   start: "/* >>> GENERATED: " + file + " — uredi izvorno datoteko, ne to kopijo */",
   end: "/* <<< END GENERATED: " + file + " */",
@@ -66,6 +66,9 @@ for (const file of MODULES) {
 const coreSource = fs.readFileSync(path.join(root, "js/core.js"), "utf8");
 const geoSource = fs.readFileSync(path.join(root, "js/geometry.js"), "utf8");
 const dilSource = fs.readFileSync(path.join(root, "js/dilatation.js"), "utf8");
+const csvSource = fs.readFileSync(path.join(root, "js/csv.js"), "utf8");
+check("js/csv.js vsebuje csvCell in csvRow",
+  /function csvCell\(/.test(csvSource) && /function csvRow\(/.test(csvSource));
 check("js/core.js izvaža DWCore", coreSource.includes("window.DWCore=DWCore;"));
 check("js/geometry.js vsebuje solve in homography",
   /function solve\(/.test(geoSource) && /function homography\(/.test(geoSource));
