@@ -15,7 +15,7 @@ const cp = require("child_process");
 const root = path.join(__dirname, "..");
 const htmlPath = path.join(root, "tehnicka-risba-pro.html");
 const generatorPath = path.join(root, "scripts", "sync-modules.js");
-const MODULES = ["js/core.js", "js/geometry.js", "js/dilatation.js", "js/csv.js", "js/roksal.js"];
+const MODULES = ["js/core.js", "js/geometry.js", "js/dilatation.js", "js/csv.js", "js/roksal.js", "js/registry.js"];
 const markers = (file) => ({
   start: "/* >>> GENERATED: " + file + " — uredi izvorno datoteko, ne to kopijo */",
   end: "/* <<< END GENERATED: " + file + " */",
@@ -38,8 +38,8 @@ function finish() {
 
 check("scripts/sync-modules.js obstaja (stara koda bi PADO)", fs.existsSync(generatorPath));
 /* Vsi viri so preverjeni PRED morebitnim izstopom. Na neposredni predhodni
-   kodi (manjka le js/roksal.js) zato pade z 1 FAIL; na kodi pred celotno
-   modularizacijo bi bilo 6 FAIL (generator + 5 virov), ne le prvi. */
+   kodi (manjka le js/registry.js) zato pade z 1 FAIL; na kodi pred celotno
+   modularizacijo bi bilo 7 FAIL (generator + 6 virov), ne le prvi. */
 let allSources = true;
 for (const file of MODULES) {
   const ok = fs.existsSync(path.join(root, file));
@@ -83,6 +83,13 @@ check("js/roksal.js vsebuje USE_NAMES in obe omejitvi",
   /function roksalRailLimit\(/.test(roksalSource));
 check("roksalUseNotes ostane v HTML-ju, ne v čistem modulu",
   /function roksalUseNotes\(/.test(html) && !/function roksalUseNotes\(/.test(roksalSource));
+const registrySource = fs.readFileSync(path.join(root, "js/registry.js"), "utf8");
+check("js/registry.js vsebuje shemo, validator in helperje",
+  /var REGISTRY_SCHEMA=\{/.test(registrySource) && /function validateRegistry\(/.test(registrySource) &&
+  /function woodcoreRegistry\(/.test(registrySource) && /function setRegistryBrand\(/.test(registrySource));
+check("register se sklicuje na vire, ne pa na DOM",
+  /profiles:WC/.test(registrySource) && /pravaPodlage:roksalLimit/.test(registrySource) &&
+  !/\bdocument\b|\bfetch\(/.test(registrySource));
 check("generator pokriva vse module",
   MODULES.every((f) => fs.readFileSync(generatorPath, "utf8").includes('"' + f + '"')));
 

@@ -15,7 +15,7 @@ const path = require("path");
 
 const root = process.argv[2] ? path.resolve(process.argv[2]) : path.join(__dirname, "..");
 const htmlPath = path.join(root, "tehnicka-risba-pro.html");
-const MODULES = ["js/core.js", "js/geometry.js", "js/dilatation.js", "js/csv.js", "js/roksal.js"];
+const MODULES = ["js/core.js", "js/geometry.js", "js/dilatation.js", "js/csv.js", "js/roksal.js", "js/registry.js"];
 
 const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const markers = (file) => ({

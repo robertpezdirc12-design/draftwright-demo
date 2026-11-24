@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- CSP: strict script allowlist by hash. No unsafe-inline / unsafe-eval. frame-ancestors is set in vercel.json (unsupported in meta). -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-8eWVLvSBTYC/IMKp7PMy+0HiMYjNsPDMKETMQSarrxM='; style-src 'self' 'sha256-xOmD8s5jUsW4WSPzf+U5h6XcMTu2SRV0M8LoZ3nZar8='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-Aj7ZkF+zlitZk9JjbDFkN0u7CwHrkGmiNU0gG/xds5M='; style-src 'self' 'sha256-xOmD8s5jUsW4WSPzf+U5h6XcMTu2SRV0M8LoZ3nZar8='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Tehnična risba PRO – fotografija do končnega lista</title>
 <meta name="theme-color" content="#141c24">
 <link rel="manifest" href="manifest.webmanifest">
@@ -2769,7 +2769,14 @@ $("sysSurface").addEventListener("change",function(){
    Stop-rule M5: BREZ pogodbenih podatkov znamk → registriran ostane samo WoodCore; druga znamka
    se vgradi šele, ko so njeni podatki na voljo. Ta blok je ZADOBELEN: shema + validator +
    prvi registar (WoodCore, ki referencira obstoječe vire WC/DIL/USE_NAMES/PAL_*),
-   ne pa izmišljenih podatkov drugih znamk. */
+   ne pa izmišljenih podatkov drugih znamk. Vir je `js/registry.js`, inline kopija je generirana. */
+/* >>> GENERATED: js/registry.js — uredi izvorno datoteko, ne to kopijo */
+/* js/registry.js — izvorni modul registrske abstrakcije več znamk.
+   Vir je ta datoteka; `npm run modules:sync` vstavi vsebino v označeni blok
+   znotraj tehnicka-risba-pro.html. Modul je brez DOM in omrežja; WoodCore
+   vnos se sklicuje na že opredeljene vire WC, DIL, PAL_KLASIK, PAL_RUSTIK,
+   USE_NAMES in roksalLimit, ki v HTML-ju stojijo pred tem blokom. Stop-rule:
+   brez pogodbenih podatkov drugih znamk je registriran samo WoodCore. */
 var REGISTRY_SCHEMA={
   required:["id","naziv","material","profiles","dilatacijska","pravaPodlage","palete","uporabe","kontaktni"],
   profileRequired:["n","w","t","len","max","fix","allowed","drill","palette"]
@@ -2831,6 +2838,7 @@ var REGISTRY_ACTIVE="woodcore";
 function registryBrands(){return Object.keys(REGISTRY)}
 function activeRegistry(){return REGISTRY[REGISTRY_ACTIVE]||REGISTRY.woodcore}
 function setRegistryBrand(id){if(REGISTRY[id]){REGISTRY_ACTIVE=id;return true}return false}
+/* <<< END GENERATED: js/registry.js */
 
 /* Testno dostopno (monolit): IIFE-razlogi za tests/auto-l.test.js, registry.test.js in
    vision-deep.test.js — enaka konvencija kot window.exportPdf / window.prjRestoreFromHash. */
