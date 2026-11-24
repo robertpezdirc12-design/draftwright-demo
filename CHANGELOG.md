@@ -2,6 +2,17 @@
 
 Vse pomembnejše spremembe projekta **Draftwright — Tehnična risba PRO** so dokumentirane v tej datoteki. Oblika sledi [Keep a Changelog](https://keepachangelog.com/sl/1.1.0/); različica je enaka `APP_VERSION` v aplikaciji.
 
+## [2026.11.13] — 2026-11-24
+
+### Popravljeno (Issue #41 — EN UI parity: mešan jezik v novejših sklopih)
+
+**Vmesnik v EN načinu zdaj dosledno angleški — meni, korita/segmenti, orodja in statusi**
+- **Ugotovitev (docs/review-2026-11-23.md, P2):** SL/EN preklopnik je obstajal, a starejši prevodni slovar ni pokrival novejših sklopov. V EN načinu so ostajali slovenski: navigacijski meni (z bližnjicami), polja za korita in segmente, orodja tlorisa/skice, `title` atributi ter dinamična statusna sporočila.
+- **Popravek (frontend, brez spremembe izvozov):** razširjen `LANG_EN`; `data-i18n` na navigacijskih gumbih; `applyLang()` zdaj ohrani `<i>`, `<span class="k">` in `<kbd>` ter prevaja tudi neposredne tekstovne vozle (label z inputom) in `title` atribute. Novi `UI_MSG` + `syncLive()` z `MutationObserver` na live regijah (`calStatus`, `detStatus`, `sysStatus`, `tlorisStatus`, `skStatus`, `globalStatus`, `toastZone`, `errTray`) prevede **dinamična** sporočila ob spremembi DOM in jih ob povratku v SL obnovi iz izvornega besedila. Prefiksi z ohranjeno številko (`Segmentov: 3` → `Segments: 3`) ostanejo nedotaknjeni.
+- **Namerna izjema:** tehnična risba, BOM, CSV/PDF in STEP ostajajo slovenski (Roksal dokumentacija) — prevede se samo UI.
+- **Test:** nov `tests/i18n-ui.test.js` (41 preverjanj): meni + bližnjica `9`, korita/segmenti, orodja in barve skice, `title`, statični in dinamični statusi/toast, povratek v SL ter SL risba. **Na stari kodi bi padlo (15 FAIL).**
+- CSP hash-i ponovno izgenerirani. Skupaj **60 testnih surov** (prej 59).
+
 ## [2026.11.12] — 2026-11-24
 
 ### Dodano (Issue #41 — avtomatizacija SRI hash-ov po CRLF incidentu)
