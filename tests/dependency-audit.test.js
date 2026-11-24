@@ -62,17 +62,23 @@ check("dev: maxrects-packer zahtevan v testih", /require\(["']maxrects-packer["'
 
 // (b) 3 so verzionični PIN za brskalnisko naložene vendor UMD pakete (jsdom testih eval
 //     bralne vendor datoteke, ne Node pakete). Vsak ustreza prisotni vendor/ datoteki.
+//     SRI (Issue #41 sled): vsak vendor skript nosi integrity="sha384-…" — tukaj
+//     preverimo SAMO prisotnost SRI atribute (avtoritativni pin 71-znak hash-a je v
+//     tests/sri.test.js, kjer se recomputira iz datoteke na disku).
+// Vsak vendor skript nosi SRI (integrity="sha384-…"). Avtoritativni pin hash-a
+// (recomputed iz datoteke) je v tests/sri.test.js — tukaj preverimo le prisotnost
+// SRI atribute na pravilnem skriptu, brez regex/escaping zapletosti.
 const VENDOR_PIN = [
-  { dep: "jspdf", file: "vendor/jspdf.umd.min.js", htmlSig: '<script src="vendor/jspdf.umd.min.js" defer></script>' },
-  { dep: "svg2pdf.js", file: "vendor/svg2pdf.umd.min.js", htmlSig: '<script src="vendor/svg2pdf.umd.min.js" defer></script>' },
-  { dep: "qrcode-generator", file: "vendor/qr-core.js", htmlSig: "vendor/qr-core.js" }
+  { dep: "jspdf", file: "vendor/jspdf.umd.min.js", tag: '<script src="vendor/jspdf.umd.min.js" defer integrity="sha384-' },
+  { dep: "svg2pdf.js", file: "vendor/svg2pdf.umd.min.js", tag: '<script src="vendor/svg2pdf.umd.min.js" defer integrity="sha384-' },
+  { dep: "qrcode-generator", file: "vendor/qr-core.js", tag: '<script src="vendor/qr-core.js" defer integrity="sha384-' }
 ];
 for (const v of VENDOR_PIN) {
   const exists = fs.existsSync(path.join(root, v.file));
   const size = exists ? fs.statSync(path.join(root, v.file)).size : 0;
-  check(`dev: ${v.dep} = pin za ${v.file} (prisotna, >10 kB)` && "dev: " + v.dep + " pin → " + v.file + " prisoten >10 kB",
+  check("dev: " + v.dep + " pin → " + v.file + " prisoten >10 kB",
     exists && size > 10000, "size=" + size);
-  check("HTML naloži " + v.file, html.includes(v.htmlSig));
+  check("HTML naloži " + v.file + " (SRI)", html.includes(v.tag));
 }
 
 /* ============ 3) nobenih mrtve teže v vendor/ ============ */
