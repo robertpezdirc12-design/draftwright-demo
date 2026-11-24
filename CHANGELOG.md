@@ -2,6 +2,15 @@
 
 Vse pomembnejše spremembe projekta **Draftwright — Tehnična risba PRO** so dokumentirane v tej datoteki. Oblika sledi [Keep a Changelog](https://keepachangelog.com/sl/1.1.0/); datumski sufiksi v oznakah (npr. `[2026.11.15]`) so zaporedne podrazličice mesečne različice `APP_VERSION` (trenutno `2026.11`).
 
+## [2026.11.19] — 2026-11-24
+
+### Dodano (postopna modularizacija — korak 5)
+
+**`js/csv.js` — skupno CSV omiljanje kot izvirna datoteka**
+- `csvCell()` in `csvRow()` sta izvzeti v `js/csv.js` (čisti, brez DOM). Izvoz `window.csvCell` in vseh pet uporab v izvozih ostane nedotaknjenih.
+- `scripts/sync-modules.js` pokriva zdaj štiri module (`core`, `geometry`, `dilatation`, `csv`).
+- `tests/module-sync.test.js` razširjen z 32 na **40 preverjanj** (urejen par oznak, vsebinsko ujemanje, odsotnost DOM odvisnosti in popravilo drift-a za vsak modul). Na stari kodi pade s **5 FAIL**. Skupaj ostane **63 testnih surov**. CSP hash-i regenerirani.
+
 ## [2026.11.18] — 2026-11-24
 
 ### Dodano (postopna modularizacija — korak 4)
@@ -9,7 +18,7 @@ Vse pomembnejše spremembe projekta **Draftwright — Tehnična risba PRO** so d
 **`js/dilatation.js` — dilatacijska tabela in interpolacija kot izvirna datoteka**
 - Tabela `DIL` in funkcija `dilatacija()` sta izvzeti v `js/dilatation.js`. Obe sta čisti (brez DOM, brez stanja `S`), zato se je vzorec iz #57/#58 ponovil brez novih odvisnosti.
 - `scripts/sync-modules.js` pokriva zdaj tri module (`core`, `geometry`, `dilatation`); `npm run modules:sync` in CI drift-check ostajata enotna.
-- `tests/module-sync.test.js` razširjen z 24 na **32 preverjanj** — urejen par oznak, vsebinsko ujemanje, odsotnost DOM odvisnosti in popravilo drift-a za **vsak** od treh modulov. Na stari kodi pade s **4 FAIL**. Skupaj ostane **63 testnih surov**. CSP hash-i regenerirani.
+- `tests/module-sync.test.js` razširjen z 24 na **32 preverjanj** (danes 40 po vključitvi `js/csv.js`) — urejen par oznak, vsebinsko ujemanje, odsotnost DOM odvisnosti in popravilo drift-a za **vsak** modul. Na stari kodi pade s **4 FAIL**. Skupaj ostane **63 testnih surov**. CSP hash-i regenerirani.
 - Obstoječa izvoza `window.DIL` in `window.dilatacija` ter `dilatation-table` (15 preverjanj) ostajajo nedotaknjeni.
 
 ## [2026.11.17] — 2026-11-24
