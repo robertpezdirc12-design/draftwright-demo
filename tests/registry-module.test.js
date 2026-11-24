@@ -51,7 +51,7 @@ check("natanko en urejen par oznak",
 check("inline kopija vsebinsko enaka izvoru",
   hasSource && i >= 0 && j >= 0 && html.slice(i + start.length, j).trim() === source.replace(/\s+$/, ""));
 check("vir nima DOM/storage/omrežnih odvisnosti",
-  source.length > 0 && !/\bdocument\b|\b(?:local|session)Storage\b|\$\(|\bfetch\(|\bXMLHttpRequest\b/.test(source));
+  source.length > 0 && !/\bdocument\b|\bwindow\b|\b(?:local|session)Storage\b|\$\(|\bfetch\(|\bXMLHttpRequest\b|\bWebSocket\b|\bnavigator\b|\bsendBeacon\b/.test(source));
 const deps = ["var PAL_KLASIK=", "var WC=", "var DIL=", "var USE_NAMES=", "function roksalLimit("];
 check("odvisnosti WoodCore vnosa so opredeljene pred modulom",
   i > 0 && deps.every((d) => html.indexOf(d) >= 0 && html.indexOf(d) < i));
