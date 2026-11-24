@@ -2,6 +2,19 @@
 
 Vse pomembnejše spremembe projekta **Draftwright — Tehnična risba PRO** so dokumentirane v tej datoteki. Oblika sledi [Keep a Changelog](https://keepachangelog.com/sl/1.1.0/); različica je enaka `APP_VERSION` v aplikaciji.
 
+## [2026.11.9] — 2026-11-24
+
+### Dodano (Issue #41 §3.E — dostopnost: WCAG 4.1.2 "Name")
+
+**Dostopno ime za vidna polja/gumba + zasilni `aria-live` kanal povratne informacije**
+- **Ugotovitev (jsdom sweep):** vsak VIDEN interaktiven element mora imeti dostopno ime. Po popravku preverimo **276 elementov, 0 brez imena**. Skriti `.hooks` (display:none, aria-hidden) so JS bližnjice, ne vidna UI — izven dostopnega drevesa.
+- **Popravki:**
+  - `#calStatus` (kanal `st()`/`dt()` — »Umeritev uspešna«, opozorila detekcije, potrjevanja) pridobi `role="status"` + `aria-live="polite"` — zasilni bralnik zdaj sliši glavne sporočila (uskladitvo s `#globalStatus`/`#errTray`/`#toastZone`, ki so že bili live).
+  - 5 polj brez imena pridobi `aria-label`: `#file` (Naloži fotografijo ograje), `#rho` (Gostota materiala kg/m³), `#prjName` (Ime projekta), `#refMode` (Referenčni način lista), `#loadFile` (Odpri projekt JSON/foto).
+  - `#applySuggestedProf` (JS gumb) pridobi `title` (servi kot privzeti dostopni imenovalnik; NE prevlada dinamičnega `textContent`).
+- `tests/accessibility.test.js` (11 preverjanj): vsak poseben popavek + **celoten sweep vseh vidnih interaktivnih elementov** (brez imena → FAIL) + regresija, da `st()` še vedno piše v `#calStatus`. **Na stari kodi bi PADO (8 FAIL).**
+- CSP hash-i ponovno izgenerirani (`scripts/generate-csp.js`). Skupaj **56 testnih surov** (prej 55).
+
 ## [2026.11.8] — 2026-11-24
 
 ### Popravljeno (Issue #41 §3.B — detekcija fotografij: orientacija ≠ potrjena mera)
