@@ -2,6 +2,16 @@
 
 Vse pomembnejše spremembe projekta **Draftwright — Tehnična risba PRO** so dokumentirane v tej datoteki. Oblika sledi [Keep a Changelog](https://keepachangelog.com/sl/1.1.0/); datumski sufiksi v oznakah (npr. `[2026.11.15]`) so zaporedne podrazličice mesečne različice `APP_VERSION` (trenutno `2026.11`).
 
+## [2026.11.18] — 2026-11-24
+
+### Dodano (postopna modularizacija — korak 4)
+
+**`js/dilatation.js` — dilatacijska tabela in interpolacija kot izvirna datoteka**
+- Tabela `DIL` in funkcija `dilatacija()` sta izvzeti v `js/dilatation.js`. Obe sta čisti (brez DOM, brez stanja `S`), zato se je vzorec iz #57/#58 ponovil brez novih odvisnosti.
+- `scripts/sync-modules.js` pokriva zdaj tri module (`core`, `geometry`, `dilatation`); `npm run modules:sync` in CI drift-check ostajata enotna.
+- `tests/module-sync.test.js` razširjen z 24 na **32 preverjanj** — urejen par oznak, vsebinsko ujemanje, odsotnost DOM odvisnosti in popravilo drift-a za **vsak** od treh modulov. Na stari kodi pade s **4 FAIL**. Skupaj ostane **63 testnih surov**. CSP hash-i regenerirani.
+- Obstoječa izvoza `window.DIL` in `window.dilatacija` ter `dilatation-table` (15 preverjanj) ostajajo nedotaknjeni.
+
 ## [2026.11.17] — 2026-11-24
 
 ### Dodano (postopna modularizacija — korak 3)
@@ -9,7 +19,7 @@ Vse pomembnejše spremembe projekta **Draftwright — Tehnična risba PRO** so d
 **`js/geometry.js` — kalibracijska matematika kot izvirna datoteka**
 - Čisti funkciji `solve()` (Gaussova eliminacija s pivotiranjem) in `homography()` sta izvzeti v `js/geometry.js`. `toMM()`/`mmDist()` ostaneta inline, ker sta odvisni od stanja `S.cal`. Obstoječa izvoza `window.solve` in `window.homography` ter ves E2E `homography-math` (13 preverjanj) ostanejo nedotaknjeni.
 - `scripts/sync-modules.js` je posplošen na seznam modulov (`js/core.js`, `js/geometry.js`); vsak ima svoj urejen par oznak in neodvisno validacijo. `npm run modules:sync` in CI drift-check pokrivata oba.
-- `tests/module-sync.test.js` razširjen z **24 preverjanji** (prej 15): za vsak modul posebej urejen par oznak, vsebinsko ujemanje, odsotnost DOM odvisnosti ter popravilo drift-a v začasni kopiji. Skupaj ostane **63 testnih surov**. CSP hash-i regenerirani.
+- `tests/module-sync.test.js` razširjen z **24 preverjanji** (prej 15, danes 32 po vključitvi `js/dilatation.js`): za vsak modul posebej urejen par oznak, vsebinsko ujemanje, odsotnost DOM odvisnosti ter popravilo drift-a v začasni kopiji. Skupaj ostane **63 testnih surov**. CSP hash-i regenerirani.
 
 ## [2026.11.16] — 2026-11-24
 

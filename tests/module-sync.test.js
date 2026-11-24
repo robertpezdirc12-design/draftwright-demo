@@ -15,7 +15,7 @@ const cp = require("child_process");
 const root = path.join(__dirname, "..");
 const htmlPath = path.join(root, "tehnicka-risba-pro.html");
 const generatorPath = path.join(root, "scripts", "sync-modules.js");
-const MODULES = ["js/core.js", "js/geometry.js"];
+const MODULES = ["js/core.js", "js/geometry.js", "js/dilatation.js"];
 const markers = (file) => ({
   start: "/* >>> GENERATED: " + file + " — uredi izvorno datoteko, ne to kopijo */",
   end: "/* <<< END GENERATED: " + file + " */",
@@ -65,12 +65,14 @@ for (const file of MODULES) {
 }
 const coreSource = fs.readFileSync(path.join(root, "js/core.js"), "utf8");
 const geoSource = fs.readFileSync(path.join(root, "js/geometry.js"), "utf8");
+const dilSource = fs.readFileSync(path.join(root, "js/dilatation.js"), "utf8");
 check("js/core.js izvaža DWCore", coreSource.includes("window.DWCore=DWCore;"));
 check("js/geometry.js vsebuje solve in homography",
   /function solve\(/.test(geoSource) && /function homography\(/.test(geoSource));
-check("generator pokriva oba modula",
-  ["js/core.js", "js/geometry.js"].every((f) =>
-    fs.readFileSync(generatorPath, "utf8").includes('"' + f + '"')));
+check("js/dilatation.js vsebuje DIL in dilatacija",
+  /var DIL=\{/.test(dilSource) && /function dilatacija\(/.test(dilSource));
+check("generator pokriva vse module",
+  MODULES.every((f) => fs.readFileSync(generatorPath, "utf8").includes('"' + f + '"')));
 
 /* --- generator v začasni kopiji --- */
 const tempDirs = [];
@@ -94,7 +96,8 @@ function generate(dir) {
 
 const clean = workspace();
 const out1 = generate(clean);
-check("generator poroča oba izvora", /js\/core\.js/.test(out1) && /js\/geometry\.js/.test(out1), out1.trim());
+check("generator poroča vse izvore",
+  MODULES.every((f) => out1.includes(f)), out1.trim());
 check("idempotenca: pravilna HTML ostane bajtovno nespremenjena",
   fs.readFileSync(path.join(clean, "tehnicka-risba-pro.html"), "utf8") === html);
 
