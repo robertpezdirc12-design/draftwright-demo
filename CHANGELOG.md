@@ -2,6 +2,21 @@
 
 Vse pomembnejše spremembe projekta **Draftwright — Tehnična risba PRO** so dokumentirane v tej datoteki. Oblika sledi [Keep a Changelog](https://keepachangelog.com/sl/1.1.0/); datumski sufiksi v oznakah (npr. `[2026.11.15]`) so zaporedne podrazličice mesečne različice `APP_VERSION` (trenutno `2026.11`).
 
+## [2026.11.22] — 2026-11-24
+
+### Dodano (lokalne izboljšave brez omrežja)
+
+**Popravek mere `L` pri fotografijah, širših od 900 px**
+- `applyDetection()` je `L` računala iz bboxa v naravnih pikslih z `mmPerPx` (mm/sivi px). Ker se slika pred detekcijo pomanjša na največ 900 px (`sc < 1`), je bila vrednost `1/sc` prevelika. Zdaj se v linearnem načinu uporabi `S.cal.scale` (mm/naravni px), v ravninskem pa razmerje `1/S.det.rectK`. `H`, `sw` in `gap` ostanejo v sivih pikslih — zato se njihova vrednost ni spremenila.
+
+**Vektorski predlog nove ograje čez fotografijo**
+- Nov gumb *Predlog ograje na sliki* v foto plošči preklopi lokalno SVG prekrivko (`#dw-proposal`): lamele se izrišejo iz `n`/`sw`/`gap` znotraj zaznanega okvira, stebri pa iz `roksalLimit()` glede na `L`. Barva je orientacijska iz WoodCore palete (`sysColor`), ne vir mer. Prekrivka je na voljo v 2-točkovni umeritvi; pri 4-točkovni (homografija) gumb pojasni, da podprta ni.
+- Ni klica v oblak, nobenega novega `fetch`, nobene spremembe izvozov. Status izrecno pove: »mere iz risbe, ne iz slike«.
+
+**Enotne statusne oznake in EN prevodi**
+- `DW_STATUS` / `statusMark()` poenotita oznake ✓ izmerjeno · ∑ izračunano · ≈ ocenjeno · ?? neznano; legenda je dodana v foto ploščo. Novi gumb, legenda in dinamični statusi imajo EN prevode (preklop prek gumba, kot v preostalem UI-ju).
+- Nov `tests/local-upgrade.test.js` (**21 preverjanj**) pokriva popravek enote, vsebino prekrivke, vire mer, prevode in offline jamstvo. Na neposredni predhodni kodi (`92a05a2`) pade z **14 FAIL**, preverjeno v začasni delovni kopiji. Skupaj **66 testnih surov** (prej 65). CSP hash-i regenerirani.
+
 ## [2026.11.21] — 2026-11-24
 
 ### Dodano (postopna modularizacija — korak 7)

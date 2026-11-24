@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- CSP: strict script allowlist by hash. No unsafe-inline / unsafe-eval. frame-ancestors is set in vercel.json (unsupported in meta). -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-Aj7ZkF+zlitZk9JjbDFkN0u7CwHrkGmiNU0gG/xds5M='; style-src 'self' 'sha256-xOmD8s5jUsW4WSPzf+U5h6XcMTu2SRV0M8LoZ3nZar8='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-rUw1ZUjdKmC1eYWAp/gZpF518t1oN4B6KvwybShFSeY='; style-src 'self' 'sha256-xOmD8s5jUsW4WSPzf+U5h6XcMTu2SRV0M8LoZ3nZar8='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Tehnična risba PRO – fotografija do končnega lista</title>
 <meta name="theme-color" content="#141c24">
 <link rel="manifest" href="manifest.webmanifest">
@@ -486,6 +486,8 @@ body.viewmode .viewbar{display:flex}
 <div class="photo" id="photoBox"><img id="img" alt="foto"><svg id="ov" xmlns="http://www.w3.org/2000/svg"></svg></div>
 <p class="hint">Prilepite z <span class="kbd">Ctrl+V</span>, povlecite ali izberite datoteko. Za merjenje naj bo v kadru merilo ali znan predmet.</p>
 <button class="btn" id="applySuggestedProf" data-s="s30" title="Uporabi predlagani profil"></button>
+<button class="btn" id="proposalBtn" data-i18n="b_proposal" title="Lokalni predlog nove ograje čez fotografijo (brez omrežja)">Predlog ograje na sliki</button>
+<p class="hint" id="statusLegend" data-i18n="status_legend">Oznake: ✓ izmerjeno · ∑ izračunano · ≈ ocenjeno · ?? neznano</p>
 </section>
 
 <section data-panel="cal">
@@ -1111,8 +1113,11 @@ function spanCenters(total,n){return DWCore.spanCenters(total,n)}
 function dim(str,fallback){return DWCore.dim(str,fallback)}
 function st(t,k){var e=$("calStatus");e.textContent=t;e.className="status"+(k?" "+k:"");syncSteps()}
 function dt(t,k){var e=$("detStatus");e.textContent=t;e.className="status"+(k?" "+k:"");syncSteps()}
+/* Enotne statusne oznake — samo UI; izvozi (SVG/PDF/CSV) ostanejo glede na zlate posnetke nedotaknjeni. */
+var DW_STATUS={measured:"✓ izmerjeno",calculated:"∑ izračunano",estimated:"≈ ocenjeno",unknown:"?? neznano"};
+function statusMark(k){return DW_STATUS[k]||DW_STATUS.unknown}
 
-var S={img:null,calMode:"linear",cal:null,calibrated:false,picking:false,tmp:[],lines:[],photoData:null,det:null,drag:null};
+var S={img:null,calMode:"linear",cal:null,calibrated:false,picking:false,tmp:[],lines:[],photoData:null,det:null,drag:null,showProposal:false};
 
 /* ---------- image input ---------- */
 function loadPhoto(file){
@@ -1149,6 +1154,39 @@ function mmDist(a,b){if(!S.calibrated)return 0;var p=toMM(a),q=toMM(b);return Ma
 function pxPerMM(){return S.calibrated?1/S.cal.scale:0}
 
 /* ---------- overlay ---------- */
+/* Lokalni vektorski predlog nove ograje čez fotografijo — brez omrežja, brez AI.
+   Geometrija izhaja iz zaznanega bboxa in polj n/sw/gap/L/H; barva je le
+   orientacijska vizualizacija izbrane WoodCore palete, ne vir mer. */
+function proposalSvg(W,H){
+  if(!S.showProposal||!S.det||!S.det.bbox||S.det.rectK)return "";
+  var b=S.det.bbox,x0=skNum(b.x0,0,0,W),x1=skNum(b.x1,W,0,W),
+      y0=skNum(b.y0,0,0,H),y1=skNum(b.y1,H,0,H);
+  if(x1-x0<8||y1-y0<8)return "";
+  var cnt=Math.max(1,Math.min(80,Math.round(n("n")||8)));
+  var sw=Math.max(1,n("sw")||100),gap=Math.max(0,n("gap")||20);
+  var units=cnt*sw+Math.max(0,cnt-1)*gap;
+  var band=(y1-y0)*sw/units,gapPx=(y1-y0)*gap/units;
+  var colors={"Amazon wood":"#8b5a2b","Ash wood":"#b9b0a0","Golden teak":"#a9782f",
+    "Burma teak":"#7a4a24","Oak wood":"#b98b5a","Rustic oak":"#8a6a45",
+    "Rustic walnut":"#5a3b28","White":"#f2f0e8"};
+  var col=colors[V("sysColor")]||"#9ca3af",ang=skNum(S.det.ang,0,-12,12),cx=(x0+x1)/2,cy=(y0+y1)/2;
+  var s='<g id="dw-proposal" transform="rotate('+ang+' '+cx+' '+cy+')" opacity="0.78">';
+  for(var i=0;i<cnt;i++){
+    var yy=y0+i*(band+gapPx);
+    s+='<rect x="'+x0+'" y="'+yy+'" width="'+(x1-x0)+'" height="'+band+'" fill="'+col+'"/>';
+  }
+  var posts=2,Lv=n("L"),prof=WC[V("sysProfile")];
+  if(Lv>0&&prof){
+    var lim=roksalLimit(prof,V("sysUse"),n("H"));
+    posts=Math.max(2,Math.min(16,Math.ceil(Lv/Math.max(1,lim.v))+1));
+  }
+  var pw=Math.max(2,(x1-x0)/200);
+  for(var j=0;j<posts;j++){
+    var px=x0+(x1-x0)*j/(posts-1);
+    s+='<line x1="'+px+'" y1="'+y0+'" x2="'+px+'" y2="'+y1+'" stroke="#1f2937" stroke-width="'+pw+'" stroke-opacity="0.85"/>';
+  }
+  return s+'</g>';
+}
 function drawOverlay(){
   var ov=$("ov");if(!S.img){ov.innerHTML="";return}
   var W=S.img.naturalWidth,H=S.img.naturalHeight,w=Math.max(2,W/500);ov.setAttribute("viewBox","0 0 "+W+" "+H);
@@ -1161,6 +1199,7 @@ function drawOverlay(){
     });
     if(S.det.bbox){var b=S.det.bbox,bx0=skNum(b.x0,0,-1e7,1e7),by0=skNum(b.y0,0,-1e7,1e7),bx1=skNum(b.x1,0,-1e7,1e7),by1=skNum(b.y1,0,-1e7,1e7);s+='<rect x="'+bx0+'" y="'+by0+'" width="'+(bx1-bx0)+'" height="'+(by1-by0)+'" fill="none" stroke="#60a5fa" stroke-width="'+w+'" stroke-dasharray="'+(w*3)+' '+(w*2)+'"/>'}
   }
+  s+=proposalSvg(W,H);
   if(S.calibrated&&S.cal){
     var ca=S.cal.a,cb=S.cal.b;
     if(S.calMode==="linear")s+='<line x1="'+skNum(ca.x,0,-1e7,1e7)+'" y1="'+skNum(ca.y,0,-1e7,1e7)+'" x2="'+skNum(cb.x,0,-1e7,1e7)+'" y2="'+skNum(cb.y,0,-1e7,1e7)+'" stroke="#fbbf24" stroke-width="'+w+'"/>';
@@ -1309,7 +1348,10 @@ function applyDetection(){
       if(prof.slatMed>0&&!ov.sw)$("sw").value=String(Math.round(prof.slatMed*mmPerPx*10)/10);
       if(prof.gapMed>0&&!ov.gap)$("gap").value=String(Math.round(prof.gapMed*mmPerPx*10)/10);
       if(S.det.bbox){
-        var bl=(S.det.bbox.x1-S.det.bbox.x0)*(S.det.rectK?1/S.det.rectK:mmPerPx);
+        /* bbox.x je v naravnih piksliah (glej peakList/g.sc), zato v linearnem
+           načinu uporabi S.cal.scale (mm/naravni px), NE mmPerPx (mm/sivi px).
+           Stara formula je pri foto širše od 900 px (sc<1) dala L za 1/sc prevelik. */
+        var bl=(S.det.bbox.x1-S.det.bbox.x0)*(S.det.rectK?1/S.det.rectK:S.cal.scale);
         /* M2 (Issue #2): avto-L iz bbox je ZANESILNO le, kadar je detekcija koraka
            konsistentna (prag 45 % — isti prag, ki že sproži opozorilo v dt()). Pri nizki
            zanesljivosti (nagnat pogled, perspektiva, šibek kontrast) se L NE izpolnjuje
@@ -1523,6 +1565,15 @@ $("detect").onclick=function(){
 };
 $("sens").oninput=function(){if(S.det)$("detect").click()};
 $("minsep").onchange=function(){if(S.det)$("detect").click()};
+$("proposalBtn").onclick=function(){
+  if(!S.img){dt("Najprej naložite sliko.","bad");return}
+  if(!S.det||!S.det.bbox){dt("Najprej zaznaj lamele s slike.","warn");return}
+  if(S.det.rectK){dt("Predlog ograje je za zdaj na voljo samo v 2-točkovni umeritvi.","warn");return}
+  S.showProposal=!S.showProposal;
+  $("proposalBtn").classList.toggle("on",S.showProposal);
+  drawOverlay();
+  dt(S.showProposal?"Predlog ograje je viden — mere iz risbe, ne iz slike.":"Predlog ograje skrit.","");
+};
 
 /* drag detected lines — pointer dogodki (P0 iz pregleda 2026-11-23): tablice/dotik delujejo,
    mousedown/mousemove so bili zamenjani s pointer* (kazneje pokrivajo tudi miško); setPointerCapture
@@ -2850,6 +2901,7 @@ window.roksalLimit=roksalLimit;window.roksalRailLimit=roksalRailLimit;window.REG
 window.woodcoreRegistry=woodcoreRegistry;window.REGISTRY=REGISTRY;window.registryBrands=registryBrands;
 window.activeRegistry=activeRegistry;window.setRegistryBrand=setRegistryBrand;
 window.S=S;window.applyDetection=applyDetection;window.svetlostniStolpci=svetlostniStolpci;
+window.DW_STATUS=DW_STATUS;window.statusMark=statusMark;
 
 /* ---------- cut list / installation plan ---------- */
 var planData=null;
@@ -5017,7 +5069,11 @@ var LANG_EN={
   "Vpišite resnično dolžino.":"Enter the real length.","Najprej izberite točke.":"Select points first.",
   "Kliknite referenčne točke na sliki.":"Click reference points on the image.",
   "Zaznava ni uspela. Zmanjšajte občutljivost ali preverite kontrast slike.":"Detection failed. Reduce sensitivity or check image contrast.",
-  "Zaznane črte prilagojene ročno.":"Detected lines adjusted manually."
+  "Zaznane črte prilagojene ročno.":"Detected lines adjusted manually.",
+  b_proposal:"Railing proposal on photo",
+  status_legend:"Markers: ✓ measured · ∑ calculated · ≈ estimated · ?? unknown",
+  "Predlog ograje na sliki":"Railing proposal on photo",
+  "Oznake: ✓ izmerjeno · ∑ izračunano · ≈ ocenjeno · ?? neznano":"Markers: ✓ measured · ∑ calculated · ≈ estimated · ?? unknown"
 };
 function lngGet(){try{return localStorage.getItem("draftwright-lang")||"sl"}catch(e){return"sl"}}
 
@@ -5039,7 +5095,11 @@ var UI_MSG=[
   [/^Dolžina /,"Length "],[/^Tloris izvožen/,"Plan exported"],
   [/^Izvažam… /,"Exporting… "],[/^Izvoz končan/,"Export finished"],
   [/^Izvoz prekinjen/,"Export aborted"],[/^Napaka pri /,"Error at "],
-  [/^Montažni checklist pripravljen/,"Installation checklist ready"]
+  [/^Montažni checklist pripravljen/,"Installation checklist ready"],
+  [/^Najprej zaznaj lamele/,"Detect slats first"],
+  [/^Predlog ograje je za zdaj/,"Railing proposal currently available only with 2-point calibration"],
+  [/^Predlog ograje je viden.*/,"Railing proposal shown — dimensions come from the drawing, not the photo"],
+  [/^Predlog ograje skrit/,"Railing proposal hidden"]
 ];
 function uiMsg(s){
   if(lngGet()!=="en"||typeof s!=="string")return s;
