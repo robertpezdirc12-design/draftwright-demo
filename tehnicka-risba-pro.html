@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- CSP: strict script allowlist by hash. No unsafe-inline / unsafe-eval. frame-ancestors is set in vercel.json (unsupported in meta). -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-p2z2G5FF/b1IqSCLQ9yTMmgn20M1n8FWbb5eMc3txWU='; style-src 'self' 'sha256-qdTPGCo9ClqvaTTCnpl+IhEZceBb5o82jT8kCt7nT6Y='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-LZ4rU0ihc0fmvfG8CDXubtzhr8U3QywGM6ShkTdB684='; style-src 'self' 'sha256-qdTPGCo9ClqvaTTCnpl+IhEZceBb5o82jT8kCt7nT6Y='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Tehnična risba PRO – fotografija do končnega lista</title>
 <meta name="theme-color" content="#141c24">
 <link rel="manifest" href="manifest.webmanifest">
@@ -1071,7 +1071,21 @@ Konstrukcija odporna na vremenske vplive.</textarea>
 "use strict";
 var $=function(id){return document.getElementById(id)};
 function V(id){return $(id).value}
-function n(id){var x=parseFloat(V(id));return isFinite(x)?x:0}
+/* Issue #41 §3.A: številski vnos sprejme slovensko decimalno VEJICO ("3,8" → 3.8).
+   V slovenski lokalizaciji je decimalni ločilec VEJICA, tisočni ločilec PIKA,
+   zato sta pravili nedvoumni:
+     - »decimalna vejica brez tisoči«: /-?\d+,\d+/            → vejica = dec. ("3,8" → 3.8)
+     - »tisoči-pika + decimalna vejica«: /-?\d{1,3}(\.\d{3})*(,\d+)?/ → pika = tisoči, vejica = dec. ("3.000,5" → 3000.5)
+   Podprta ostane tudi ASCII pika ("3.8" → 3.8). Vse ostalo pusti parseFloat-u → lahko NaN,
+   klicatelj (n()) določi privzeto vrednost. To odpravi tiho okrnitev "3,8"→3 pri merah/referencah. */
+function numParse(v){
+  var s=String(v==null?"":v).trim();
+  if(s==="")return NaN;
+  if(/^-?\d+,\d+$/.test(s))s=s.replace(",",".");
+  else if(/^-?\d{1,3}(\.\d{3})*(,\d+)?$/.test(s))s=s.replace(/\./g,"").replace(",",".");
+  return parseFloat(s);
+}
+function n(id){var x=numParse(V(id));return isFinite(x)?x:0}
 function E(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&apos;"}[c]})}
 function f(x){var y=Math.round(x*10)/10;return (Math.abs(y-Math.round(y))<0.05)?String(Math.round(y)):y.toFixed(1)}
 function spanParts(total,n){var t10=Math.round(total*10),b10=Math.floor(t10/Math.max(1,n)),rem=t10-b10*Math.max(1,n),out=[],i;for(i=0;i<n;i++)out.push(String((b10+(i<rem?1:0))/10));return out}
@@ -1141,7 +1155,7 @@ $("mPlane").onclick=function(){S.calMode="plane";S.calibrated=false;S.tmp=[];$("
 $("pickCal").onclick=function(){if(!S.img){st("Najprej naložite sliko.","bad");return}S.picking=true;S.tmp=[];$("pickCal").classList.add("on");st("Kliknite referenčne točke na sliki.","warn")};
 $("clearCal").onclick=function(){S.cal=null;S.calibrated=false;S.tmp=[];S.raw=null;S.lines=[];st("Umeritev počiscena.","");drawOverlay()};
 $("applyCal").onclick=function(){
-  var a=parseFloat(V("refA"));if(!(a>0)){st("Vpišite resnično dolžino.","bad");return}
+  var a=numParse(V("refA"));if(!(a>0)){st("Vpišite resnično dolžino.","bad");return}
   if(!S.raw){st("Najprej izberite točke.","bad");return}
   try{
     if(S.calMode==="linear"){
@@ -1162,7 +1176,7 @@ $("applyCal").onclick=function(){
         return (t>=-0.02&&t<=1.02&&u>=-0.02&&u<=1.02);
       }
       if(!xseg(cs4[0],cs4[2],cs4[1],cs4[3]))throw new Error("Vogali niso v pravilnem vrstnem redu ali so samosekajoči — kliknite: levo zgoraj, desno zgoraj, desno spodaj, levo spodaj.");
-      var b=parseFloat(V("refB"));if(!(b>0))throw new Error("Vpišite resnično višino.");
+      var b=numParse(V("refB"));if(!(b>0))throw new Error("Vpišite resnično višino.");
       S.cal={corners:S.raw,h:homography(S.raw,[{x:0,y:0},{x:a,y:0},{x:a,y:b},{x:0,y:b}])}
     }
     S.calibrated=true;S.rectCache=null;st("Umeritev uspešna: "+f(a)+" mm referenca.","");drawOverlay();toast("Umeritev uspešna: "+f(a)+" mm referenca","ok");
@@ -2765,6 +2779,7 @@ function setRegistryBrand(id){if(REGISTRY[id]){REGISTRY_ACTIVE=id;return true}re
 window.WC=WC;window.DIL=DIL;window.USE_NAMES=USE_NAMES;window.PAL_KLASIK=PAL_KLASIK;window.PAL_RUSTIK=PAL_RUSTIK;
 /* testno dostopni izvozi za numerično preverjanje (pregled 2026-11-23, točka 4) */
 window.solve=solve;window.homography=homography;window.dilatacija=dilatacija;window.toMM=toMM;window.mmDist=mmDist;
+window.numParse=numParse;window.n=n;
 window.roksalLimit=roksalLimit;window.REGISTRY_SCHEMA=REGISTRY_SCHEMA;window.validateRegistry=validateRegistry;
 window.woodcoreRegistry=woodcoreRegistry;window.REGISTRY=REGISTRY;window.registryBrands=registryBrands;
 window.activeRegistry=activeRegistry;window.setRegistryBrand=setRegistryBrand;
