@@ -1,10 +1,10 @@
 /**
- * Postopna modularizacija, korak 2 — js/core.js kot izvirna datoteka.
+ * Postopna modularizacija — izvorne datoteke js/*.js.
  *
- * Aplikacija ostane zero-install PWA z enim HTML-jem, zato se modul ne naloži
- * prek <script src> (tudi jsdom testi ga ne bi). Vir je js/core.js, inline
- * kopija pa se generira med oznakama. Ta surov zaklene, da se izvor in kopija
- * ne razideta — ter da je generator idempotenten in popravi drift.
+ * Aplikacija ostane zero-install PWA z enim HTML-jem, zato se moduli ne naložijo
+ * prek <script src> (tudi jsdom testi brez resources:"usable" jih ne bi). Viri
+ * so datoteke v js/, inline kopije pa se generirajo med oznakama. Ta surov
+ * zaklene ujemanje za VSE module, idempotenco in popravilo drift-a.
  */
 "use strict";
 const fs = require("fs");
@@ -14,10 +14,17 @@ const cp = require("child_process");
 
 const root = path.join(__dirname, "..");
 const htmlPath = path.join(root, "tehnicka-risba-pro.html");
-const sourcePath = path.join(root, "js", "core.js");
 const generatorPath = path.join(root, "scripts", "sync-modules.js");
-const START = "/* >>> GENERATED: js/core.js — uredi izvorno datoteko, ne to kopijo */";
-const END = "/* <<< END GENERATED: js/core.js */";
+const MODULES = ["js/core.js", "js/geometry.js"];
+const markers = (file) => ({
+  start: "/* >>> GENERATED: " + file + " — uredi izvorno datoteko, ne to kopijo */",
+  end: "/* <<< END GENERATED: " + file + " */",
+});
+const generated = (s, m) => {
+  const i = s.indexOf(m.start), j = s.indexOf(m.end);
+  return i < 0 || j < 0 ? null : s.slice(i + m.start.length, j).trim();
+};
+const count = (s, needle) => s.split(needle).length - 1;
 
 let pass = 0, fail = 0, errors = [];
 function check(name, ok, info) {
@@ -29,9 +36,14 @@ function finish() {
   process.exit(fail ? 1 : 0);
 }
 
-check("js/core.js obstaja (stara koda bi PADO)", fs.existsSync(sourcePath));
 check("scripts/sync-modules.js obstaja (stara koda bi PADO)", fs.existsSync(generatorPath));
-if (!fs.existsSync(sourcePath) || !fs.existsSync(generatorPath)) finish();
+let allSources = true;
+for (const file of MODULES) {
+  const ok = fs.existsSync(path.join(root, file));
+  check(file + " obstaja (stara koda bi PADO)", ok);
+  allSources = allSources && ok;
+}
+if (!fs.existsSync(generatorPath) || !allSources) finish();
 
 const pkg = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
 check("npm script modules:sync je registriran",
@@ -39,29 +51,33 @@ check("npm script modules:sync je registriran",
   pkg.scripts && pkg.scripts["modules:sync"]);
 
 const html = fs.readFileSync(htmlPath, "utf8");
-const source = fs.readFileSync(sourcePath, "utf8").replace(/\s+$/, "");
-const count = (s, needle) => s.split(needle).length - 1;
-check("v HTML-ju je natanko en par oznak GENERATED",
-  count(html, START) === 1 && count(html, END) === 1,
-  `start=${count(html, START)}, end=${count(html, END)}`);
-
-const generated = (s) => {
-  const i = s.indexOf(START), j = s.indexOf(END);
-  return i < 0 || j < 0 ? null : s.slice(i + START.length, j).trim();
-};
-const inline = generated(html);
-check("committed HTML: inline kopija je bajtovno enaka js/core.js", inline === source,
-  inline === source ? "" : `html=${inline && inline.length} src=${source.length}`);
-check("izvor vsebuje izvoz window.DWCore", source.includes("window.DWCore=DWCore;"));
-check("izvor nima DOM odvisnosti",
-  !/\bdocument\b|\blocalStorage\b|\$\(/.test(source));
+for (const file of MODULES) {
+  const m = markers(file);
+  const source = fs.readFileSync(path.join(root, file), "utf8").replace(/\s+$/, "");
+  check(file + ": natanko en urejen par oznak",
+    count(html, m.start) === 1 && count(html, m.end) === 1 && html.indexOf(m.start) < html.indexOf(m.end),
+    `start=${count(html, m.start)}, end=${count(html, m.end)}`);
+  const inline = generated(html, m);
+  check(file + ": inline kopija vsebinsko enaka izvoru", inline === source,
+    inline === source ? "" : `html=${inline && inline.length} src=${source.length}`);
+  check(file + ": izvor nima DOM/storage odvisnosti",
+    !/\bdocument\b|\blocalStorage\b|\$\(/.test(source));
+}
+const coreSource = fs.readFileSync(path.join(root, "js/core.js"), "utf8");
+const geoSource = fs.readFileSync(path.join(root, "js/geometry.js"), "utf8");
+check("js/core.js izvaža DWCore", coreSource.includes("window.DWCore=DWCore;"));
+check("js/geometry.js vsebuje solve in homography",
+  /function solve\(/.test(geoSource) && /function homography\(/.test(geoSource));
+check("generator pokriva oba modula",
+  ["js/core.js", "js/geometry.js"].every((f) =>
+    fs.readFileSync(generatorPath, "utf8").includes('"' + f + '"')));
 
 /* --- generator v začasni kopiji --- */
 const tempDirs = [];
 function workspace(mutate) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "dw-module-"));
   tempDirs.push(dir);
-  for (const f of ["tehnicka-risba-pro.html", "js/core.js", "scripts/sync-modules.js"]) {
+  for (const f of ["tehnicka-risba-pro.html", ...MODULES, "scripts/sync-modules.js"]) {
     const dest = path.join(dir, f);
     fs.mkdirSync(path.dirname(dest), { recursive: true });
     fs.copyFileSync(path.join(root, f), dest);
@@ -78,33 +94,37 @@ function generate(dir) {
 
 const clean = workspace();
 const out1 = generate(clean);
-check("generator poroča velikost izvora", /Inline modules already current/.test(out1), out1.trim());
+check("generator poroča oba izvora", /js\/core\.js/.test(out1) && /js\/geometry\.js/.test(out1), out1.trim());
 check("idempotenca: pravilna HTML ostane bajtovno nespremenjena",
   fs.readFileSync(path.join(clean, "tehnicka-risba-pro.html"), "utf8") === html);
 
-const drifted = workspace((dir) => {
-  const p = path.join(dir, "tehnicka-risba-pro.html");
-  const s = fs.readFileSync(p, "utf8");
-  const i = s.indexOf(START), j = s.indexOf(END);
-  fs.writeFileSync(p, s.slice(0, i + START.length) + "\nvar DWCore=null;\n" + s.slice(j));
-});
-generate(drifted);
-check("generator popravi driftano inline kopijo",
-  generated(fs.readFileSync(path.join(drifted, "tehnicka-risba-pro.html"), "utf8")) === source);
-check("popravilo je minimalno: ostanek HTML je identičen committed različici",
-  fs.readFileSync(path.join(drifted, "tehnicka-risba-pro.html"), "utf8") === html);
+for (const file of MODULES) {
+  const m = markers(file);
+  const source = fs.readFileSync(path.join(root, file), "utf8").replace(/\s+$/, "");
+  const drifted = workspace((dir) => {
+    const p = path.join(dir, "tehnicka-risba-pro.html");
+    const s = fs.readFileSync(p, "utf8");
+    const i = s.indexOf(m.start), j = s.indexOf(m.end);
+    fs.writeFileSync(p, s.slice(0, i + m.start.length) + "\nvar DRIFTED=null;\n" + s.slice(j));
+  });
+  generate(drifted);
+  check(file + ": generator popravi driftano inline kopijo",
+    generated(fs.readFileSync(path.join(drifted, "tehnicka-risba-pro.html"), "utf8"), m) === source);
+  check(file + ": popravilo je minimalno (ostanek HTML identičen)",
+    fs.readFileSync(path.join(drifted, "tehnicka-risba-pro.html"), "utf8") === html);
+}
 
 /* Manjkajoča končna oznaka mora biti napaka, ne tihi no-op. */
 const brokenMarkers = workspace((dir) => {
   const p = path.join(dir, "tehnicka-risba-pro.html");
-  fs.writeFileSync(p, fs.readFileSync(p, "utf8").replace(END, "/* END MARKER REMOVED */"));
+  fs.writeFileSync(p, fs.readFileSync(p, "utf8").replace(markers("js/core.js").end, "/* END MARKER REMOVED */"));
 });
 const rejected = cp.spawnSync(process.execPath,
   [path.join(brokenMarkers, "scripts", "sync-modules.js"), brokenMarkers],
   { encoding: "utf8", cwd: root });
 check("generator zavrne manjkajočo končno oznako (ne tihi no-op)",
-  rejected.status !== 0 && /ordered generated core marker pair/.test(rejected.stderr || ""),
-  "exit=" + rejected.status + " " + (rejected.stderr || "").slice(0, 140));
+  rejected.status !== 0 && /ordered generated marker pair/.test(rejected.stderr || ""),
+  "exit=" + rejected.status + " " + (rejected.stderr || "").slice(0, 160));
 check("zavrnitev ne spremeni HTML-ja",
   fs.readFileSync(path.join(brokenMarkers, "tehnicka-risba-pro.html"), "utf8").includes("/* END MARKER REMOVED */"));
 
