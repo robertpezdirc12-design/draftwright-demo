@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- CSP: strict script allowlist by hash. No unsafe-inline / unsafe-eval. frame-ancestors is set in vercel.json (unsupported in meta). -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-H7eNbSPdszkNNHvueGifg82r82ACXbxy0/C3Z6kfmO0='; style-src 'self' 'sha256-qdTPGCo9ClqvaTTCnpl+IhEZceBb5o82jT8kCt7nT6Y='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-x8dPeupY2oNHPhHppSq1CH89AjV1VwsGuvRNHRgieOQ='; style-src 'self' 'sha256-qdTPGCo9ClqvaTTCnpl+IhEZceBb5o82jT8kCt7nT6Y='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Tehnična risba PRO – fotografija do končnega lista</title>
 <meta name="theme-color" content="#141c24">
 <link rel="manifest" href="manifest.webmanifest">
@@ -4925,9 +4925,10 @@ var LANG_EN={
      Tehnični izpisi (risba, BOM, CSV, PDF) ostanejo namerno SL. */
   nav_photo:"Photo",nav_cal:"Calibration",nav_detect:"Detection",nav_dims:"Dimensions",nav_sheet:"Sheet",
   nav_plan:"Installation",nav_export:"Build",nav_tloris:"Plan",nav_skica:"Sketch",nav_all:"Expand all visible",
-  "Sklopi":"Sections","Fotografija":"Photo","Zaznavanje lamel":"Slat detection","WoodCore sistem":"WoodCore system",
+  "Sklopi":"Sections","Fotografija":"Photo","Umeritev":"Calibration","Zaznavanje lamel":"Slat detection",
+  "WoodCore sistem":"WoodCore system","List in opombe":"Sheet & notes","Montaža in količine":"Installation & quantities",
   "Osnovne mere":"Basic dimensions","Cone in globina":"Zones & depth","Napredna polja":"Advanced fields",
-  "Izdelava in izvoz":"Build & export","Ponastavi na osnovno":"Reset to default",
+  "Izdelava in izvoz":"Build & export","Tloris":"Plan view","Skica":"Sketch","Ponastavi na osnovno":"Reset to default",
   "Korito za rože — višina (mm)":"Flower trough — height (mm)","Korito za rože — globina (mm)":"Flower trough — depth (mm)",
   "Korita za rože (vrstica: širina;odmik od levega roba — prazno = brez)":"Flower troughs (row: width;offset from left edge — empty = none)",
   "Segmenti za sprednji pogled (vrstica: naziv;širina;višina)":"Front-view segments (row: name;width;height)",
@@ -4941,7 +4942,17 @@ var LANG_EN={
   "Ni umerjeno.":"Not calibrated.","Pripravljeno.":"Ready.",
   "Trasa prazna — kliknite za prvo oglišče.":"Path empty — click to place the first vertex.",
   "Prazen list — izberite orodje in rišite.":"Blank sheet — select a tool and draw.",
-  "Svetla tema":"Light theme","Temna tema":"Dark theme"
+  "Svetla tema":"Light theme","Temna tema":"Dark theme",
+  "Odpri izbiro stranske plošče (Alt+P)":"Open side panel picker (Alt+P)","Prikaži stransko ploščo":"Show side panel",
+  "Zapri ploščo":"Close panel","Zapri (Esc)":"Close (Esc)","Uporabi predlagani profil":"Apply suggested profile",
+  "Prikazani vsi vidni sklopi.":"All visible sections shown.",
+  "Slika naložena. Izberite umeritev.":"Image loaded. Select calibration.",
+  "Način: 2 točki.":"Mode: 2 points.","Način: 4 točke.":"Mode: 4 points.",
+  "Najprej naložite sliko.":"Load an image first.","Umeritev počiscena.":"Calibration cleared.",
+  "Vpišite resnično dolžino.":"Enter the real length.","Najprej izberite točke.":"Select points first.",
+  "Kliknite referenčne točke na sliki.":"Click reference points on the image.",
+  "Zaznava ni uspela. Zmanjšajte občutljivost ali preverite kontrast slike.":"Detection failed. Reduce sensitivity or check image contrast.",
+  "Zaznane črte prilagojene ročno.":"Detected lines adjusted manually."
 };
 function lngGet(){try{return localStorage.getItem("draftwright-lang")||"sl"}catch(e){return"sl"}}
 
@@ -4949,7 +4960,13 @@ function lngGet(){try{return localStorage.getItem("draftwright-lang")||"sl"}catc
    LANG_EN, prefiksi z rečnico pa sem (števila/razdalje ostanejo nedotaknjene). */
 var UI_MSG=[
   [/^Točke izbrane\./,"Points selected."],[/^Točk še /,"Points left: "],
-  [/^Umeritev uspešna/,"Calibration successful"],[/^Umeritev ni/,"Calibration not"],
+  [/^Umeritev uspešna: (.+) mm referenca\.$/,"Calibration successful: $1 mm reference."],
+  [/^Umeritev uspešna: (.+) mm referenca$/,"Calibration successful: $1 mm reference"],
+  [/^Orodje: prosto$/,"Tool: Freehand"],[/^Orodje: line$/,"Tool: Line"],
+  [/^Orodje: rect$/,"Tool: Rectangle"],[/^Orodje: circle$/,"Tool: Circle"],
+  [/^Orodje: arrow$/,"Tool: Arrow"],[/^Orodje: text$/,"Tool: Text"],
+  [/^Orodje: dim$/,"Tool: Dimension (manual)"],[/^Orodje: iso$/,"Tool: Cube (iso)"],
+  [/^Orodje: radirka$/,"Tool: Eraser"],[/^Orodje: premakni$/,"Tool: Move"],
   [/Segmentov: /,"Segments: "],[/skupna dolžina: /,"total length: "],
   [/Elementov: /,"Elements: "],[/list: /,"sheet: "],[/ mreža/," grid"],
   [/Orodje: /,"Tool: "],[/Podvoji: /,"Duplicate: "],[/Element podvojen/,"Element duplicated"],
@@ -4966,7 +4983,10 @@ function uiMsg(s){
   for(var i=0;i<UI_MSG.length;i++){if(UI_MSG[i][0].test(out))out=out.replace(UI_MSG[i][0],UI_MSG[i][1])}
   return out;
 }
-var LIVE_IDS=["calStatus","detStatus","sysStatus","tlorisStatus","skStatus","globalStatus","toastZone","errTray"];
+/* Samo navadne text(status) regije. toastZone/errTray sta KONTEJNERJA z otroki —
+   zamenjava njunega textContent bi uničila .toast elemente in njihove časovnike;
+   toaste prevaja neposredno toast() (uiMsg). */
+var LIVE_IDS=["calStatus","detStatus","sysStatus","tlorisStatus","skStatus","globalStatus"];
 var liveState={},liveBusy=false;
 function syncLive(){
   if(liveBusy)return;
@@ -4985,11 +5005,12 @@ function applyLang(lang){
     var k=el.getAttribute("data-i18n"),v=LANG_EN[k];
     if(lang==="en"&&v){
       if(!el.__dwI18n)el.__dwI18n={type:"html",value:el.innerHTML};
-      var keep="";
+      var pre="",post="";
       [].slice.call(el.children).forEach(function(ch){
-        if(ch.tagName==="I"||ch.classList.contains("k")||ch.classList.contains("kbd"))keep+=ch.outerHTML;
+        if(ch.tagName==="I")pre+=ch.outerHTML;
+        else if(ch.classList.contains("k")||ch.classList.contains("kbd"))post+=ch.outerHTML;
       });
-      el.innerHTML=keep+v;
+      el.innerHTML=pre+v+(post?" "+post:"");
     }else if(lang==="sl"&&el.__dwI18n&&el.__dwI18n.type==="html"){
       el.innerHTML=el.__dwI18n.value;delete el.__dwI18n;
     }

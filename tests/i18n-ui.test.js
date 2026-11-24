@@ -62,6 +62,11 @@ const txt = (sel) => (document.querySelector(sel) || {}).textContent || "";
   const nav = document.querySelector('button[data-goto="skica"]');
   check("EN meni: Skica → Sketch", nav && nav.textContent.includes("Sketch"), nav && nav.textContent);
   check("EN meni: bližnjica 9 ostane vidna", !!nav.querySelector("span.k") && nav.querySelector("span.k").textContent === "9");
+  check("EN meni: bližnjica jeZA oznako (ne pred njo)",
+    nav.innerHTML.indexOf("Sketch") < nav.innerHTML.indexOf("<span"), nav.innerHTML);
+  const visLabel = (fg) => document.querySelector('input[data-fg="' + fg + '"]').parentElement.textContent.trim();
+  check("EN vidnost: Umeritev → Calibration", visLabel("cal") === "Calibration", visLabel("cal"));
+  check("EN vidnost: Skica → Sketch", visLabel("skica") === "Sketch", visLabel("skica"));
   check("EN meni: Zaznavanje lamel → Detection", txt('button[data-goto="detect"]').includes("Detection"));
   check("EN meni: Montaža in količine → Installation", txt('button[data-goto="plan"]').includes("Installation"));
 
@@ -74,6 +79,10 @@ const txt = (sel) => (document.querySelector(sel) || {}).textContent || "";
   check("EN orodja skice: Črna → Black", txt("#skColor option").includes("Black"));
   check("EN title: Celozaslonsko urejanje → Fullscreen editing",
     document.querySelector("#tlrFs").getAttribute("title") === "Fullscreen editing");
+  check("EN title: Zapri (Esc) → Close (Esc)",
+    document.querySelector("#expClose").getAttribute("title") === "Close (Esc)");
+  check("EN title: Odpri izbiro stranske plošče → Open side panel picker",
+    document.querySelector("#panelBtn").getAttribute("title") === "Open side panel picker (Alt+P)");
   check("EN tloris: Uporabi v izračun → Apply to calculation", txt("#tlorisApply").includes("Apply to calculation"));
 
   /* ---- 2) statična in dinamična statusna sporočila ---- */
@@ -87,6 +96,13 @@ const txt = (sel) => (document.querySelector(sel) || {}).textContent || "";
   check("EN uiMsg: prefix z ohranjeno številko",
     window.uiMsg("Segmentov: 3 · skupna dolžina: 12000 mm") === "Segments: 3 · total length: 12000 mm",
     window.uiMsg("Segmentov: 3 · skupna dolžina: 12000 mm"));
+  check("EN uiMsg: celo sporočilo s številko",
+    window.uiMsg("Umeritev uspešna: 1000 mm referenca.") === "Calibration successful: 1000 mm reference.",
+    window.uiMsg("Umeritev uspešna: 1000 mm referenca."));
+  check("EN uiMsg: vrednost orodja ne ostane SL",
+    window.uiMsg("Orodje: prosto") === "Tool: Freehand", window.uiMsg("Orodje: prosto"));
+  check("EN uiMsg: razgrni vse vidne",
+    window.uiMsg("Prikazani vsi vidni sklopi.") === "All visible sections shown.");
 
   window.toast("Ni umerjeno.", "ok");
   await new Promise((r) => setTimeout(r, 0)); // MutationObserver je mikro-/task-asynchrono
@@ -94,6 +110,8 @@ const txt = (sel) => (document.querySelector(sel) || {}).textContent || "";
   check("EN toast: dinamično sporočilo prevedeno",
     toasts.length > 0 && toasts[toasts.length - 1].textContent === "Not calibrated.",
     toasts.length ? toasts[toasts.length - 1].textContent : "brez toastov");
+  check("EN toast: kontejner ostane nedotaknjen (vsi otroci so .toast)",
+    toasts.length > 0 && Array.from(toasts).every((el) => el.classList.contains("toast")), "otrok=" + toasts.length);
 
   check("EN izjema: risba ostane SL", document.querySelector("#prev svg").textContent.includes("SPREDNJI POGLED"));
 
