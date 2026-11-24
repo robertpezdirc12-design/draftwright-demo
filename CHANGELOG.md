@@ -2,6 +2,15 @@
 
 Vse pomembnejše spremembe projekta **Draftwright — Tehnična risba PRO** so dokumentirane v tej datoteki. Oblika sledi [Keep a Changelog](https://keepachangelog.com/sl/1.1.0/); različica je enaka `APP_VERSION` v aplikaciji.
 
+## [2026.11.15] — 2026-11-24
+
+### Dodano (postopna modularizacija — korak 1)
+
+**Čisti modul `DWCore` brez spremembe vedenja**
+- Šest čistih funkcij (`numParse`, `format`, `spanParts`, `spanCenters`, `dim`, `escapeHtml`) je zbranih v enem imenskem prostoru. Obstoječa globalna imena (`numParse`, `n`, `E`, `f`, `spanParts`, `spanCenters`, `dim`) ostanejo kot **tanke ovijalke**, zato se noben klic, testni izvoz ali izvoz risbe ne spremeni.
+- **Zakaj še brez zunanje datoteke:** jsdom v obstoječih testih ne nalaga `<script src>` (manjka `resources:"usable"`). Fizična izdvojitev v `js/core.js` bi razbila vseh 62 surovov; modulski korak je zato najprej logičen, šele po morebitni posodobitvi testnega ogrodja fizičen.
+- **Test:** nov `tests/core-module.test.js` (18 preverjanj) — obnašanje vseh šestih funkcij, odsotnost DOM/storage odvisnosti v telesu modula ter nazaj združljive ovijalke; **na stari kodi pade s 3 FAIL**. `window.DWCore` je izvožen za teste. Skupaj **62 testnih surov**. CSP hash-i regenerirani.
+
 ## [2026.11.14] — 2026-11-24
 
 ### Popravljeno (Issue #41 — ne-barvne napake in 44 px dotikova področja)
