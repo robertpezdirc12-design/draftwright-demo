@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- CSP: strict script allowlist by hash. No unsafe-inline / unsafe-eval. frame-ancestors is set in vercel.json (unsupported in meta). -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-g6iPnQ0K2UazX8NNV7e8HgNbGEeTA7f2Bv7YtsU/8I4='; style-src 'self' 'sha256-qdTPGCo9ClqvaTTCnpl+IhEZceBb5o82jT8kCt7nT6Y='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-H7eNbSPdszkNNHvueGifg82r82ACXbxy0/C3Z6kfmO0='; style-src 'self' 'sha256-qdTPGCo9ClqvaTTCnpl+IhEZceBb5o82jT8kCt7nT6Y='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Tehnična risba PRO – fotografija do končnega lista</title>
 <meta name="theme-color" content="#141c24">
 <link rel="manifest" href="manifest.webmanifest">
@@ -327,16 +327,16 @@ body.viewmode .viewbar{display:flex}
     <button type="button" id="panelBtn" title="Odpri izbiro stranske plošče (Alt+P)">Plošča ▾</button>
     <div class="drop" id="panelDrop">
       <div class="label">Odpri sklop</div>
-      <button class="mi" data-goto="photo">Slika <span class="k">1</span></button>
-      <button class="mi" data-goto="cal">Umeritev <span class="k">2</span></button>
-      <button class="mi" data-goto="detect">Zaznavanje lamel <span class="k">3</span></button>
-      <button class="mi" data-goto="dims">Mere in parametri <span class="k">4</span></button>
-      <button class="mi" data-goto="sheet">List in opombe <span class="k">5</span></button>
-      <button class="mi" data-goto="plan">Montaža in količine <span class="k">6</span></button>
-      <button class="mi" data-goto="export">Izdelava <span class="k">7</span></button>
-      <button class="mi" data-goto="tloris">Tloris <span class="k">8</span></button>
-      <button class="mi" data-goto="skica">Skica <span class="k">9</span></button>
-      <button class="mi" data-goto="all">Razgrni vse vidne <span class="k">*</span></button>
+      <button class="mi" data-goto="photo" data-i18n="nav_photo">Slika <span class="k">1</span></button>
+      <button class="mi" data-goto="cal" data-i18n="nav_cal">Umeritev <span class="k">2</span></button>
+      <button class="mi" data-goto="detect" data-i18n="nav_detect">Zaznavanje lamel <span class="k">3</span></button>
+      <button class="mi" data-goto="dims" data-i18n="nav_dims">Mere in parametri <span class="k">4</span></button>
+      <button class="mi" data-goto="sheet" data-i18n="nav_sheet">List in opombe <span class="k">5</span></button>
+      <button class="mi" data-goto="plan" data-i18n="nav_plan">Montaža in količine <span class="k">6</span></button>
+      <button class="mi" data-goto="export" data-i18n="nav_export">Izdelava <span class="k">7</span></button>
+      <button class="mi" data-goto="tloris" data-i18n="nav_tloris">Tloris <span class="k">8</span></button>
+      <button class="mi" data-goto="skica" data-i18n="nav_skica">Skica <span class="k">9</span></button>
+      <button class="mi" data-goto="all" data-i18n="nav_all">Razgrni vse vidne <span class="k">*</span></button>
       <div class="sep"></div>
       <div class="label">Vidnost</div>
       <div class="fieldpick">
@@ -4711,7 +4711,7 @@ parseViewMode();
 function toast(msg,type){
   var z=$("toastZone");if(!z)return;
   var el=document.createElement("div");el.className="toast"+(type?" "+type:"");
-  el.textContent=msg;z.appendChild(el);
+  el.textContent=uiMsg(msg);z.appendChild(el);
   setTimeout(function(){el.classList.add("out");setTimeout(function(){el.remove()},380)},3200);
 }
 (function(){ /* tema — gumb + sistemska detekcija (flag v localStorage) */
@@ -4920,35 +4920,111 @@ var LANG_EN={
   "Shranjeni projekti":"Saved projects","Shrani trenutni projekt":"Save current project","Deljenje":"Sharing",
   "Primeri risb":"Drawing examples","Prenesi PDF":"Download PDF","Uredi projekt":"Edit project",
   "Front":"Front","Rear":"Rear","Left":"Left","Right":"Right","Top":"Top","Reset":"Reset",
-  "Prilepite z":"Paste with"
+  "Prilepite z":"Paste with",
+  /* Issue #41 — EN UI parity: meni, vidnost, korita/segmenti, tloris, skica, statusi.
+     Tehnični izpisi (risba, BOM, CSV, PDF) ostanejo namerno SL. */
+  nav_photo:"Photo",nav_cal:"Calibration",nav_detect:"Detection",nav_dims:"Dimensions",nav_sheet:"Sheet",
+  nav_plan:"Installation",nav_export:"Build",nav_tloris:"Plan",nav_skica:"Sketch",nav_all:"Expand all visible",
+  "Sklopi":"Sections","Fotografija":"Photo","Zaznavanje lamel":"Slat detection","WoodCore sistem":"WoodCore system",
+  "Osnovne mere":"Basic dimensions","Cone in globina":"Zones & depth","Napredna polja":"Advanced fields",
+  "Izdelava in izvoz":"Build & export","Ponastavi na osnovno":"Reset to default",
+  "Korito za rože — višina (mm)":"Flower trough — height (mm)","Korito za rože — globina (mm)":"Flower trough — depth (mm)",
+  "Korita za rože (vrstica: širina;odmik od levega roba — prazno = brez)":"Flower troughs (row: width;offset from left edge — empty = none)",
+  "Segmenti za sprednji pogled (vrstica: naziv;širina;višina)":"Front-view segments (row: name;width;height)",
+  "Počisti":"Clear","Uporabi v izračun":"Apply to calculation","Celozaslonsko urejanje":"Fullscreen editing",
+  "Izvozi tloris (SVG)":"Export plan (SVG)","Orodje":"Tool","Prosto":"Freehand","Črta":"Line",
+  "Pravokotnik":"Rectangle","Krog":"Circle","Puščica":"Arrow","Besedilo":"Text","Kotiraj (ročno)":"Dimension (manual)",
+  "Kocka (izo)":"Cube (iso)","Radirka":"Eraser","Premakni":"Move","Podvoji izbrano":"Duplicate selected",
+  "Počisti list":"Clear sheet","Tisk (A4/A3)":"Print (A4/A3)","Barva":"Color","Črna":"Black","Rdeča":"Red",
+  "Modra":"Blue","Debelina":"Weight","List":"Sheet","Orientacija":"Orientation","Pokončno":"Portrait",
+  "Ležeče":"Landscape","Mreža":"Grid",
+  "Ni umerjeno.":"Not calibrated.","Pripravljeno.":"Ready.",
+  "Trasa prazna — kliknite za prvo oglišče.":"Path empty — click to place the first vertex.",
+  "Prazen list — izberite orodje in rišite.":"Blank sheet — select a tool and draw.",
+  "Svetla tema":"Light theme","Temna tema":"Dark theme"
 };
 function lngGet(){try{return localStorage.getItem("draftwright-lang")||"sl"}catch(e){return"sl"}}
+
+/* Issue #41 — dinamična statusna sporočila v EN načinu. Exact matches gredo v
+   LANG_EN, prefiksi z rečnico pa sem (števila/razdalje ostanejo nedotaknjene). */
+var UI_MSG=[
+  [/^Točke izbrane\./,"Points selected."],[/^Točk še /,"Points left: "],
+  [/^Umeritev uspešna/,"Calibration successful"],[/^Umeritev ni/,"Calibration not"],
+  [/Segmentov: /,"Segments: "],[/skupna dolžina: /,"total length: "],
+  [/Elementov: /,"Elements: "],[/list: /,"sheet: "],[/ mreža/," grid"],
+  [/Orodje: /,"Tool: "],[/Podvoji: /,"Duplicate: "],[/Element podvojen/,"Element duplicated"],
+  [/^Trasa je prazna/,"Path is empty"],[/^Trasa v teku/,"Path in progress"],
+  [/^Dolžina /,"Length "],[/^Tloris izvožen/,"Plan exported"],
+  [/^Izvažam… /,"Exporting… "],[/^Izvoz končan/,"Export finished"],
+  [/^Izvoz prekinjen/,"Export aborted"],[/^Napaka pri /,"Error at "],
+  [/^Montažni checklist pripravljen/,"Installation checklist ready"]
+];
+function uiMsg(s){
+  if(lngGet()!=="en"||typeof s!=="string")return s;
+  if(LANG_EN[s])return LANG_EN[s];
+  var out=s;
+  for(var i=0;i<UI_MSG.length;i++){if(UI_MSG[i][0].test(out))out=out.replace(UI_MSG[i][0],UI_MSG[i][1])}
+  return out;
+}
+var LIVE_IDS=["calStatus","detStatus","sysStatus","tlorisStatus","skStatus","globalStatus","toastZone","errTray"];
+var liveState={},liveBusy=false;
+function syncLive(){
+  if(liveBusy)return;
+  LIVE_IDS.forEach(function(id){
+    var n=$(id);if(!n)return;
+    var cur=n.textContent||"",stt=liveState[id]||{src:cur,out:null};
+    if(stt.out!==null&&cur!==stt.out)stt.src=cur; /* zunanja JS posodobitev */
+    var want=lngGet()==="en"?uiMsg(stt.src):stt.src;
+    if(want!==cur){liveBusy=true;n.textContent=want;liveBusy=false}
+    stt.out=want;liveState[id]=stt;
+  });
+}
 function applyLang(lang){
   document.documentElement.setAttribute("lang",lang==="en"?"en":"sl");
   [].slice.call(document.querySelectorAll("[data-i18n]")).forEach(function(el){
     var k=el.getAttribute("data-i18n"),v=LANG_EN[k];
     if(lang==="en"&&v){
-      if(!el.__i18nOrig)el.__i18nOrig=el.innerHTML;
-      var iEl=el.querySelector("i");
-      el.innerHTML=iEl?"<i>"+iEl.textContent+"</i>"+v:v;
-    }else if(lang==="sl"&&el.__i18nOrig){el.innerHTML=el.__i18nOrig;delete el.__i18nOrig}
+      if(!el.__dwI18n)el.__dwI18n={type:"html",value:el.innerHTML};
+      var keep="";
+      [].slice.call(el.children).forEach(function(ch){
+        if(ch.tagName==="I"||ch.classList.contains("k")||ch.classList.contains("kbd"))keep+=ch.outerHTML;
+      });
+      el.innerHTML=keep+v;
+    }else if(lang==="sl"&&el.__dwI18n&&el.__dwI18n.type==="html"){
+      el.innerHTML=el.__dwI18n.value;delete el.__dwI18n;
+    }
   });
-  if(lang==="en"){
-    [].slice.call(document.querySelectorAll("button,.mi,.label,span,div,p")).forEach(function(el){
-      if(el.children.length||el.querySelector("svg")||el.querySelector("input")||el.querySelector("select"))return;
-      var t=(el.textContent||"").trim();
-      if(!t||t.length>60)return;
-      var v=LANG_EN[t];
-      if(v&&!el.__i18nOrig){el.__i18nOrig=document.createTextNode(el.textContent);el.textContent=v}
+  [].slice.call(document.querySelectorAll("button,.mi,.label,span,div,p,label,option")).forEach(function(el){
+    if(el.hasAttribute("data-i18n")||el.querySelector("svg"))return;
+    var node=null,txt="";
+    [].slice.call(el.childNodes).forEach(function(n){
+      if(n.nodeType===3&&n.textContent.trim()){if(!node)node=n;txt+=n.textContent}
     });
-  }else{
-    [].slice.call(document.querySelectorAll("*")).forEach(function(el){
-      if(el.__i18nOrig){el.textContent=el.__i18nOrig.nodeValue;delete el.__i18nOrig}
-    });
-  }
+    txt=txt.trim();
+    if(!node||txt.length>80)return;
+    if(lang==="en"){
+      var v=LANG_EN[txt];
+      if(v&&!el.__dwI18n){el.__dwI18n={type:"text",node:node,value:node.textContent};node.textContent=node.textContent.replace(txt,v)}
+    }else if(el.__dwI18n&&el.__dwI18n.type==="text"){
+      el.__dwI18n.node.textContent=el.__dwI18n.value;delete el.__dwI18n;
+    }
+  });
+  [].slice.call(document.querySelectorAll("[title]")).forEach(function(el){
+    var t=el.getAttribute("title"),v=LANG_EN[t];
+    if(lang==="en"&&v&&!el.__dwTitleOrig){el.__dwTitleOrig=t;el.setAttribute("title",v)}
+    else if(lang==="sl"&&el.__dwTitleOrig){el.setAttribute("title",el.__dwTitleOrig);delete el.__dwTitleOrig}
+  });
   var lb=$("langBtn");if(lb)lb.textContent=(lang==="en"?"SL":"EN");
+  syncLive();
 }
 applyLang(lngGet());
+/* Statusna sporočila se dopisujejo med delom — prevedi jih ob spremembi DOM,
+   ne le ob preklopu. Opazujemo samo live regije, ne SVG risbe (ta ostane SL). */
+if(window.MutationObserver){
+  var liveObs=new MutationObserver(function(){syncLive()});
+  LIVE_IDS.forEach(function(id){var n=$(id);if(n)liveObs.observe(n,{childList:true,characterData:true,subtree:true})});
+}
+window.uiMsg=uiMsg;
 $("langBtn").onclick=function(){
   var nxt=lngGet()==="en"?"sl":"en";
   try{localStorage.setItem("draftwright-lang",nxt)}catch(e){}
