@@ -2,6 +2,17 @@
 
 Vse pomembnejše spremembe projekta **Draftwright — Tehnična risba PRO** so dokumentirane v tej datoteki. Oblika sledi [Keep a Changelog](https://keepachangelog.com/sl/1.1.0/); različica je enaka `APP_VERSION` v aplikaciji.
 
+## [2026.11.12] — 2026-11-24
+
+### Dodano (Issue #41 — avtomatizacija SRI hash-ov po CRLF incidentu)
+
+**`npm run sri:generate` — enovirni generator SHA-384 iz strežanih (LF) bajtov**
+- **Ugotovitev:** SRI je bil v PR #49 ročno izračunan in je v CI skoraj ušel kritični napaki — lokalni Windows checkout vsebuje CRLF, git/brskalnik pa streže LF (`.gitattributes: * text=auto eol=lf`). Ročno računanje ostaja ponavljajoča se past ob vsaki zamenjavi vendor datoteke.
+- **Popravek:** nov `scripts/generate-sri.js` (registriran kot `npm run sri:generate`) prebere vsakega od 3 vendor skriptov kot bajte, normalizira `CRLF → LF` in zapiše ravno pravilen `integrity="sha384-…"` v HTML. Je **idempotenten** (na že pravilni datoteki ne piše nič) in sprejme opcijsko pot do korena (uporabno za teste v začasni kopiji).
+- **Test:** nov `tests/sri-generator.test.js` (15 preverjanj) — neodvisno izračuna pričakovane hashe, v začasni kopiji dokaže idempotenco, **popravilo poškodovanega hash-a** (ostanek HTML ostane bajtovno identičen) in **pravilnost na CRLF checkoutu**, pri čemer repozitorija ne spreminja. **Na stari kodi bi PADO (generator manjka).**
+- **CI:** dodan korak, ki po generatorju zahteva `git diff --exit-code -- tehnicka-risba-pro.html` — morebiten drift med committed SRI in resničnimi vendor bajti zdaj pade v pull requestu, ne šele v brskalniku.
+- Skupaj **59 testnih surov** (prej 58).
+
 ## [2026.11.11] — 2026-11-24
 
 ### Dodano (Issue #41 — dostopnost: fokus-trap v modalnih dialogih)
