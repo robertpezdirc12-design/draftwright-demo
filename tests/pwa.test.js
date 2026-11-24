@@ -57,7 +57,7 @@ function pngSize(file) {
   /* 4) HTML: meta oznake + registracija + mobilni CSS */
   check("HTML: link manifest + theme-color + apple-touch-icon", html.includes('rel="manifest" href="manifest.webmanifest"') && html.includes('name="theme-color" content="#141c24"') && html.includes('rel="apple-touch-icon" href="icon-192.png"'));
   check("HTML: registracija SW varovana (https/localhost, catch)", html.includes('"serviceWorker" in navigator&&(window.location.protocol==="https:"||window.location.hostname==="localhost")') && /register\("sw\.js"\)\.catch/.test(html));
-  check("HTML: mobilni predal @media 760 (aside fiksni + transform + dotiki)", html.includes("@media(max-width:760px)") && html.includes("body.aside-hidden aside{display:block;transform:translateX(-104%)}") && html.includes("min-height:38px"));
+  check("HTML: mobilni predal @media 760 (aside fiksni + transform + dotiki)", html.includes("@media(max-width:760px)") && html.includes("body.aside-hidden aside{display:block;transform:translateX(-104%)}") && html.includes("min-height:44px"));
 
   /* 5) aplikacija se zažene brez JS napak (SW registracija varno preskočena v jsdom) */
   const { JSDOM } = require("jsdom");

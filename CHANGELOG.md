@@ -2,6 +2,18 @@
 
 Vse pomembnejše spremembe projekta **Draftwright — Tehnična risba PRO** so dokumentirane v tej datoteki. Oblika sledi [Keep a Changelog](https://keepachangelog.com/sl/1.1.0/); različica je enaka `APP_VERSION` v aplikaciji.
 
+## [2026.11.14] — 2026-11-24
+
+### Popravljeno (Issue #41 — ne-barvne napake in 44 px dotikova področja)
+
+**Zadnji neposredni UI vrzeli iz `docs/review-2026-11-23.md` (P2 + P1) sta zaprti**
+- **Ugotovitev P2:** neveljavna polja so bila označena izključno z rdečim robom (`border-color` + `box-shadow`), brez ikone, predpone ali `aria-invalid` — za barvno slepe in bralnike zaslona signal ni bil zanesljiv.
+- **Popravek (samo UI):** `input.invalid,select.invalid` dobijo tematsko neodvisno SVG opozorilno ikono (`data:` URI, dovoljen z `img-src 'self' data:`), sporočila v `warnbox` dobijo vidno `⚠ ` predpono, `checks()` pa vsakemu polju, na katerega se opozorilo navezuje (`it.f`), doda `aria-invalid="true"` z sledljivim `data-dw-invalid` in ga ob popravku odstrani. Klik-za-popravek v traku napak ostaja nedotaknjen. Izvozi (SVG/PDF/CSV/STEP) se ne spremenijo.
+- **Ugotovitev P1:** mobilni `@media(max-width:760px)` je gumbom dovoljeval le `min-height:38px`, ročaj predala in gumb traka napak pa sta bila še manjša.
+- **Popravek:** najmanj **44 px** za `.btn`, `.mi`, `.show-aside-handle`, `.exp-cancel`, `.exp-go` ter `.err-tray .et-toggle` (slednji tudi `min-width:44px`, centrirana puščica).
+- **Test:** nov `tests/ui-error-touch.test.js` (**24 preverjanj**) — jsdom dokaže ikono in `⚠` predpono, `aria-invalid` ob napaki in njegovo odstranitev po popravku, klikljiv err-tray, pravilno dimenzijo pri skupnem sporočilu L/H/D (L, H **in D**), izločitev svetovalnih opozoril (`subType`, `mountType`) ter 44 × 44 px pravila; **na stari kodi pade z 14 FAIL**. `window.checks` izvožen za determinističen test. Skupaj **61 testnih surov**. CSP hash-i regenerirani.
+- **Odziv na cubic review (8 findingov v dveh krogih):** ikona velja tudi za `[data-dw-invalid]` (ne le `.invalid`); skupno sporočilo o pozitivnosti označi res neveljavno dimenzijo; 44 px dodan `.primarybar`, `.menu>button` in `min-width:44px` za ikonske gumbe; revalidacija ob vnosu/change je omejena na stanja z aktivnimi oznakami (prepreči upočasnitev stresnih testov); svetovalna opozorila (`subType`, `mountType`) ne označujejo veljavnega polja, `pesek` (nepripravljiva podlaga) pa ostane res neveljavno polje.
+
 ## [2026.11.13] — 2026-11-24
 
 ### Popravljeno (Issue #41 — EN UI parity: mešan jezik v novejših sklopih)

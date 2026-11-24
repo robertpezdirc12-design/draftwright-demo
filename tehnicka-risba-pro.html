@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- CSP: strict script allowlist by hash. No unsafe-inline / unsafe-eval. frame-ancestors is set in vercel.json (unsupported in meta). -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-x8dPeupY2oNHPhHppSq1CH89AjV1VwsGuvRNHRgieOQ='; style-src 'self' 'sha256-qdTPGCo9ClqvaTTCnpl+IhEZceBb5o82jT8kCt7nT6Y='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-aDbyeDAi+PnO5B6+w1hUIMarNu1SD3EBge6szcJwdFo='; style-src 'self' 'sha256-xOmD8s5jUsW4WSPzf+U5h6XcMTu2SRV0M8LoZ3nZar8='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Tehnična risba PRO – fotografija do končnega lista</title>
 <meta name="theme-color" content="#141c24">
 <link rel="manifest" href="manifest.webmanifest">
@@ -115,7 +115,7 @@ main.drop{outline:2px dashed var(--ac);outline-offset:-10px}
 section h2{cursor:pointer;user-select:none}section h2::after{content:"−";float:right;color:var(--mut)}section.collapsed h2::after{content:"+"}
 section.collapsed>*:not(h2){display:none}
 .guided .advanced{display:none!important}
-input.invalid,select.invalid{border-color:var(--bad)!important;box-shadow:0 0 0 1px var(--bad)}
+input.invalid,select.invalid,input[data-dw-invalid],select[data-dw-invalid]{border-color:var(--bad)!important;box-shadow:0 0 0 1px var(--bad);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%23d98a2b' d='M8 1 15 14H1z'/%3E%3Cpath fill='%23241a10' d='M7.2 5h1.6v5.2H7.2zm0 6.2h1.6v1.6H7.2z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 7px center;background-size:14px 14px;padding-right:27px}
 #globalStatus{font-size:11px;color:var(--mut);padding:8px 0 0;border-top:1px solid var(--line);margin-top:10px}
 /* Export dialog — poenotene možnosti izvoza */
 .exp-overlay{position:fixed;inset:0;z-index:100;background:#000b;display:none;align-items:flex-start;justify-content:center;overflow:auto;padding:36px 14px}
@@ -194,7 +194,8 @@ input.invalid,select.invalid{border-color:var(--bad)!important;box-shadow:0 0 0 
 @media(max-width:950px){.grid{grid-template-columns:1fr}aside{max-height:none;border-right:0;border-bottom:1px solid var(--line)}.brand small{display:none}.menubar{flex-wrap:wrap;height:auto;padding:6px 8px}}
 /* P3: mobilna priprava — plošča kot zgibni predal, večji dotiki, lepljiv Generiraj */
 @media(max-width:760px){
-  .btn,.mi{min-height:38px}
+  .btn,.mi,.show-aside-handle,.exp-cancel,.exp-go,.primarybar,.menu>button{min-height:44px;min-width:44px}
+  .err-tray .et-toggle{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px}
   .mi{padding:10px 14px}
   aside{position:fixed;top:0;left:0;bottom:0;width:min(92vw,380px);max-height:none;border-right:1px solid var(--line);border-bottom:0;overflow-y:auto;z-index:80;box-shadow:0 0 40px #000a;transition:transform .22s ease;transform:none}
   body.aside-hidden aside{display:block;transform:translateX(-104%)}
@@ -1542,7 +1543,7 @@ function checks(){
      (f) sta priložena na MESTU NASTANKA, zato sprememba besedila več tiho ne prekine
      povezave v traku napak. Polje je eksplicitno (ne re-izpeljano iz proze po regexu). */
   var msgs=[];
-  function pushW(text,field){msgs.push({m:text,f:field==null?fieldForMsg(text):field})}
+  function pushW(text,field,advisory){msgs.push({m:text,f:field==null?fieldForMsg(text):field,adv:!!advisory})}
   function pushStrings(arr){arr.forEach(function(w){pushW(w)})}
   var use0=V("sysUse");
   if(use0==="pokoncna"){
@@ -1555,7 +1556,7 @@ function checks(){
     pushW("Vsota lamel in rež ("+f(N*(sw+gap))+" mm) presega višino H ("+f(H)+" mm).","H");
   }
   if(wa*2>=Math.min(sw,stn))pushW("Stena profila je predebela za izbrane mere lamele.","wall");
-  if(L<=0||H<=0||n("D")<=0)pushW("Mere L, H in D morajo biti pozitivne.","L");
+  if(L<=0||H<=0||n("D")<=0)pushW("Mere L, H in D morajo biti pozitivne.",L<=0?"L":(H<=0?"H":"D"));
   if(ref&&gap*N>=n("zoneMid"))pushW("Pri "+N+" lamelah in reži "+gap+" mm srednje polje ("+f(n("zoneMid"))+" mm) ne zadošča — zmanjšajte število lamel ali režo.","zoneMid");
   if(ref){var zs=n("zoneTop")+n("zoneMid")+n("zoneBot")+n("zoneBase");
     if(Math.abs(zs-H)>0.5)pushW("Vsota con ("+f(zs)+" mm) se ne ujema z višino H ("+f(H)+" mm) — razlika "+f(H-zs)+" mm je na listu prikazana kot odmik.","H");
@@ -1573,14 +1574,15 @@ function checks(){
         var lenM=Math.max(1,Math.min(5,L/1000)),rec=dilatacija(lenM,n("installTemp"));
         if(Math.abs(n("gap")-rec)>0.75)pushW("Dilatacija (tabela WoodCore): priporočen razmak "+f(rec)+" mm za deske "+f(lenM)+" m pri "+f(n("installTemp"))+" °C — trenutno "+f(n("gap"))+" mm.","gap");
         var stv=V("subType");
+        /* pesek ni svetovalna izbira — Roksal montaže ne izvaja, zato polje ostane označeno */
         if(stv==="pesek")pushW("Pesek/prodec: Roksal ne izvaja montaž in ne priporoča — potrebna prana betonska plošča (min. 6 cm) s padcem 1 cm/m.","subType");
-        else if(stv==="tlakovci")pushW("Tlakovci: obvezno alu podložne cevi + mreža; preveriti višino do vrat (min. 4,5 cm).","subType");
-        else if(stv==="plocice")pushW("Ploščice: montaža brez vrtanja v tla; preveriti višino do vrat; odstopajoče ploščice odstraniti.","subType");
-        else if(stv==="beton_hidro")pushW("Hidroizolacija: podložne letvi ne pritrditi v tla — pod njiju guma/filc; podkonstrukcijo povezati s kotniki.","subType");
-        else if(stv==="prane")pushW("Prane plošče: minimalna rešitev — priporočena betonska plošča s padcem 1 cm/m.","subType");
-        else if(stv==="kovina")pushW("Obstoječa kovinska konstrukcija: razmak letvic max 33–35 cm (center); pod dolžinskim spojem konstrukcija na vsaki strani.","subType");
+        else if(stv==="tlakovci")pushW("Tlakovci: obvezno alu podložne cevi + mreža; preveriti višino do vrat (min. 4,5 cm).","subType",true);
+        else if(stv==="plocice")pushW("Ploščice: montaža brez vrtanja v tla; preveriti višino do vrat; odstopajoče ploščice odstraniti.","subType",true);
+        else if(stv==="beton_hidro")pushW("Hidroizolacija: podložne letvi ne pritrditi v tla — pod njiju guma/filc; podkonstrukcijo povezati s kotniki.","subType",true);
+        else if(stv==="prane")pushW("Prane plošče: minimalna rešitev — priporočena betonska plošča s padcem 1 cm/m.","subType",true);
+        else if(stv==="kovina")pushW("Obstoječa kovinska konstrukcija: razmak letvic max 33–35 cm (center); pod dolžinskim spojem konstrukcija na vsaki strani.","subType",true);
       }
-      if(use!=="terasa"&&V("mountType")==="kovinska konstrukcija")pushW("Obstoječa kovinska konstrukcija: montaža na okrogle cevi NI dovoljena (potrebne ravne pritrdilne površine); garancija na izvedbo na obstoječi konstrukciji se ne prizna (kondenz).","mountType");
+      if(use!=="terasa"&&V("mountType")==="kovinska konstrukcija")pushW("Obstoječa kovinska konstrukcija: montaža na okrogle cevi NI dovoljena (potrebne ravne pritrdilne površine); garancija na izvedbo na obstoječi konstrukciji se ne prizna (kondenz).","mountType",true);
       if(use==="pregrada"&&pc.n.indexOf("KUBO")>=0&&H>2500)pushW("KUBO pregrada: brez vmesnih nosilcev (pritrditev zgoraj in spodaj) samo do višine 2500 mm — dodajte vmesne nosilce.","H");
     }
   }
@@ -1588,7 +1590,17 @@ function checks(){
   pushStrings(getKoritaData().warnings);
   /* P3.2: zaznavanje prekrivanj/trkov (besedilni vir → f po fieldForMsg) */
   pushStrings(detectClashes());
-  var box=$("checks");box.className="warnbox"+(msgs.length?" on":"");box.innerHTML=msgs.map(function(it){return"• "+E(it.m)}).join("<br>");
+  var box=$("checks");box.className="warnbox"+(msgs.length?" on":"");box.innerHTML=msgs.map(function(it){return"⚠ "+E(it.m)}).join("<br>");
+  /* Pregled 2026-11-23 (P2): napaka ni označena samo z barvo. Ikono dodaja CSS,
+     ⚠ predpona ostane vidna brez barve, aria-invalid pa jo sporoči bralniku zaslona. */
+  [].slice.call(document.querySelectorAll("[data-dw-invalid]")).forEach(function(el){
+    el.removeAttribute("aria-invalid");el.removeAttribute("data-dw-invalid");
+  });
+  msgs.forEach(function(it){
+    /* it.adv = svetovalno opozorilo za veljavno izbiro (npr. podlaga) — ni neveljavno polje. */
+    if(it.adv||!it.f)return;var el=$(it.f);
+    if(el&&el.setAttribute){el.setAttribute("aria-invalid","true");el.setAttribute("data-dw-invalid","1")}
+  });
   var zoneBad=msgs.some(function(it){return it.m.indexOf("srednje polje")>=0});
   $("n").classList.toggle("invalid",zoneBad);$("gap").classList.toggle("invalid",zoneBad);
   renderErrTray(msgs);updateGlobalStatus(msgs);syncSteps()
@@ -4317,8 +4329,12 @@ document.addEventListener("keydown",function(e){
   if(k==="z"){e.preventDefault();histUndo()}
   else if(k==="y"){e.preventDefault();histRedo()}
 });
-document.addEventListener("input",function(){histPush();invalidateProduction();markStale();clearTimeout(saveTimer);saveTimer=setTimeout(saveState,400)});
-document.addEventListener("change",function(){histPush();invalidateProduction();markStale();clearTimeout(saveTimer);saveTimer=setTimeout(saveState,400)});
+/* Revalidacija le, ko je aktivno kakšno označeno polje — sicer aria-invalid ostane
+   viseti na že popravljenem polju (npr. np brez lastnega handlerja). Brez oznak
+   ne preverjamo ob vsakem tipkanju (stres/E2E ostanejo hitri). */
+function revalidateMarked(){if(document.querySelector("[data-dw-invalid]"))checks()}
+document.addEventListener("input",function(){histPush();invalidateProduction();markStale();revalidateMarked();clearTimeout(saveTimer);saveTimer=setTimeout(saveState,400)});
+document.addEventListener("change",function(){histPush();invalidateProduction();markStale();revalidateMarked();clearTimeout(saveTimer);saveTimer=setTimeout(saveState,400)});
 
 /* P2.1: konfiguracije + dizajn tabela (CSV) */
 var CFGKEY="draftwright-konfiguracije";
@@ -5045,7 +5061,7 @@ if(window.MutationObserver){
   var liveObs=new MutationObserver(function(){syncLive()});
   LIVE_IDS.forEach(function(id){var n=$(id);if(n)liveObs.observe(n,{childList:true,characterData:true,subtree:true})});
 }
-window.uiMsg=uiMsg;
+window.uiMsg=uiMsg;window.checks=checks;
 $("langBtn").onclick=function(){
   var nxt=lngGet()==="en"?"sl":"en";
   try{localStorage.setItem("draftwright-lang",nxt)}catch(e){}
