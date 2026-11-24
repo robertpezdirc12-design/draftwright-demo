@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- CSP: strict script allowlist by hash. No unsafe-inline / unsafe-eval. frame-ancestors is set in vercel.json (unsupported in meta). -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-gM3o6U0D7+Rk663YYzeh62NRhv+TBLi+vVGrosS8GlU='; style-src 'self' 'sha256-qdTPGCo9ClqvaTTCnpl+IhEZceBb5o82jT8kCt7nT6Y='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-2966VOpyVLrgGM5ksLkJFSNH3QNF9dTVn/1ZIIE9RrA='; style-src 'self' 'sha256-qdTPGCo9ClqvaTTCnpl+IhEZceBb5o82jT8kCt7nT6Y='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Tehnična risba PRO – fotografija do končnega lista</title>
 <meta name="theme-color" content="#141c24">
 <link rel="manifest" href="manifest.webmanifest">
@@ -5200,6 +5200,58 @@ setMode(false);applyFieldVisibility();applySystem();checks();
 maybeShowWhatsNew();
 var _rm=$("refModeMenu"); if(_rm) _rm.checked=!!$("refMode").checked;
 if(typeof updateModeTicks==="function") updateModeTicks();
+})();
+
+/* ---------- Issue #41 (focus-trap): Tab / Shift+Tab vgrada fokus v odprtem modalnem dialogu
+   (WCAG 2.1.2 "No Keyboard Trap" + 4.7.2 "Focus Not Obscured"; dostopno ime 4.1.2 že pokriva §3.E).
+   Centralizirano: ko je odprt vsaj en modal (overlay z razredom .on, ki vsebuje
+   [role=dialog][aria-modal=true]), Tab ob zadnjem fokusabilnem elementu povrže na prvi,
+   Shift+Tab ob prvem na zadnji — fokus ne pobegne v ozadje. Brez odprtega modala je
+   obnašanje privzeto (trap je neaktiven). Brez novih CSP inline-hash: regenerira se z generate-csp.js. */
+(function(){
+  var FOCUSABLE='a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
+  function collectFocusable(root){
+    if(!root)return[];
+    var els=Array.prototype.slice.call(root.querySelectorAll(FOCUSABLE));
+    return els.filter(function(el){
+      if(el.disabled)return false;
+      var w=el.ownerDocument&&el.ownerDocument.defaultView;
+      if(w){try{if(w.getComputedStyle(el).display==="none")return false}catch(_e){}}
+      return true;
+    });
+  }
+  /* "Odprt" modal = [role=dialog][aria-modal=true], katerega overlay-ancestors ima razred .on
+     (to je aplikacijski source-of-truth za odprte/žaprete — ne zanašamo se na izračunane stile).
+     Med več odprtimi cilja zadnji v DOM-u (počasneje odprt se nadloži). */
+  function topOpenDialog(){
+    var dlgs=Array.prototype.slice.call(document.querySelectorAll('[role="dialog"][aria-modal="true"]'));
+    var open=dlgs.filter(function(d){
+      var ov=d.closest&&d.closest('[class*="overlay"]');if(!ov)ov=d.parentElement;
+      return ov&&ov.classList&&ov.classList.contains('on');
+    });
+    return open.length?open[open.length-1]:null;
+  }
+  function initTrap(){
+    document.addEventListener('keydown',function(e){
+      if(e.key!=='Tab')return;
+      var dlg=topOpenDialog();
+      if(!dlg)return;
+      var items=collectFocusable(dlg);
+      if(items.length===0){e.preventDefault();try{dlg.focus()}catch(_e){}return;}
+      var idx=items.indexOf(document.activeElement);
+      if(e.shiftKey){
+        if(idx<=0){e.preventDefault();items[items.length-1].focus();}
+      }else{
+        if(idx===-1||idx===items.length-1){e.preventDefault();items[0].focus();}
+      }
+    });
+  }
+  /* Izvoz za regresijske teste (tests/focus-trap.test.js). */
+  window.fwFocusTrap={collectFocusable:collectFocusable,topOpenDialog:topOpenDialog};
+  /* Poslušalca registriramo TAKOJ (kot ostali keydown poslušalci v aplikaciji) —
+     brez readyState/DOMContentLoaded odvisnosti, da je obnašanje deterministično
+     tudi pod jsdom. Ta skript teče konec <body>, zato je DOM že na voljo. */
+  initTrap();
 })();
 
 </script>
