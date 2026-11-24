@@ -481,10 +481,10 @@ body.viewmode .viewbar{display:flex}
 
 <section data-panel="photo">
 <h2 data-i18n="h_photo"><i>1</i>Slika</h2>
-<input type="file" id="file" accept="image/*">
+<input type="file" id="file" accept="image/*" aria-label="Naloži fotografijo ograje">
 <div class="photo" id="photoBox"><img id="img" alt="foto"><svg id="ov" xmlns="http://www.w3.org/2000/svg"></svg></div>
 <p class="hint">Prilepite z <span class="kbd">Ctrl+V</span>, povlecite ali izberite datoteko. Za merjenje naj bo v kadru merilo ali znan predmet.</p>
-<button class="btn" id="applySuggestedProf" data-s="s30"></button>
+<button class="btn" id="applySuggestedProf" data-s="s30" title="Uporabi predlagani profil"></button>
 </section>
 
 <section data-panel="cal">
@@ -496,7 +496,7 @@ body.viewmode .viewbar{display:flex}
 <div id="refBWrap" data-s="s29"><label for="refB">Resnična višina (mm)</label><input type="number" id="refB" step="0.1" placeholder="npr. 1200">></div>
 </div>
 <button class="btn" id="applyCal" data-s="s48">Uporabi umeritev</button>
-<div class="status" id="calStatus">Ni umerjeno.</div>
+<div class="status" id="calStatus" role="status" aria-live="polite">Ni umerjeno.</div>
 <p class="hint">Pri 4 točkah kliknite: levo zgoraj, desno zgoraj, desno spodaj, levo spodaj.</p>
 </section>
 
@@ -566,7 +566,7 @@ body.viewmode .viewbar{display:flex}
 <label id="matDensityLabel" data-s="s46">Material in gostota</label>
 <div class="row">
 <div><select id="matSel"><option value="2700">Aluminij (2700 kg/m³)</option><option value="7850">Jeklo (7850 kg/m³)</option><option value="1300" selected>WoodCore WPC (1300 kg/m³)</option><option value="0">Po lastni izbiri</option></select></div>
-<div><input type="number" id="rho" value="1300" step="10"></div>
+<div><input type="number" id="rho" value="1300" step="10" aria-label="Gostota materiala (kg/m³)"></div>
 </div>
 <div class="row3" data-s="s46">
 <div><label for="emb">Globina sidra (mm)</label><input type="number" id="emb" value="90">></div>
@@ -807,7 +807,7 @@ Konstrukcija odporna na vremenske vplive.</textarea>
     <div class="exp-body">
       <div class="exp-label">Shrani trenutni projekt</div>
       <div data-s="s22">
-        <input type="text" id="prjName" placeholder="Ime (privzeto: naziv projekta)" data-s="s34">
+        <input type="text" id="prjName" placeholder="Ime (privzeto: naziv projekta)" data-s="s34" aria-label="Ime projekta">
         <button class="exp-go" id="prjSave" type="button">Shrani</button>
       </div>
       <div class="exp-label" data-s="s44">Seznam</div>
@@ -1042,7 +1042,7 @@ Konstrukcija odporna na vremenske vplive.</textarea>
 
   <button id="modeGuided" type="button"></button>
   <button id="modeExpert" type="button"></button>
-  <input type="checkbox" id="refMode">
+  <input type="checkbox" id="refMode" aria-label="Referenčni način lista (razgrni list referenčnih mer)">
   <button id="dlSvg" type="button"></button>
   <button id="dlDxf" type="button"></button>
   <button id="dlStep" type="button"></button>
@@ -1050,7 +1050,7 @@ Konstrukcija odporna na vremenske vplive.</textarea>
   <button id="prt" type="button"></button>
   <button id="save" type="button"></button>
   <button id="loadBtn" type="button"></button>
-  <input type="file" id="loadFile" accept=".json,application/json,image/png,image/jpeg,image/webp,image/gif">
+  <input type="file" id="loadFile" accept=".json,application/json,image/png,image/jpeg,image/webp,image/gif" aria-label="Odpri projekt (JSON ali fotografija)">
   <button id="dlPlan" type="button"></button>
   <button id="exportDialog" type="button"></button>
   <button id="prjDialogBtn" type="button"></button>
