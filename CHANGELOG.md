@@ -9,7 +9,7 @@ Vse pomembnejše spremembe projekta **Draftwright — Tehnična risba PRO** so d
 **`js/csv.js` — skupno CSV omiljanje kot izvirna datoteka**
 - `csvCell()` in `csvRow()` sta izvzeti v `js/csv.js` (čisti, brez DOM). Izvoz `window.csvCell` in vseh pet uporab v izvozih ostane nedotaknjenih.
 - `scripts/sync-modules.js` pokriva zdaj štiri module (`core`, `geometry`, `dilatation`, `csv`).
-- `tests/module-sync.test.js` razširjen z 32 na **40 preverjanj** (urejen par oznak, vsebinsko ujemanje, odsotnost DOM odvisnosti in popravilo drift-a za vsak modul). Na stari kodi pade s **5 FAIL**. Skupaj ostane **63 testnih surov**. CSP hash-i regenerirani.
+- `tests/module-sync.test.js` razširjen z 32 na **40 preverjanj**: urejen par oznak, vsebinsko ujemanje, odsotnost DOM odvisnosti in popravilo drift-a **za vsak modul**; idempotenca se preverja **globalno**, zavrnitev manjkajoče končne oznake pa na modulu `core`. Na stari kodi pade s **5 FAIL** (manjkata generator in vsi štirje izvori — vsi checki se izvedejo pred izstopom, preverjeno v začasni kopiji). Skupaj ostane **63 testnih surov**. CSP hash-i regenerirani.
 
 ## [2026.11.18] — 2026-11-24
 
