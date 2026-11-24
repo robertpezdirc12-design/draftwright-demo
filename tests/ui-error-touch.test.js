@@ -39,7 +39,9 @@ function check(name, ok, info) {
   check("checks() je izvožena za neposredno validacijo", typeof window.checks === "function");
 
   /* --- ne-barvna oznaka v CSS: ikona poleg rdečega roba --- */
-  const invalidRule = (html.match(/input\.invalid,select\.invalid\{[^}]*\}/) || [""])[0];
+  const invalidRule = (html.match(/input\.invalid,select\.invalid[^{]*\{[^}]*\}/) || [""])[0];
+  check("CSS: ikona velja tudi za polja z aria-invalid brez class invalid",
+    invalidRule.includes("input[data-dw-invalid]") && invalidRule.includes("select[data-dw-invalid]"));
   check("CSS: invalid polje ima SVG opozorilno ikono (ne le barvo)",
     invalidRule.includes("background-image:url(\"data:image/svg+xml,") &&
     invalidRule.includes("background-repeat:no-repeat") &&
@@ -63,17 +65,42 @@ function check(name, ok, info) {
   check("err-tray: opozorilo ostaja klikljivo do polja",
     !!$("errTray").querySelector('.et-item[data-field="L"]'));
 
+  /* Popravek vrednosti sproži document-level input → checks() brez eksplicitnega klica. */
   L.value = original;
-  if (typeof window.checks === "function") window.checks();
-  check("povratek v veljavno stanje odstrani aria-invalid", !L.hasAttribute("aria-invalid"),
+  L.dispatchEvent(new window.Event("input", { bubbles: true }));
+  check("input: popravek polja takoj odstrani aria-invalid", !L.hasAttribute("aria-invalid"),
     String(L.getAttribute("aria-invalid")));
-  check("povratek v veljavno stanje skrije warnbox", !$("checks").classList.contains("on"),
+  check("input: popravek polja skrije warnbox", !$("checks").classList.contains("on"),
     $("checks").className);
+
+  /* Skupno sporočilo za L/H/D mora označiti res neveljavno dimenzijo, ne vedno L. */
+  const H = $("H"), hOriginal = H.value;
+  H.value = "0";
+  if (typeof window.checks === "function") window.checks();
+  check("H neveljavna → aria-invalid na H", H.getAttribute("aria-invalid") === "true",
+    String(H.getAttribute("aria-invalid")));
+  check("H neveljavna → L ostane brez aria-invalid", !L.hasAttribute("aria-invalid"),
+    String(L.getAttribute("aria-invalid")));
+  H.value = hOriginal;
+  if (typeof window.checks === "function") window.checks();
+
+  /* Svetovalno opozorilo za veljavno izbiro podlage ne sme pomeniti neveljavnega polja. */
+  const use = $("sysUse"), sub = $("subType"), useOriginal = use.value, subOriginal = sub.value;
+  use.value = "terasa";
+  sub.value = "plocice";
+  if (typeof window.checks === "function") window.checks();
+  check("svetovalno opozorilo ostane vidno v warnboxu",
+    ($("checks").textContent || "").includes("Ploščice"));
+  check("svetovalno opozorilo ne označi veljavnega polja z aria-invalid",
+    !sub.hasAttribute("aria-invalid"), String(sub.getAttribute("aria-invalid")));
+  use.value = useOriginal;
+  sub.value = subOriginal;
+  if (typeof window.checks === "function") window.checks();
 
   /* --- dotikova področja --- */
   const mobile = (html.match(/@media\(max-width:760px\)\{[\s\S]*?\n\}/) || [""])[0];
   check("mobil: gumbi in menijske postavke vsaj 44 px",
-    mobile.includes(".btn,.mi,.show-aside-handle,.exp-cancel,.exp-go{min-height:44px}"));
+    mobile.includes(".btn,.mi,.show-aside-handle,.exp-cancel,.exp-go,.primarybar,.menu>button{min-height:44px}"));
   check("mobil: ročaj predala in gumb traka napak vsaj 44 px",
     mobile.includes(".err-tray .et-toggle{") && mobile.includes("min-width:44px") &&
     mobile.includes("min-height:44px"));
