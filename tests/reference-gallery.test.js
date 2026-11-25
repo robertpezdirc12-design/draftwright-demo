@@ -176,6 +176,8 @@ function check(name, ok, info) {
     catEn.includes("Terrace boards — installation instructions") && catEn.includes("not structural elements") && catEn.includes("void the warranty") && catEn.includes("freezing water inside the board can crack it"));
   check("EN: pregradne stene prevedene (uradna stran)",
     catEn.includes("Partition walls with transverse boards") && catEn.includes("valid ONLY") && catEn.includes("from the top tube") && catEn.includes("end cap"));
+  check("EN: pokončne pregrade prevedene (uradna stran)",
+    catEn.includes("Partition walls with vertical boards") && catEn.includes("flat aluminium on every carrier") && catEn.includes("slat spacing is arbitrary") && catEn.includes("may vary noticeably between boards and batches"));
   $("langBtn").click();
   const catSl = $("tmplOverlay").textContent;
   check("povratek v SL: katalog spet slovensko",
@@ -239,6 +241,17 @@ function check(name, ok, info) {
     cat.includes("128 × 16,5 × 2200") && cat.includes("110 cm") && cat.includes("sredini deske"));
   check("katalog: pregradne stene — DESKA-150 130 cm, 3 površine, pokrovček",
     cat.includes("130 cm") && cat.includes("3 površine") && cat.includes("zaključnim pokrovčkom") && cat.includes("popolnoma gladke"));
+  check("katalog: pokončne pregrade — 5 profilov + vodoravne cevi 80/100/110",
+    cat.includes("Pregradne stene s pokončnimi deskami") && cat.includes("5 profilov") &&
+    ["80 cm (POLNA-100)", "100 cm (POLNA-128)", "110 cm (ROMB"].every((d) => cat.includes(d)));
+  check("katalog: KUBO — alu cevi 20×60×2 / 25×25×2 / 20×20×2 + dolžina 5000",
+    ["20×60×2", "25×25×2", "20×20×2", "5000 mm", "Amazon Wood in Rustic Walnut", "80 ali 42 mm"].every((d) => cat.includes(d)));
+  check("katalog: pokončne pregrade — romb 150/100 + ploščat aluminij",
+    cat.includes("stebri ≤ 150 cm") && cat.includes("vertikalni nosilci ≤ 100 cm") && cat.includes("ploščatim aluminijem"));
+  check("katalog: pokončne pregrade — 57/32 (2/3 globine) in 100/128 (180/150, +1 mm)",
+    cat.includes("2/3 globine") && cat.includes("180 cm do višine 150 cm") && cat.includes("+1 mm"));
+  check("katalog: palete — opozorili o variiranju barv (Rustic, dobave)",
+    cat.includes("malenkost varirajo") && cat.includes("razpored lis"));
 
   const fixImgs = Array.from(document.querySelectorAll('#tmplOverlay img[src^="slike/"]'));
   check("vse katalogske slike so krajevne", fixImgs.every((im) => /^slike\/pokoncna\/[a-z0-9-]+\.jpg$/.test(im.getAttribute("src") || "")));

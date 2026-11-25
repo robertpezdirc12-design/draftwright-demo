@@ -40,7 +40,16 @@ Vse pomembnejše spremembe projekta **Draftwright — Tehnična risba PRO** so d
 - **Nova sekcija galerije »Terasne deske — navodila za montažo (WoodCore)«** s 4 karticami (priprava podlage, podložne letve, montaža desk in reže, zaključki in odvodnjavanje) in strukturnim opozorilom; EN pariteta (`ter_h`, `ter_w`, `ter_c1..4`).
 - `tests/reference-gallery.test.js` dopolnjen s **8 preverjanji** terasnega kataloga (skupaj 77), `tests/roksal-p1.test.js` s 3 preverjanji novih opozoril v kontrolnem listu. Zlati posnetki nespremenjeni (kontrolni list ni vrisan vanje). Skupaj **67 testnih surov**. CSP hash-i regenerirani.
 
-### Spremenjeno (uskladitev s spletno stranjo »WPC prečne deske za pregradne stene«)
+### Spremenjeno (uskladitev s spletno stranjo »WPC pokončne deske za pregradne stene«)
+
+**Prebrana uradna produktne stran roksal.com (tekstovno in vizualno — katalog profilov, alu cevi, palete)**
+- **Popravek: razmak stebrov pri pregradah (pokončno) — prej 2000 mm, uradno 150–180 cm po profilu** (57/32 in romb 150 cm; polna 100/128 180 cm do višine pregrade 150 cm, višje 150 cm). `roksalLimit()` veja `pregrada` zdaj upošteva profilno mejo `post.pokoncna` + pravilo višine, kot velja za ograje; kontrolni list in `roksalUseNotes()` usklajena. Zlati posnetki nespremenjeni (noben ne uporablja pregrade).
+- **KUBO-80/42 dopolnjen**: alu cevi v notranjosti **20×60×2 / 25×25×2 / 20×20×2 mm** (izbira vpliva na ceno in razpon konstrukcije), montaža na **vidno širino 80 ali 42 mm**, razmak kubo letvic **poljuben**, dolžina **5800 ali 5000 mm** (5000 samo Amazon Wood in Rustic Walnut), suva ali eloksirana cev (na prostem obvezno eloksirana).
+- **ROMB pokončne pregrade**: stebri ≤ 150 cm, **vertikalni nosilci ≤ 100 cm — samo s kotnikom ali ploščatim aluminijem na vsakem nosilcu**; vodoravne cevi ≤ 110 cm s kotnikom.
+- **POLNA-57/32 pregrade**: stebri 150 cm ne glede na višino, nosilci 100 cm, RF knipping skozi cev, vijak ≈ 2/3 globine, luknja v WPC manjša/v konstrukciji večja — potrjeno tudi za pregrade.
+- **POLNA-100/128**: obdelujeta se kakor les (zaokrožitev, poljubne oblike); izbira vijaka glede na tip konstrukcije.
+- **Opozorili barvnih palet**: \* odtenki med dobavami malenkost varirajo (naravni material); \*\* Rustic Oak/Walnut (večbarvni videz) — odtenek in razpored lis se med deskami in serijami opazneje razlikujeta.
+- Nova sekcija galerije **»Pregradne stene s pokončnimi deskami (WoodCore)«** (4 kartice) + opomba palet, z EN pariteto. Testi: `reference-gallery` **88 PASS** (+6), `roksal-module` 32 OK, `roksal-p1` 47 OK (+1). Celotna veriga zelena (67 surovov, 0 FAIL). CSP hash-i regenerirani.
 
 **Prebrana uradna produktne stran roksal.com (tekstovno in vizualno, vključno s paletami in prerezi)**
 - **Popravek mere: POLNA DESKA-128 je 128 × 16,5 × 2200 mm** (uradna stran + prvotni register) — prej začasno 16 mm po katalogskem zapisu. Register `WC`, kartica elementov in testi posodobljeni.

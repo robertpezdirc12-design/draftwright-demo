@@ -138,8 +138,9 @@ const setField = (id, v) => { $(id).value = String(v); fire($(id), "input"); };
   check("polna57 dovoljena za pregrado", !$("checks").textContent.includes("ni predviden"));
   $("buildChecklist").click();
   const cl2 = $("checklistOut").textContent;
-  check("checklist pregrada: stebri ≤ 200 cm", cl2.includes("pokončno ≤ 200 cm"));
+  check("checklist pregrada: stebri pokončno 150–180 cm po profilu", cl2.includes("pokončno 150–180 cm") && cl2.includes("180 do višine 150 cm"));
   check("checklist pregrada: KUBO razpon 120/260", cl2.includes("≤ 120 cm brez cevi") && cl2.includes("≤ 260 cm"));
+  check("checklist pregrada: KUBO cevi 20×60×2/25×25×2/20×20×2 + širina 80/42", cl2.includes("25×25×2") && cl2.includes("20×20×2") && cl2.includes("vidno širino 80 ali 42 mm") && cl2.includes("letvic je poljuben"));
   check("checklist pregrada: eloksirana na prostem", cl2.includes("eloksirana"));
 
   // 10) napušč (samo polna-100 je predvidena)

@@ -5,7 +5,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-5x9KVDWd0yF1QIX9uTOHsZ+lIUBi5VpB1uLekMV5dac='; style-src 'self' 'sha256-+XPKIdmuNTsipilSRGR8w5PiFGjSbAXe7nysm4Re3bs='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+          "value": "default-src 'self'; script-src 'self' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-AAHsSAb8UB/n8w1up2TqeIX8nBc2CfOU/r7U/JSosTw='; style-src 'self' 'sha256-+XPKIdmuNTsipilSRGR8w5PiFGjSbAXe7nysm4Re3bs='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
         },
         {
           "key": "X-Content-Type-Options",
