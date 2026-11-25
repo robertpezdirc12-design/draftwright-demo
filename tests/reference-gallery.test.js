@@ -172,6 +172,8 @@ function check(name, ok, info) {
   check("EN: palete in skladiščenje prevedena",
     catEn.includes("Colour options") && catEn.includes("complaints will not be accepted"));
   check("EN: povpraševanje prevedeno", catEn.includes("For a free quote"));
+  check("EN: terase prevedeno (PDF navodila)",
+    catEn.includes("Terrace boards — installation instructions") && catEn.includes("not structural elements") && catEn.includes("void the warranty") && catEn.includes("freezing water inside the board can crack it"));
   $("langBtn").click();
   const catSl = $("tmplOverlay").textContent;
   check("povratek v SL: katalog spet slovensko",
@@ -213,6 +215,20 @@ function check(name, ok, info) {
     cat.includes("reklamacija ne upošteva"));
   check("katalog: povpraševanje — info@roksal.com kot besedilo (brez zunanje povezave)",
     cat.includes("info@roksal.com") && !$("tmplOverlay").querySelector('a[href^="mailto"], a[href^="http"]'));
+  check("katalog: terase — naslov in strukturno opozorilo (PDF)",
+    cat.includes("Terasne deske — navodila za montažo") && cat.includes("niso konstrukcijski element") && cat.includes("izniči garancijo"));
+  check("katalog: terase — podlaga (1 cm/m, 100 mm zemlje, beton ≥ 6 cm)",
+    cat.includes("1 cm/m") && cat.includes("100 mm zemlje") && cat.includes("betonsko ploščo (debelina ≥ 6 cm)"));
+  check("katalog: terase — letve 30–35 cm, točkovno do 60 cm, turbo 6,7×80",
+    cat.includes("30–35 cm med letvami") && cat.includes("do 60 cm") && cat.includes("6,7×80 mm"));
+  check("katalog: terase — predvrtanje WPC letvi (luknja manjša + grezilo)",
+    cat.includes("luknjo manjšo od vijaka") && cat.includes("letev lahko poči"));
+  check("katalog: terase — izmenično polaganje, dve letvi pri spoju",
+    cat.includes("2,2+1,1 m") && cat.includes("vedno dve letvi"));
+  check("katalog: terase — reže 5–6 mm + dilatacija, stene ≥ 6 mm",
+    cat.includes("5–6 mm") && cat.includes("do cca 10 mm na 4 m") && cat.includes("vseh sten ≥ 6 mm"));
+  check("katalog: terase — L letev ≤ 2 m / 30 cm, rez 30°, odvodne Ø4,2 mm",
+    cat.includes("≤ 2 m") && cat.includes("vsakih 30 cm") && cat.includes("kotom 30°") && cat.includes("Ø4,2 mm") && cat.includes("zmrznjena voda"));
 
   const fixImgs = Array.from(document.querySelectorAll('#tmplOverlay img[src^="slike/"]'));
   check("vse katalogske slike so krajevne", fixImgs.every((im) => /^slike\/pokoncna\/[a-z0-9-]+\.jpg$/.test(im.getAttribute("src") || "")));

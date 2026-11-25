@@ -32,6 +32,14 @@ Vse pomembnejše spremembe projekta **Draftwright — Tehnična risba PRO** so d
 - Register `WC`: `polna100`/`polna128` stebri pokončno 1800 (H ≤ 1500) oziroma 1500 (višje), `romb67` stebri z L-kotniki 1450; `polna128` debelina 16 mm po katalogu (128 × 16 × 2200); `drill`/`fix` besedila usklajena (2/3 globine pri 57/32, obvezna alu cev pri ROMB, predvrtanje v kovinsko cev pri 100/128). Opombe risbe (`roksalUseNotes()`, `applySystem`) sledijo profilnim pravilom.
 - Zlati posnetek `pokoncna-referencna` regeneriran (romb67 stebri 1500 → 1450 mm); ostali zlati posnetki nespremenjeni. `tests/reference-gallery.test.js` razširjen s **32 novimi preverjanji** kataloga (skupaj 69), `tests/roksal-module.test.js` dopolnjen z novimi katalogskimi mejami. Vseh 16 slik je v `sw.js` predpomnilniku. Skupaj **67 testnih surov**. CSP hash-i regenerirani.
 
+### Dodano (uradni PDF »Navodila za montažo WPC terasnih desk« — uskladitev in dopolnila)
+
+**Prebran celoten uradni Roksal PDF (9 strani, tekstovno in vizualno)**
+- Potrjeno, da so ključni podatki iz PDF-ja že vgrajeni: dilatacijska matrika `DIL` (`js/dilatation.js` citira PDF in dokumentira tipkarsko napako −25 °C/1 m: 2,27 → 2,75), terasna veja `roksalUseNotes()`, kontrolni list in montažni načrt (razmiki letvi 30–35 cm, točkovno podlaganje alu do 60 cm, turbo vijaki 6,7×80 mm, reža 5–6 mm + dilatacija, odmik od sten 6 mm, odvodne luknje Ø4,2 mm, rez 30°, orodja).
+- **Novo — opozorila iz PDF-ja**, prej manjkajoča: WoodCore deske **niso konstrukcijski element** (nosilci, tramovi, podporni stebri — neupoštevanje lahko izniči garancijo; dodano v kontrolni list za vse uporabe), predvrtanje WPC podložnih letev (luknja manjša od vijaka + grezilo — visoka gostota, brez tega letev poči), opozorilo o zmrznjeni vodi v deski (poči), previdnost pri distančnikih in stiskanju desk, L letev v enem kosu ob enosmernem polaganju brez dolžinskih spojev.
+- **Nova sekcija galerije »Terasne deske — navodila za montažo (WoodCore)«** s 4 karticami (priprava podlage, podložne letve, montaža desk in reže, zaključki in odvodnjavanje) in strukturnim opozorilom; EN pariteta (`ter_h`, `ter_w`, `ter_c1..4`).
+- `tests/reference-gallery.test.js` dopolnjen s **8 preverjanji** terasnega kataloga (skupaj 77), `tests/roksal-p1.test.js` s 3 preverjanji novih opozoril v kontrolnem listu. Zlati posnetki nespremenjeni (kontrolni list ni vrisan vanje). Skupaj **67 testnih surov**. CSP hash-i regenerirani.
+
 ## [2026.11.22] — 2026-11-24
 
 ### Dodano (lokalne izboljšave brez omrežja)

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- CSP: strict script allowlist by hash. No unsafe-inline / unsafe-eval. frame-ancestors is set in vercel.json (unsupported in meta). -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-qbgS4++4LuSF7OVGP6KyrP/5VYC5/Fsm/ceABNjG0Dc='; style-src 'self' 'sha256-+XPKIdmuNTsipilSRGR8w5PiFGjSbAXe7nysm4Re3bs='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-xpMNLY8rmu3L2CPDxVUCy8ZUMzIltuhk4j5wWxqFWN0='; style-src 'self' 'sha256-+XPKIdmuNTsipilSRGR8w5PiFGjSbAXe7nysm4Re3bs='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Tehnična risba PRO – fotografija do končnega lista</title>
 <meta name="theme-color" content="#141c24">
 <link rel="manifest" href="manifest.webmanifest">
@@ -892,6 +892,16 @@ Konstrukcija odporna na vremenske vplive.</textarea>
           <figure class="pal-fig"><img src="slike/pokoncna/paleta-100.jpg" alt="Barvna paleta POLNA DESKA 100" loading="lazy"><figcaption data-i18n="pal_c2">POLNA DESKA 100 — na voljo 8 barv.</figcaption></figure>
           <figure class="pal-fig"><img src="slike/pokoncna/paleta-128.jpg" alt="Barvna paleta POLNA DESKA 128" loading="lazy"><figcaption data-i18n="pal_c3">POLNA DESKA 128 — na voljo 6 barv.</figcaption></figure>
           <figure class="pal-fig"><img src="slike/pokoncna/paleta-romb.jpg" alt="Barvna paleta ROMB DESKA 67" loading="lazy"><figcaption data-i18n="pal_c4">ROMB DESKA 67 — na voljo 7 barv.</figcaption></figure>
+        </div>
+      </div>
+      <div class="ref-sect">
+        <div class="st" data-i18n="ter_h">Terasne deske — navodila za montažo (WoodCore)</div>
+        <p class="hint" data-i18n="ter_w">OPOZORILO: WoodCore deske niso konstrukcijski element — ne smejo se uporabljati za nosilce, tramove, podporne stebre ali druge gradbene elemente. Neupoštevanje navodil lahko izniči garancijo.</p>
+        <div class="ref-grid">
+          <div class="el-card"><b>Priprava podlage</b><span data-i18n="ter_c1">Ravna in trdna podlaga z naklonom 1 cm/m stran od zgradbe. Deske se ne montirajo na zemljo — vrhnjih 100 mm zemlje zamenjajte z betonsko ploščo (debelina ≥ 6 cm).</span></div>
+          <div class="el-card"><b>Podložne letve</b><span data-i18n="ter_c2">Razmak 30–35 cm med letvami (osna razdalja 33–38 cm). WPC letve samo na brezhibni podlagi; točkovno podlaganje z alu cevmi do 60 cm (PVC ploščice ali guma pri hidroizolaciji). Pritrditev v beton s turbo vijaki 6,7×80 mm; v WPC predvrtajte luknjo manjšo od vijaka in ugreznite glavo — visoka gostota ne dopušča neposrednega vijačenja, letev lahko poči.</span></div>
+          <div class="el-card"><b>Montaža desk in reže</b><span data-i18n="ter_c3">Letve polagajte izmenično (2,2+1,1 m / 1,1+2,2 m). Pri spoju dveh desk sta vedno dve letvi; vsak konec deske ima svojo letev in distančnik. Razmak med deskami 5–6 mm + dilatacija po tabeli (do cca 10 mm na 4 m); odmik od vseh sten ≥ 6 mm. Distančnikov ne zategujte premočno — lahko počijo.</span></div>
+          <div class="el-card"><b>Zaključki in odvodnjavanje</b><span data-i18n="ter_c4">Zaključna letev L (dolžina ≤ 2 m) z vijaki iz nerjavečega jekla vsakih 30 cm, na vsaki drugi deski; ne ob zidovih in betonskih robnikih. Spodnjo steno deske režite pod kotom 30°; v vsak prekat od spodaj izvrtajte odvodno luknjo Ø4,2 mm približno 5 cm od roba — zmrznjena voda v deski jo lahko poči. Dolžinski spoji so odsvetovani.</span></div>
         </div>
       </div>
       <div class="ref-sect">
@@ -3427,6 +3437,7 @@ function buildChecklist(){
   L.push("[ ] Jutranja temperatura ≥ +5 °C; dilatacijske reže določene po Roksal temperaturni tabeli.");
   L.push("[ ] Nosilnost podlage, steber, zidov in sidranje preverjeni; risba ni statični izračun.");
   L.push("[ ] Orodje: baterijski vrtalnik (ročni izvijač ni primeren), Widia/HM rezila, brusni papir granulacija 40 (praske), grezilo; RF vijaki odporni na rjo in korozijo.");
+  L.push("[ ] WoodCore deske niso konstrukcijski element — ne smejo se uporabljati za nosilce, tramove, podporne stebre ali druge gradbene elemente (neupoštevanje lahko izniči garancijo).");
   L.push("[ ] Obstoječi varjeni deli na stebrih odstranjeni: "+(V("weldedParts")==="da"?"DA — odstraniti":V("weldedParts")==="ne"?"NI DELOV":"NI PREVERJENO"));
   L.push("[ ] Stebri v ravnini; način pritrditve: "+V("mountType")+".");
   if(use==="terasa")L.push("[ ] Podlaga: beton ≥ 60 mm ali estrih z hidroizolacijo, padec ≥ 10 mm/m, odtok prost.");
@@ -3452,15 +3463,15 @@ function buildChecklist(){
     if(p.n.indexOf("ROMB")>=0)L.push("[ ] ROMB: montaža brez alu cevi v sredini profila NI mogoča.");
     L.push("[ ] Po montaži brez naknadnega vrtanja/rezanja brez pisnega soglasja.");
   }else if(use==="terasa"){
-    L.push("[ ] Podložne letve 30–35 cm med letvama (center 33–35 cm; PDF navodila 33–38 cm); izmenično polaganje (2,2+1,1 / 1,1+2,2); vsak konec deske ima svojo letev in distančnik.");
+    L.push("[ ] Podložne letve 30–35 cm med letvama (center 33–35 cm; PDF navodila 33–38 cm); izmenično polaganje (2,2+1,1 / 1,1+2,2); vsak konec deske ima svojo letev in distančnik. Distančnikov ne zategovati premočno (lahko počijo); deske ne stiskati skupaj — glava vijaka poškoduje rob.");
     L.push("[ ] Točkovno podlaganje SAMO z alu cevmi, max 60 cm (PVC ploščice različnih debelin ali guma) — WPC letvi nikoli točkovno (samo brezhibna podlaga).");
-    L.push("[ ] Podlaga: beton ≥ 60 mm (vrhnjih 100 mm zemlje zamenjati); pritrditev letev s turbo vijaki za beton 6,7×80 mm; glave pod površino; ne pretirano zategovati.");
+    L.push("[ ] Podlaga: beton ≥ 60 mm (vrhnjih 100 mm zemlje zamenjati); pritrditev letev s turbo vijaki za beton 6,7×80 mm; v WPC letev predvrtati luknjo manjšo od vijaka + grezilo (visoka gostota — brez tega letev poči); glave pod površino; ne pretirano zategovati.");
     L.push("[ ] Višina terase: min. 4,5 cm (deska 2,5 + alu cev 2,0), standard 5,5–6,5 cm; višje → alu letvi/buzoni (nikoli WPC).");
     L.push("[ ] Reža med deskami "+f(dilatacija(Math.max(1,Math.min(5,n("L")/1000)),n("installTemp")))+" mm po dilatacijski tabeli WoodCore (montaža pri "+V("installTemp")+" °C, deske "+f(Math.max(1,Math.min(5,n("L")/1000)))+" m); odmik od vseh sten ≥ 6 mm.");
-    L.push("[ ] Drenažne luknje Ø4,2 mm od spodaj, približno 5 cm od roba, v vsak prekat (vse deske brez zaključne letvi).");
+    L.push("[ ] Drenažne luknje Ø4,2 mm od spodaj, približno 5 cm od roba, v vsak prekat (vse deske brez zaključne letvi) — voda, ki zmrzne v deski, jo lahko poči.");
     L.push("[ ] Spodnja stena desk rezana pod kotom 30° (uradni PDF; FAQ navaja 5° pri polaganju pravokotno na padec) — kontra padca, dolžinski spoji, ob steni.");
     L.push("[ ] Dolžinski spoji odsvetovani; sicer dve deski v nasprotni smeri, pod spojem 2 turbo vijaka ali 2 kotnika, alu cev 3 cm daljša na vsaki strani; kombinacija 4,0+2,2 m NI dovoljena.");
-    L.push("[ ] Zaključna letev L 45×55 mm, ≤ 2000 mm, vijaki vsakih 300 mm na vsaki drugi deski; ne ob zidovih/robnikih; na dolžinskih spojih deljena.");
+    L.push("[ ] Zaključna letev L 45×55 mm, ≤ 2000 mm, vijaki vsakih 300 mm na vsaki drugi deski; ne ob zidovih/robnikih; na dolžinskih spojih deljena; v isti smeri brez dolžinskih spojev je lahko v enem kosu.");
   }else if(use==="napusc"){
     L.push("[ ] Podkonstrukcija: macesnove letve 4×7 cm v razmaku 70–80 cm; vertikalna postavitev → horizontalne letve 2×7 cm, razmak ≤ 50 cm.");
     L.push("[ ] Pritrditev: vidni RF svetleči vijaki s prednje strani; vijačenje v opeko.");
@@ -5218,7 +5229,13 @@ var LANG_EN={
   stor_h:"Storage",
   stor_t:"WoodCore WPC boards must be stored in a dry, ventilated space before installation. The base for storage should be flat and clean. Boards should rest on a support along their entire length and width. In case of improper storage, complaints will not be accepted.",
   inq_h:"Enquiry",
-  inq_t:"For a free quote, send us the length and height of your fence, the fence type (solid profile, terrace profile or romb profile) and the desired spacing. Send your enquiry to info@roksal.com; if possible, include a floor plan and photos."
+  inq_t:"For a free quote, send us the length and height of your fence, the fence type (solid profile, terrace profile or romb profile) and the desired spacing. Send your enquiry to info@roksal.com; if possible, include a floor plan and photos.",
+  ter_h:"Terrace boards — installation instructions (WoodCore)",
+  ter_w:"WARNING: WoodCore boards are not structural elements — they must not be used for beams, rafters, support posts or other building elements. Ignoring the instructions may void the warranty.",
+  ter_c1:"Flat and firm base with a 1 cm/m slope away from the building. Boards are not mounted on soil — replace the top 100 mm of soil with a concrete slab (thickness ≥ 6 cm).",
+  ter_c2:"Spacing 30–35 cm between battens (33–38 cm centre to centre). WPC battens only on flawless bases; point support with alu tubes up to 60 cm (PVC shims or rubber for waterproofing). Fasten to concrete with turbo screws 6.7×80 mm; in WPC pre-drill a hole smaller than the screw and countersink the head — high density does not allow direct screwing, the batten may crack.",
+  ter_c3:"Lay battens alternately (2.2+1.1 m / 1.1+2.2 m). At a junction of two boards there are always two battens; each board end has its own batten and spacer. Gap between boards 5–6 mm + expansion per the table (up to approx. 10 mm per 4 m); minimum 6 mm from all walls. Do not overtighten the spacers — they may crack.",
+  ter_c4:"L closing strip (length ≤ 2 m) with stainless steel screws every 30 cm, on every other board; not at walls and concrete curbs. Cut the bottom wall of the board at a 30° angle; drill a drainage hole Ø4.2 mm about 5 cm from the edge into each chamber from below — freezing water inside the board can crack it. Butt joints are discouraged."
 };
 function lngGet(){try{return localStorage.getItem("draftwright-lang")||"sl"}catch(e){return"sl"}}
 

@@ -92,6 +92,12 @@ const setField = (id, v) => { $(id).value = String(v); fire($(id), "input"); };
   check("checklist: višina terase 4,5 cm", cl.includes("min. 4,5 cm"));
   check("checklist: rez 30° (uradni PDF)", cl.includes("kotom 30°"));
   check("checklist: kombinacija 4,0+2,2 ni dovoljena", cl.includes("kombinacija 4,0+2,2 m NI dovoljena"));
+  check("checklist: strukturno opozorilo WoodCore (uradni PDF)",
+    cl.includes("niso konstrukcijski element") && cl.includes("izniči garancijo"));
+  check("checklist: predvrtanje WPC letvi — luknja manjša od vijaka (uradni PDF)",
+    cl.includes("predvrtati luknjo manjšo od vijaka") && cl.includes("brez tega letev poči"));
+  check("checklist: zmrznjena voda poči desko (uradni PDF)",
+    cl.includes("zmrzne v deski") && cl.includes("Distančnikov ne zategovati"));
   check("checklist: odmik od vseh sten ≥ 6 mm", cl.includes("odmik od vseh sten ≥ 6 mm"));
   check("popravljena tipkarska napaka VSKAK", !cl.includes("VSKAK"));
 
