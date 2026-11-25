@@ -178,6 +178,8 @@ function check(name, ok, info) {
     catEn.includes("Partition walls with transverse boards") && catEn.includes("valid ONLY") && catEn.includes("from the top tube") && catEn.includes("end cap"));
   check("EN: pokončne pregrade prevedene (uradna stran)",
     catEn.includes("Partition walls with vertical boards") && catEn.includes("flat aluminium on every carrier") && catEn.includes("slat spacing is arbitrary") && catEn.includes("may vary noticeably between boards and batches"));
+  check("EN: vrtno pohištvo prevedeno (uradna stran)",
+    catEn.includes("Garden furniture (WoodCore WPC)") && catEn.includes("RAL 9005") && catEn.includes("216 × 91.2 × 76.1") && catEn.includes("WEPOS WPC impregnation"));
   $("langBtn").click();
   const catSl = $("tmplOverlay").textContent;
   check("povratek v SL: katalog spet slovensko",
@@ -252,6 +254,15 @@ function check(name, ok, info) {
     cat.includes("2/3 globine") && cat.includes("180 cm do višine 150 cm") && cat.includes("+1 mm"));
   check("katalog: palete — opozorili o variiranju barv (Rustic, dobave)",
     cat.includes("malenkost varirajo") && cat.includes("razpored lis"));
+  check("katalog: vrtno pohištvo — 6 izdelkov z merami (Kubo/Linea/X/R)",
+    cat.includes("Vrtno pohištvo (WoodCore WPC)") &&
+    ["220 × 80 × 75", "200 × 45 × 45", "220 × 81 × 45", "200 × 41 × 45", "216 × 91,2 × 76,1", "216 × 39,2 × 44,8"].every((d) => cat.includes(d)));
+  check("katalog: vrtno pohištvo — RAL 9005, profili, po meri, komplet",
+    cat.includes("RAL 9005") && cat.includes("KUBO 80×42") && cat.includes("polni profil 57×32") && cat.includes("po meri") && cat.includes("posamično ali kot komplet"));
+  check("katalog: vrtno pohištvo — primeri (po meri, Rustic Walnut, Burma Teak)",
+    cat.includes("Rustic Walnut") && cat.includes("Burma Teak") && cat.includes("15-letno garancijo"));
+  check("katalog: zaščita pohištva — WEPOS impregnacija (čista in suha površina)",
+    cat.includes("WEPOS WPC impregnacijo") && cat.includes("vodoodbojno zaščito") && cat.includes("popolnoma suha") && cat.includes("mizne plošče"));
 
   const fixImgs = Array.from(document.querySelectorAll('#tmplOverlay img[src^="slike/"]'));
   check("vse katalogske slike so krajevne", fixImgs.every((im) => /^slike\/pokoncna\/[a-z0-9-]+\.jpg$/.test(im.getAttribute("src") || "")));

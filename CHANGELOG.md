@@ -51,6 +51,20 @@ Vse pomembnejše spremembe projekta **Draftwright — Tehnična risba PRO** so d
 - **Opozorili barvnih palet**: \* odtenki med dobavami malenkost varirajo (naravni material); \*\* Rustic Oak/Walnut (večbarvni videz) — odtenek in razpored lis se med deskami in serijami opazneje razlikujeta.
 - Nova sekcija galerije **»Pregradne stene s pokončnimi deskami (WoodCore)«** (4 kartice) + opomba palet, z EN pariteto. Testi: `reference-gallery` **88 PASS** (+6), `roksal-module` 32 OK, `roksal-p1` 47 OK (+1). Celotna veriga zelena (67 surovov, 0 FAIL). CSP hash-i regenerirani.
 
+### Dodano (katalog vrtnega pohištva — roksal.com, tekst + fotografije)
+
+**Nova sekcija galerije »Vrtno pohištvo (WoodCore WPC)«** — 6 produktov s fotografijami eksponatov:
+- **Miza Kubo** (220 × 80 × 75 cm) in **Klop Kubo** (200 × 45 × 45 cm) — alu konstrukcija prašno barvana črno **RAL 9005**, deske KUBO 80×42 mm.
+- **Miza Linea** (220 × 81 × 45 cm) in **Klop Linea** (200 × 41 × 45 cm) — alu RAL 9005, polni profil 57×32; klop z naslonom ali brez.
+- **Klop in miza X** (jeklo, noge v obliki X, polne deske 128): miza 216 × 91,2 × 76,1 cm, klop z naslonom 216 × 39,2 × 44,8 cm — posamično ali kot komplet.
+- **Klop in miza R** (jeklo, ravne noge, deske 128): enake mere — posamično ali kot komplet.
+- **Izdelava po meri** — pas 3 fotografij (komplet dveh klopi in mize, klop iz deske 150 Rustic Walnut, klop in miza romb Burma Teak).
+- Barvo desk pri vseh izdelkih izbere naročnik; material bambus + HDPE, 15-letna garancija, brez lakiranja.
+
+**Nova sekcija »Dodatna zaščita WPC vrtnega pohištva«**: redno čiščenje z vodo; pod nadstreški (kjer dež ne spirira) je čiščenje zahtevnejše — **WEPOS WPC impregnacija** (vodoodbojna zaščita, zmanjša prodiranje tekočin in umazanije) na **dobro očiščeni in popolnoma suhi** površini, predvsem za mizne plošče, sedeže klopi in bolj obremenjene dele.
+
+**9 novih fotografij** (`slike/pokoncna/pohistvo-*.jpg`, JPG q85 ≤ 1000 px) dodanih v `sw.js` `SW_ASSETS` (offline); skupaj 26 katalogskih slik. EN pariteta (furn_*/prot_*). Testi: `reference-gallery` **93 PASS** (+5), celotna veriga zelena (0 FAIL). CSP hash-i regenerirani.
+
 **Prebrana uradna produktne stran roksal.com (tekstovno in vizualno, vključno s paletami in prerezi)**
 - **Popravek mere: POLNA DESKA-128 je 128 × 16,5 × 2200 mm** (uradna stran + prvotni register) — prej začasno 16 mm po katalogskem zapisu. Register `WC`, kartica elementov in testi posodobljeni.
 - **ROMB DESKA-67 pri pregradah**: maksimalni razmak 145 cm velja **samo**, kadar je L-kotnik na vsakem stebru **levo in desno**; vijačenje skrito (rf vijaki skozi kotnik v alu cev iz zadnje strani). Pri razmaku > 145 cm je potrebna **vmesna povezava — ni privijačena v tla, ampak iz zgornje cevi** — možna do < 180 cm; pri ≥ 180 cm dodaten stebriček. Zaključek s čepi ali letvico.
