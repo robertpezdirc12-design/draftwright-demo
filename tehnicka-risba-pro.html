@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- CSP: strict script allowlist by hash. No unsafe-inline / unsafe-eval. frame-ancestors is set in vercel.json (unsupported in meta). -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-+sOX/T48dWeidmT3FLJUmymV7xAt8VBw/uNCcKXO9Wk=' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-hSl2E9NU2g+p/QCtT9D6iuf2U7rOCluwrenx5PPa+Ek='; style-src 'self' 'sha256-+XPKIdmuNTsipilSRGR8w5PiFGjSbAXe7nysm4Re3bs='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-YoLMLTs8IVbIoMsOmn0ayuPrkdhpp1vH2ALrAlsmjkE=' 'sha256-twBraN+jPtJDywmROogfGcI4ZwiqRwlF1/XaWxm3zxE=' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-x4DCTMj2BzUquGlP+KjQnTz/UXlHfL6r4gx0KQzcypM='; style-src 'self' 'sha256-o68CI6+lyXlvfPBh8A9CxCfnNYjJp9hfyAbRoous0IY='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Tehnična risba PRO – fotografija do končnega lista</title>
 <!-- >>> GENERATED: seo-jsonld — uredi scripts/generate-seo.js, ne to kopijo -->
 <script type="application/ld+json">[
@@ -20,7 +20,7 @@
     "applicationSubCategory": "Technical drawing / CAD",
     "operatingSystem": "Web (PWA) — Windows, macOS, Linux, Android, iOS",
     "applicationSuite": "WoodCore WPC (Roksal)",
-    "softwareVersion": "2026.11.25",
+    "softwareVersion": "2026.11.26",
     "datePublished": "2026-11-25",
     "offers": {
       "@type": "Offer",
@@ -148,6 +148,15 @@
     ]
   }
 ]</script>
+<script>var DW_RELEASE={
+  "version": "2026.11.26",
+  "date": "2026-11-25",
+  "notes": [
+    "Pogosta vprašanja v aplikaciji — nova sekcija kataloga z 8 vprašanji v \u003cdetails> (profilne mere, nekonstrukcijska raba, razmaki stebrov, ROMB alu cev, vijačenje, vzdrževanje/WEPOS, lokalna zasebnost, ponudba/garancija). Besedila so iz scripts/lib/seo-content.js — en vir z llms.txt in schema.org FAQPage; EN pariteta v LANG_EN (18 novih ključev).",
+    "Vgrajeni CHANGELOG snapshot (vzor fetch-github iz soma-website, brez runtime omrežja) — var DW_RELEASE v generiranem seo bloku nosi verzijo, datum in zapiski zadnje izdaje; »Kaj je novega« prikaže »Najnovejša izdaja« z zapiski (očiščenimi markdown okraskov) nad povzetki različic.",
+    "Surova seo razširjen na 28 preverjanj (FAQ na strani ↔ seo-content, EN pariteta, DW_RELEASE drift in prikaz). Skupaj 72 testnih surov (0 FAIL)."
+  ]
+};</script>
 <!-- <<< END GENERATED: seo-jsonld -->
 <meta name="theme-color" content="#141c24">
 <link rel="manifest" href="manifest.webmanifest">
@@ -284,6 +293,9 @@ input.invalid,select.invalid,input[data-dw-invalid],select[data-dw-invalid]{bord
 /* Reference — pokončna ograje: foto eksponati WoodCore (Faza 0.5 galerija) */
 .ref-sect{margin-top:18px;border-top:1px solid var(--line);padding-top:14px}
 .ref-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.faq-item{margin:8px 0;border:1px solid var(--line);border-radius:10px;background:var(--p2);padding:8px 12px}
+.faq-item summary{cursor:pointer;font-weight:600}
+.faq-item .hint{margin:8px 0 2px}
 .ref-card{background:var(--p2);border:1px solid var(--line);border-radius:10px;padding:0;cursor:pointer;text-align:left;font:inherit;color:var(--tx);display:flex;flex-direction:column;overflow:hidden;transition:border-color .15s}
 .ref-card:hover{border-color:var(--ac)}
 .ref-card img{width:100%;height:150px;object-fit:cover;display:block;background:var(--p3)}
@@ -954,6 +966,7 @@ Konstrukcija odporna na vremenske vplive.</textarea>
           </div>
         </div>
       </div>
+
     </div>
     <div class="exp-foot">
       <div class="exp-note" id="expNote"></div>
@@ -1093,6 +1106,18 @@ Konstrukcija odporna na vremenske vplive.</textarea>
         <p class="hint" data-i18n="stor_t">WoodCore WPC deske je pred montažo potrebno hraniti v suhem in zračnem prostoru. Podlaga za shranjevanje naj bo ravna in čista. Deske naj bodo na odlagalni podlagi po celotni dolžini in širini. V primeru neustreznega skladiščenja se reklamacija ne upošteva.</p>
         <div class="st" data-i18n="inq_h">Povpraševanje</div>
         <p class="hint" data-i18n="inq_t">Za brezplačno ponudbo nam sporočite dolžino in višino ograje, tip ograje (profil polna, profil terasna ali profil romb) ter želeni razmak. Pošljite povpraševanje na info@roksal.com; če je mogoče, priložite tudi tloris in slike.</p>
+      </div>
+      <div class="ref-sect">
+        <div class="st" data-i18n="faq_h">Pogosta vprašanja</div>
+        <p class="hint" data-i18n="faq_i">Kratki odgovori na najpogostejša vprašanja o WoodCore WPC sistemih in uporabi aplikacije.</p>
+        <details class="faq-item"><summary data-i18n="faq_q1">Katere profile WoodCore WPC podpira Tehnična risba PRO?</summary><p class="hint" data-i18n="faq_a1">Aplikacija pozna šest profilov WoodCore: ROMB-67 (67 × 26 × 5800 mm), POLNA-128 (128 × 16,5 × 2200 mm), DESKA-150 (150 × 25 × 4000 mm), POLNA-57/32 (57 × 32 × 5800 mm), POLNA-100 (100 × 12 × 5800 mm) in KUBO-80/42 (80 × 42 × 5800 mm). Za vsak profil upošteva katalogske razmake stebrov in nosilcev ter pravila pritrjevanja.</p></details>
+        <details class="faq-item"><summary data-i18n="faq_q2">Ali so izračuni in risbe zavezujoča dokumentacija?</summary><p class="hint" data-i18n="faq_a2">Ne. Izračuni so orientacijske narave in niso pogodbena dokumenta; vse mere so v milimetrih (mm) in jih je pred izdelavo treba preveriti na objektu. Predračun je orientacijski in ni ponudba — za zavezujočo ponudbo in DDV velja pogodbeni obrazec.</p></details>
+        <details class="faq-item"><summary data-i18n="faq_q3">Kakšen je največji razmak stebrov pri pokončni ograji?</summary><p class="hint" data-i18n="faq_a3">Največji razmak stebrov je odvisen od profila: ROMB-67 do 1450 mm, POLNA-57/32 do 1500 mm ter POLNA-100 in POLNA-128 do 1800 mm do višine 1500 mm, nad to višino pa 1500 mm. Pri pregradnih stenah znaša razmak stebrov 150–180 cm po profilu.</p></details>
+        <details class="faq-item"><summary data-i18n="faq_q4">Ali je pri profilu ROMB-67 potrebna aluminijasta cev?</summary><p class="hint" data-i18n="faq_a4">Da. ROMB-67 se montira skrito z L-kotniki levo in desno na stebru, aluminijasta cev v sredini profila pa je obvezna in vključena v ceno romb deske — montaža brez alu cevi ni mogoča. Vijak 3,9 mm se privija z vrtino Ø3,2 mm v alu cev in romb ter Ø4,2–4,5 mm v WPC.</p></details>
+        <details class="faq-item"><summary data-i18n="faq_q5">Kako poteka pritrjevanje WPC desk na konstrukcijo?</summary><p class="hint" data-i18n="faq_a5">Najmanjši odmik vijaka od roba reza je 3 cm, pri konstrukciji na ploščo največ 15 cm, pri bočni montaži na ploščo pa 10 cm. Izvrtina v WPC je 1 mm večja od vijaka (predvrtanje +1 mm), pri profilu POLNA-57/32 pa je luknja v WPC manjša od vijaka in v konstrukciji večja. Vijak je 30–150 mm od roba deske, montaža poteka nad +5 °C.</p></details>
+        <details class="faq-item"><summary data-i18n="faq_q6">Kako vzdrževati WPC vrtno pohištvo?</summary><p class="hint" data-i18n="faq_a6">Površino očistite z vodo. Za dodatno vodoodbojno zaščito nanesite WEPOS WPC impregnacijo na dobro očiščeno in popolnoma suho površino, predvsem na mizne plošče in sedeže.</p></details>
+        <details class="faq-item"><summary data-i18n="faq_q7">Kako skladiščiti WPC deske?</summary><p class="hint" data-i18n="faq_a7">Deske hranite v suhem in zračnem prostoru, na ravni in čisti podlagi po celotni dolžini in širini. Ob neustreznem skladiščenju se reklamacija ne upošteva.</p></details>
+        <details class="faq-item"><summary data-i18n="faq_q8">Kakšna je garancija za WoodCore WPC?</summary><p class="hint" data-i18n="faq_a8">Garancija znaša 15 let na material in 2 leti na dela izvedena s strani Roksal/a. Odtenek deske se v prvem letu posvetli za 5–10 %.</p></details>
       </div>
     </div>
     <div class="exp-foot">
@@ -4807,14 +4832,22 @@ document.addEventListener("keydown",function(e){
 /* P3.6: »What's new« + zapiski izdaj */
 var APP_VERSION="2026.11";
 var WHATS_NEW=[
-  ["2026.11","P1+P2+P3: trak napak (klik-za-popravek), kontekstualni panel, zgodovina (undo/redo), konfiguracije + dizajn tabela, break view (prelom dolgih ograj), BOM z interaktivnimi baloni, predloge listov ISO/ANSI, PDM-lite (posnetki), masne lastnosti (kg/m²), zaznavanje trkov/prekrivanj. Strojno berljivi izhodi: llms.txt/llms.en.txt (llmstxt.org) + schema.org JSON-LD (SoftwareApplication/HowTo/FAQPage) iz enega vira registra WoodCore, vsebinski gate pred objavo. Združljivost shranjenih projektov: ohranjena."],
+  ["2026.11","P1+P2+P3: trak napak (klik-za-popravek), kontekstualni panel, zgodovina (undo/redo), konfiguracije + dizajn tabela, break view (prelom dolgih ograj), BOM z interaktivnimi baloni, predloge listov ISO/ANSI, PDM-lite (posnetki), masne lastnosti (kg/m²), zaznavanje trkov/prekrivanj. Strojno berljivi izhodi: llms.txt/llms.en.txt (llmstxt.org) + schema.org JSON-LD (SoftwareApplication/HowTo/FAQPage) iz enega vira registra WoodCore, vsebinski gate, pogosta vprašanja v aplikaciji in zapiski zadnje izdaje v »Kaj je novega«. Združljivost shranjenih projektov: ohranjena."],
   ["2026.10","Predloge listov, PWA, i18n SL/EN, izvozni dialog z nastavitvami."]
 ];
 function seenVersion(){try{return localStorage.getItem("draftwright-seen-version")||""}catch(e){return ""}}
 function setSeenVersion(){try{localStorage.setItem("draftwright-seen-version",APP_VERSION)}catch(e){}}
 function renderWhatsNew(){
   var box=$("wnList");if(!box)return;
-  box.innerHTML=WHATS_NEW.map(function(r){
+  var head="";
+  /* vgrajeni CHANGELOG snapshot (DW_RELEASE iz generiranega seo bloka) — zapiski zadnje izdaje */
+  try{
+    if(window.DW_RELEASE&&DW_RELEASE.version){
+      head='<div data-s="s63"><b data-s="s8">Najnovejša izdaja: '+E(DW_RELEASE.version)+(DW_RELEASE.date?" ("+E(DW_RELEASE.date)+")":"")+'</b>'+
+        (DW_RELEASE.notes||[]).map(function(t){return '<div data-s="s36">• '+E(t)+'</div>';}).join("")+'</div>';
+    }
+  }catch(e){head=""}
+  box.innerHTML=head+WHATS_NEW.map(function(r){
     return '<div data-s="s63"><b data-s="s8">'+E(r[0])+'</b><div data-s="s36">'+E(r[1])+'</div></div>';
   }).join("");
 }
@@ -5452,7 +5485,25 @@ var LANG_EN={
   furn_e2:"Bench from board 150 — Rustic Walnut.",
   furn_e3:"Bench and table with metal construction — romb, Burma Teak.",
   prot_h:"Extra protection of WPC garden furniture",
-  prot_t:"WPC boards need no painting or lacquering; regular cleaning with water is recommended. On tables, benches and other WPC surfaces under canopies or where rain cannot rinse them regularly, grease, stains and dirt make cleaning harder. For such surfaces we recommend WEPOS WPC impregnation — it creates additional water-repellent protection, reduces liquid and dirt penetration into the surface and eases further cleaning and maintenance. The WPC surface must be thoroughly cleaned and completely dry before application. Impregnation is recommended especially for tabletops, bench seating surfaces and other more heavily used parts of garden furniture."
+  prot_t:"WPC boards need no painting or lacquering; regular cleaning with water is recommended. On tables, benches and other WPC surfaces under canopies or where rain cannot rinse them regularly, grease, stains and dirt make cleaning harder. For such surfaces we recommend WEPOS WPC impregnation — it creates additional water-repellent protection, reduces liquid and dirt penetration into the surface and eases further cleaning and maintenance. The WPC surface must be thoroughly cleaned and completely dry before application. Impregnation is recommended especially for tabletops, bench seating surfaces and other more heavily used parts of garden furniture.",
+  faq_h:"Frequently asked questions",
+  faq_i:"Short answers to the most common questions about WoodCore WPC systems and using the application.",
+  faq_q1:"Which WoodCore WPC profiles does Tehnična risba PRO support?",
+  faq_a1:"The app knows six WoodCore profiles: ROMB-67 (67 × 26 × 5800 mm), POLNA-128 (128 × 16.5 × 2200 mm), DESKA-150 (150 × 25 × 4000 mm), POLNA-57/32 (57 × 32 × 5800 mm), POLNA-100 (100 × 12 × 5800 mm) and KUBO-80/42 (80 × 42 × 5800 mm). For each profile it applies the catalogue post and batten spacing and the fastening rules.",
+  faq_q2:"Are the calculations and drawings binding documentation?",
+  faq_a2:"No. The calculations are orientational and are not contractual documents; all dimensions are in millimetres (mm) and must be verified on site before fabrication. The quotation is orientational and is not an offer — the contract form governs binding offers and VAT.",
+  faq_q3:"What is the maximum post spacing for a vertical fence?",
+  faq_a3:"The maximum post spacing depends on the profile: ROMB-67 up to 1450 mm, POLNA-57/32 up to 1500 mm, and POLNA-100 and POLNA-128 up to 1800 mm for fence heights up to 1500 mm (1500 mm above that). For partition walls the post spacing is 150–180 cm depending on the profile.",
+  faq_q4:"Is an aluminium tube required for the ROMB-67 profile?",
+  faq_a4:"Yes. ROMB-67 is mounted hidden with L-brackets left and right on each post; the aluminium tube in the middle of the profile is mandatory and included in the price of the ROMB board — mounting without the aluminium tube is not possible. A 3.9 mm screw uses a Ø3.2 mm hole in the aluminium tube and the ROMB board, and Ø4.2–4.5 mm in the WPC.",
+  faq_q5:"How are WPC boards fastened to the substructure?",
+  faq_a5:"The minimum screw offset from the cut edge is 3 cm, up to 15 cm for slab-mounted substructure and 10 cm for side-mounted slabs. The WPC hole is 1 mm larger than the screw (pre-drilling +1 mm); for POLNA-57/32 the WPC hole is smaller than the screw and the substructure hole larger. Screws sit 30–150 mm from the board edge; mounting is done above +5 °C.",
+  faq_q6:"How do I maintain WPC garden furniture?",
+  faq_a6:"Clean the surface with water. For extra water-repellent protection apply WEPOS WPC impregnation to a well-cleaned and completely dry surface, especially tabletops and seats.",
+  faq_q7:"How should WPC boards be stored?",
+  faq_a7:"Store boards in a dry, ventilated room on a flat, clean support along their full length and width. With improper storage, warranty claims are not accepted.",
+  faq_q8:"What is the warranty for WoodCore WPC?",
+  faq_a8:"The warranty is 15 years on the material and 2 years on work performed by Roksal. The shade of the board lightens by 5–10 % in the first year.",
 };
 function lngGet(){try{return localStorage.getItem("draftwright-lang")||"sl"}catch(e){return"sl"}}
 

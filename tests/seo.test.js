@@ -97,6 +97,37 @@ check("FAQ odgovori so zasidrani v vsebini aplikacije (fragmenti v HTML-ju)",
 check("FAQ odgovori so samostojni (brez povezav/mailto/sklicev)",
   FAQ_SL.every((f) => !/https?:\/\/|mailto:|kot zgoraj|glej spodaj/i.test(f.a)));
 
+/* ---------- FAQ na strani (<details>) + EN pariteta ---------- */
+const { FAQ_EN } = require(path.join(root, "scripts", "lib", "seo-content.js"));
+const detailsCount = (html.match(/<details class="faq-item">/g) || []).length;
+check("FAQ sekcija na strani: 8 <details> z summary/odgovorom", detailsCount === FAQ_SL.length, "details: " + detailsCount);
+check("FAQ SL besedila na strani so iz seo-content (en vir resnice)", FAQ_SL.every((f, i) =>
+  html.indexOf('data-i18n="faq_q' + (i + 1) + '"') >= 0 && html.indexOf(f.q) >= 0 &&
+  html.indexOf('data-i18n="faq_a' + (i + 1) + '"') >= 0 && html.indexOf(f.a) >= 0));
+const langEnMatch2 = html.match(/var LANG_EN=\{[\s\S]*?\n\};/);
+let langEnObj = {};
+if (langEnMatch2) {
+  try { const sandbox = {}; require("vm").runInNewContext(langEnMatch2[0], sandbox); langEnObj = sandbox.LANG_EN || {}; }
+  catch (e) { langEnObj = {}; }
+}
+check("FAQ EN besedila v LANG_EN so iz seo-content (pariteta)",
+  langEnObj.faq_h && langEnObj.faq_i && FAQ_EN.every((f, i) =>
+    langEnObj["faq_q" + (i + 1)] === f.q && langEnObj["faq_a" + (i + 1)] === f.a));
+
+/* ---------- vgrajeni CHANGELOG snapshot (DW_RELEASE) ---------- */
+if (block) {
+  const m = block.match(/<script>var DW_RELEASE=([\s\S]*?)<\/script>/);
+  let rel = null;
+  try { rel = m ? JSON.parse(m[1].replace(/;\s*$/, "")) : null; } catch (e) { rel = null; }
+  check("DW_RELEASE je v generiranem bloku in se parsira", !!rel);
+  check("DW_RELEASE = CHANGELOG snapshot (verzija, datum, zapiski)",
+    !!rel && rel.version === ver.version && rel.date === ver.date && Array.isArray(rel.notes) && rel.notes.length > 0,
+    rel ? rel.version + ": " + (rel.notes ? rel.notes.length + " zapisov" : "/") : "");
+  check("zapiski DW_RELEASE brez markdown okraskov (pripravljeno za prikaz)",
+    !!rel && Array.isArray(rel.notes) && rel.notes.every((t) => !/\*\*|`/.test(t)));
+}
+check("renderWhatsNew prikaže DW_RELEASE (vgrajeni snapshot)", html.indexOf("DW_RELEASE.version") >= 0 && html.indexOf("Najnovejša izdaja") >= 0);
+
 /* ---------- CSP: ld+json šteje v hash politiko ---------- */
 const policy = (html.match(/<meta http-equiv="Content-Security-Policy" content="([^"]*)">/) || [])[1] || "";
 if (block) {

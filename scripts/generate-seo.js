@@ -68,8 +68,14 @@ function renderJsonLd(root) {
 
 function renderBlock(root) {
   /* zaščita pred </script> v besedilu — enak vzorec kot StructuredData.jsx (soma) */
-  const json = JSON.stringify(renderJsonLd(root), null, 2).replace(/</g, "\\u003c");
-  return START + "\n<script type=\"application/ld+json\">" + json + "</script>\n" + END;
+  const esc = (obj) => JSON.stringify(obj, null, 2).replace(/</g, "\\u003c");
+  const json = esc(renderJsonLd(root));
+  /* vgrajeni CHANGELOG snapshot (vzor fetch-github iz soma — brez runtime omrežja):
+     aplikacija »Kaj je novega« prikaže zapiski zadnje izdaje iz istega vira kot JSON-LD */
+  const v = parseChangelog(root || ROOT).latest;
+  const release = esc({ version: v.version, date: v.date, notes: v.notes });
+  return START + "\n<script type=\"application/ld+json\">" + json + "</script>\n" +
+    "<script>var DW_RELEASE=" + release + ";</script>\n" + END;
 }
 
 function installBlock(root) {

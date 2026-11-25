@@ -2,6 +2,15 @@
 
 Vse pomembnejše spremembe projekta **Draftwright — Tehnična risba PRO** so dokumentirane v tej datoteki. Oblika sledi [Keep a Changelog](https://keepachangelog.com/sl/1.1.0/); datumski sufiksi v oznakah (npr. `[2026.11.15]`) so zaporedne podrazličice mesečne različice `APP_VERSION` (trenutno `2026.11`).
 
+## [2026.11.26] — 2026-11-25
+
+### Dodano
+- **Pogosta vprašanja v aplikaciji** — nova sekcija kataloga z 8 vprašanji v `<details>` (profilne mere, nekonstrukcijska raba, razmaki stebrov, ROMB alu cev, vijačenje, vzdrževanje/WEPOS, lokalna zasebnost, ponudba/garancija). Besedila so iz `scripts/lib/seo-content.js` — **en vir** z `llms.txt` in schema.org `FAQPage`; EN pariteta v `LANG_EN` (18 novih ključev).
+- **Vgrajeni CHANGELOG snapshot** (vzor `fetch-github` iz soma-website, brez runtime omrežja) — `var DW_RELEASE` v generiranem seo bloku nosi verzijo, datum in zapiski zadnje izdaje; »Kaj je novega« prikaže »Najnovejša izdaja« z zapiski (očiščenimi markdown okraskov) nad povzetki različic.
+
+### Preizkušeno
+- Surova `seo` razširjen na 28 preverjanj (FAQ na strani ↔ seo-content, EN pariteta, DW_RELEASE drift in prikaz). **Skupaj 72 testnih surov** (0 FAIL).
+
 ## [2026.11.25] — 2026-11-25
 
 ### Spremenjeno

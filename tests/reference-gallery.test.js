@@ -272,6 +272,12 @@ function check(name, ok, info) {
   check("sw.js predpomni vse katalogske slike (offline)",
     fixImgs.every((im) => swAll.includes('"' + "./" + im.getAttribute("src") + '"')));
 
+  /* FAQ mora živeti v galeriji primerov (tmplOverlay), NE v izvoznem dialogu */
+  const faqItems = Array.from(document.querySelectorAll("#tmplOverlay details.faq-item"));
+  const faqElsewhere = Array.from(document.querySelectorAll("details.faq-item")).length - faqItems.length;
+  check("FAQ (Pogosta vprašanja) je v galeriji primerov (tmplOverlay)",
+    faqItems.length === 8 && faqElsewhere === 0, "tmplOverlay: " + faqItems.length + ", drugje: " + faqElsewhere);
+
   /* ---- 7) SW predpomnilnik vsebuje fotografije (offline galerija) ---- */
   const sw = read("sw.js");
   const swOk = imgs.length === 4 && imgs.every((im) => sw.includes('"' + "./" + im.getAttribute("src") + '"') || sw.includes('"' + im.getAttribute("src") + '"'));
