@@ -88,8 +88,18 @@ check("pokončna do 1500 mm → zgornja meja 1800 mm",
   same(L(tall, "pokoncna", 1200), 1800, "razmak med stebri"));
 check("pokončna nad 1500 mm → osnovna meja 1500 mm",
   same(L(tall, "pokoncna", 2000), 1500, "razmak med stebri"));
-check("pokončna omejena z profilom (min)",
-  same(L(WC.romb67, "pokoncna", 1200), 1500, "razmak med stebri"));
+check("pokončna omejena z profilom (min) — romb67 z L-kotniki 1450 mm po katalogu",
+  same(L(WC.romb67, "pokoncna", 1200), 1450, "razmak med stebri"));
+check("pokončna polna100 do 1500 mm višine → 1800 mm (katalog)",
+  same(L(WC.polna100, "pokoncna", 1200), 1800, "razmak med stebri"));
+check("pokončna polna100 nad 1500 mm višine → 1500 mm (katalog)",
+  same(L(WC.polna100, "pokoncna", 2000), 1500, "razmak med stebri"));
+check("pokončna polna128 → 1800 mm do 1500 mm višine (katalog)",
+  same(L(WC.polna128, "pokoncna", 1200), 1800, "razmak med stebri"));
+check("pokončna polna57 → 1500 mm ne glede na višino (katalog)",
+  same(L(WC.polna57, "pokoncna", 2000), 1500, "razmak med stebri"));
+check("nosilci polna57 → 1000 mm (katalog)",
+  window.roksalRailLimit && window.roksalRailLimit(WC.polna57) === 1000);
 check("neznana uporaba → privzeti razmak nosilcev",
   same(L(WC.romb67, "neznano", 1200), 1500, "razmak nosilcev"));
 

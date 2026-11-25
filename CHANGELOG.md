@@ -2,6 +2,36 @@
 
 Vse pomembnejše spremembe projekta **Draftwright — Tehnična risba PRO** so dokumentirane v tej datoteki. Oblika sledi [Keep a Changelog](https://keepachangelog.com/sl/1.1.0/); datumski sufiksi v oznakah (npr. `[2026.11.15]`) so zaporedne podrazličice mesečne različice `APP_VERSION` (trenutno `2026.11`).
 
+## [2026.11.23] — 2026-11-25
+
+### Dodano (reference — pokončna ograja z WoodCore deskami)
+
+**Galerija referenc pokončne ograje (4 profili, foto eksponati)**
+- V galeriji primerov je nova sekcija **Reference — pokončna ograja z WoodCore deskami** s štirimi karticami eksponatov: **POLNA DESKA 57/32** (eksponat ograje iz polnih desk širine 5,7 ali 3,2 cm, dolžine 5,8 m), **POLNA DESKA 100** (ograja iz polnih desk širine 10 cm, dolžine 5,8 m), **POLNA DESKA 128** (ograja iz polnih desk širine 12,8 cm, dolžine 2,2 m) in **ROMB DESKA 67** (ograja iz desk profila ROMB širine 6,7 cm, dolžine 2,8 m).
+- Kartica nosi fotografijo eksponata (`slike/pokoncna/*.jpg`, 4 krajevne slike brez zunanjih virov) in katalogski zapis. Klik kartice nastavi uporabo **pokončna ograja** in ustrezen profil iz registra `WC` (applySystem izračuna širino/debelino/nosilce iz Roksal limitov), izračuna število navpičnih desk čez L in generira risbo.
+- Fotografije so vključene v `SW_ASSETS` (`sw.js`) — galerija deluje tudi brez signala. Seznam cache `risba-pro-v3` ostaja (dodatne datoteke se v obstoječi cache naložijo ob namestitvi posodobljenega SW).
+- EN pariteta: naslov sekcije, uvod in opisi eksponatov (`ref_h`, `ref_intro`, `ref_c1..4`) prevedeni; imena profilov ostanejo katalogska; dinamični toast »Referenca naložena: …« gre prek `UI_MSG` vzorca.
+- Nov `tests/reference-gallery.test.js` (**69 preverjanj**) — struktura galerije, katalogske mere, registarska povezava ključev kartic z `WC`, nalaganje profila prek klika (uporaba/profil/širina/debelina/generacija), EN pariteta z povratkom v SL, dostopna imena kartic, prisotnost slik na disku in v SW predpomnilniku ter odsotnost JS napak. Na neposredni predhodni kodi pade z **24 FAIL**, preverjeno v začasni delovni kopiji. Skupaj **67 testnih surov** (prej 66). CSP hash-i regenerirani.
+
+### Dodano (katalog WoodCore WPC elementov in značilnosti pritrjevanja)
+
+**Značilnosti pritrjevanja desk na konstrukcijo**
+- Nova sekcija galerije z obveznimi pravili: min odmik vijaka od roba reza **3 cm**, pri konstrukciji na ploščo (balkon, dvoriščna ograja) max **15 cm**, pri bočni montaži na ploščo pa **10 cm**.
+- **POLNA DESKA 57/32**: montaža na širino 5,7 ali 3,2 cm; vijak ≈ 2/3 globine profila; RF vijaki skozi cev iz zadnje strani (nevidno); v WPC luknja **manjša** od vijaka, v konstrukcijo **večja** (raztezanje); stebrički max **150 cm** ne glede na višino, nosilci max **100 cm**.
+- **POLNA DESKA 100 in 128**: reza in obdelava kakor les; priporočen razmak med deskami **0,5–3 cm** ali prekrivanje (montaža iz obeh strani); stebrički **180 cm** do višine 150 cm, nad **150 cm**; vijačenje iz lica je obvezno; v kovinsko cev predvrtanje večje od vijaka (temperatura), v WPC +1 mm.
+- **ROMB DESKA 67**: rostfraj vijaki skozi stebriček v aluminijasto cev v sredini romba iz zadnje strani (nevidno); L-kotniki max **145 cm**; vedno večja luknja v WPC (primer: vijak 3,9 → Ø3.2 v romb in alu, nato romb na 4,2–4,5). **OPOZORILO: montaža brez alu cevi ni mogoča** — alu cev je obvezna in vključena v ceno romb deske.
+
+**Katalog elementov WoodCore WPC (deske, čepi, ročaji)**
+- Kartice elementov z dimenzijami: POLNA DESKA 57/32 (57 × 32 × 5800 mm), POLNA DESKA 100 (100 × 12 × 5800 mm, **samo pokončna ograja**), POLNA DESKA 128 (128 × 16 × 2200 mm), ROMB DESKA 67 (67 × 26 × 5800 mm, **z alu cevjo**), WPC čep za profil romb (levo/desno, za prečno ograjo tudi letev), Ročaj 95 × 45 × 5800 mm (samo WHITE odtenek) in Ročaj – poln profil 92 × 45 × 5800 mm (notranja dimenzija 55 × 30 mm; **samostojna prodaja ročajev ni možna**).
+
+**Barvne palete, skladiščenje in povpraševanje**
+- Fotografije barvnih palet posameznih profilov (57/32: 4 barve, 100: 8 barv, 128: 6 barv, ROMB: 7 barv) s krajevnimi slikami v `SW_ASSETS`.
+- Pravila skladiščenja (suh in zračen prostor, ravna in čista podlaga po celotni dolžini/širini; ob neustreznem skladiščenju se reklamacija ne upošteva) in besedilo povpraševanja (info@roksal.com kot besedilo — brez zunanjih povezav, skladno z egress politiko).
+
+**Register, risarske opombe in zlati posnetki**
+- Register `WC`: `polna100`/`polna128` stebri pokončno 1800 (H ≤ 1500) oziroma 1500 (višje), `romb67` stebri z L-kotniki 1450; `polna128` debelina 16 mm po katalogu (128 × 16 × 2200); `drill`/`fix` besedila usklajena (2/3 globine pri 57/32, obvezna alu cev pri ROMB, predvrtanje v kovinsko cev pri 100/128). Opombe risbe (`roksalUseNotes()`, `applySystem`) sledijo profilnim pravilom.
+- Zlati posnetek `pokoncna-referencna` regeneriran (romb67 stebri 1500 → 1450 mm); ostali zlati posnetki nespremenjeni. `tests/reference-gallery.test.js` razširjen s **32 novimi preverjanji** kataloga (skupaj 69), `tests/roksal-module.test.js` dopolnjen z novimi katalogskimi mejami. Vseh 16 slik je v `sw.js` predpomnilniku. Skupaj **67 testnih surov**. CSP hash-i regenerirani.
+
 ## [2026.11.22] — 2026-11-24
 
 ### Dodano (lokalne izboljšave brez omrežja)

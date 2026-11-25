@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- CSP: strict script allowlist by hash. No unsafe-inline / unsafe-eval. frame-ancestors is set in vercel.json (unsupported in meta). -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-rUw1ZUjdKmC1eYWAp/gZpF518t1oN4B6KvwybShFSeY='; style-src 'self' 'sha256-xOmD8s5jUsW4WSPzf+U5h6XcMTu2SRV0M8LoZ3nZar8='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-qbgS4++4LuSF7OVGP6KyrP/5VYC5/Fsm/ceABNjG0Dc='; style-src 'self' 'sha256-+XPKIdmuNTsipilSRGR8w5PiFGjSbAXe7nysm4Re3bs='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Tehnična risba PRO – fotografija do končnega lista</title>
 <meta name="theme-color" content="#141c24">
 <link rel="manifest" href="manifest.webmanifest">
@@ -138,6 +138,26 @@ input.invalid,select.invalid,input[data-dw-invalid],select[data-dw-invalid]{bord
 .tmpl-card b{font-size:13px}
 .tmpl-card span{font-size:11.5px;color:var(--mut)}
 .tmpl-icon{font-size:22px}
+/* Reference — pokončna ograje: foto eksponati WoodCore (Faza 0.5 galerija) */
+.ref-sect{margin-top:18px;border-top:1px solid var(--line);padding-top:14px}
+.ref-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.ref-card{background:var(--p2);border:1px solid var(--line);border-radius:10px;padding:0;cursor:pointer;text-align:left;font:inherit;color:var(--tx);display:flex;flex-direction:column;overflow:hidden;transition:border-color .15s}
+.ref-card:hover{border-color:var(--ac)}
+.ref-card img{width:100%;height:150px;object-fit:cover;display:block;background:var(--p3)}
+.ref-card b{font-size:13px;padding:10px 12px 0}
+.ref-card span{font-size:11.5px;color:var(--mut);padding:4px 12px 12px}
+/* Katalog: pritrjevanje, elementi, palete (referenčna galerija) */
+.el-card{background:var(--p2);border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column}
+.el-card img{width:100%;height:130px;object-fit:cover;display:block;background:var(--p3)}
+.el-card b{font-size:12.5px;padding:10px 12px 0}
+.el-card span{font-size:11.5px;color:var(--mut);padding:4px 12px 12px}
+.fix-fig{margin:0}
+.fix-fig img{width:100%;height:150px;object-fit:cover;display:block;border:1px solid var(--line);border-radius:10px;background:var(--p3)}
+.fix-fig figcaption{font-size:11.5px;color:var(--mut);padding:6px 2px 0}
+.pal-grid{grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
+.pal-fig{margin:0}
+.pal-fig img{width:100%;height:90px;object-fit:contain;display:block;border:1px solid var(--line);border-radius:10px;background:var(--p3)}
+.pal-fig figcaption{font-size:11.5px;color:var(--mut);padding:6px 2px 0}
 /* Faza 2: miniature shranjenih projektov */
 .prj-thumb{width:64px;height:45px;border-radius:6px;object-fit:cover;border:1px solid var(--line);flex:0 0 auto;background:var(--p2)}
 .prj-thumb.ph{display:inline-flex;align-items:center;justify-content:center;font-size:20px}
@@ -835,6 +855,51 @@ Konstrukcija odporna na vremenske vplive.</textarea>
     </div>
     <div class="exp-body">
       <div class="tmpl-grid" id="tmplGrid"></div>
+      <div class="ref-sect">
+        <div class="st" data-i18n="ref_h">Reference — pokončna ograja z WoodCore deskami</div>
+        <p class="hint" data-i18n="ref_intro">Za pokončne ograje imamo na voljo 4 različne profile WoodCore desk: profil POLNA DESKA 57/32, POLNA DESKA 100, POLNA DESKA 128 in ROMB DESKA 67. Spodaj so prikazani štirje primeri pokončne ograje z različnimi profili desk — kliknite kartico za nalaganje profila.</p>
+        <div class="ref-grid" id="refGrid"></div>
+      </div>
+      <div class="ref-sect">
+        <div class="st" data-i18n="fix_h">Značilnosti pritrjevanja desk na konstrukcijo</div>
+        <p class="hint" data-i18n="fix_intro">Minimalen odmik vijaka od roba reza je 3 cm. Pri konstrukciji, montirani na ploščo (balkon, dvoriščna ograja), je maksimalen odmik vijaka od roba reza 15 cm; pri konstrukciji, montirani bočno na ploščo (balkon), pa 10 cm.</p>
+        <div class="ref-grid">
+          <div class="el-card"><b>POLNA DESKA 57/32</b><span data-i18n="fix_b57">Montira se na širino 5,7 cm ali 3,2 cm; vijak naj bo dolg približno 2/3 globine profila. Pritrjuje se z RF vijaki skozi cev iz zadnje strani — vijaki niso vidni. V kompozitni material se vrta luknja, ki je manjša od vijaka, v konstrukcijo pa večja — omogoči se raztezanje materiala. Maksimalni razmak med stebrički je 150 cm ne glede na višino ograje; največja dovoljena razdalja med nosilci je 100 cm.</span></div>
+          <div class="el-card"><b>POLNA DESKA 100 in POLNA DESKA 128</b><span data-i18n="fix_b100">Deski se režeta na poljubne dolžine, obdelujeta pa se kakor les — možna je zaokrožitev ali poljubna oblika. Priporočen razmak med deskami je 0,5–3 cm; možno je tudi prekrivanje desk (montaža iz obeh strani). Maksimalni razmak med stebrički je 180 cm pri ograjah do 150 cm višine, pri višjih pa 150 cm. Vijaki so vidni iz lica — obvezno je vijačenje iz lica. Kjer je deska privijačena v kovinsko cev, predvrtamo večjo luknjo, kot je vijak (temperaturne spremembe); v WoodCore desko zvrtamo 1 mm večjo luknjo od vijaka.</span></div>
+          <div class="el-card"><b>ROMB DESKA 67</b><span data-i18n="fix_br">Deska se reže na poljubne dolžine. Pritrdi se z rostfraj vijaki skozi stebriček v aluminijasto cev v sredini romba iz zadnje strani — vijak ni viden iz lica. Maksimalna razdalja med stebrički z L-kotniki je 145 cm. V kompozitni material je vedno večja luknja kot vijak zaradi raztezanja (primer: za vijak 3,9 se izvrta 3,2 v romb in aluminij, nato se luknja v romb profilu poveča na 4,2–4,5). OPOZORILO: montaža romb deske brez aluminijaste cevi ni mogoča! Romb profil se lahko kupi samo skupaj z alu cevjo, ki je že vključena v ceno romb deske.</span></div>
+        </div>
+        <div class="ref-grid">
+          <figure class="fix-fig"><img src="slike/pokoncna/montaza-polna-lica.jpg" alt="Ograja iz polnih desk z vidnimi vijaki iz lica" loading="lazy"><figcaption data-i18n="fix_a1">Primer vijačenja iz lica — vijaki so vidni iz lica.</figcaption></figure>
+          <figure class="fix-fig"><img src="slike/pokoncna/montaza-vogal-lica.jpg" alt="Detajl vogala ograje z vijačenjem iz lica" loading="lazy"><figcaption data-i18n="fix_a2">Detajl vogala — pritrjevanje desk iz lica v konstrukcijo.</figcaption></figure>
+        </div>
+      </div>
+      <div class="ref-sect">
+        <div class="st" data-i18n="el_h">Elementi za WoodCore WPC ograje</div>
+        <div class="ref-grid">
+          <div class="el-card"><img src="slike/pokoncna/polna57-eksponat.jpg" alt="Pokončna ograja iz polnih desk 57/32" loading="lazy"><b>POLNA DESKA 57/32</b><span data-i18n="el_c1">WPC polna deska širine 5,7 cm ali 3,2 cm — dimenzija 57 × 32 × 5800 mm; naleganje je lahko na 57 ali 32 mm stran.</span></div>
+          <div class="el-card"><img src="slike/pokoncna/polna100-antracit.jpg" alt="WPC polna deska 100 v antracit odtenku" loading="lazy"><b>POLNA DESKA 100</b><span data-i18n="el_c2">WPC polna deska za ograjo — dimenzija 100 × 12 × 5800 mm; namenjena samo za pokončno ograjo.</span></div>
+          <div class="el-card"><img src="slike/pokoncna/polna128-deska.jpg" alt="WPC polna deska 128" loading="lazy"><b>POLNA DESKA 128</b><span data-i18n="el_c3">WPC polna deska za ograjo — dimenzija 128 × 16 × 2200 mm; za pokončno ali prečno ograjo.</span></div>
+          <div class="el-card"><img src="slike/pokoncna/romb-alu.jpg" alt="Profil ROMB z aluminijasto cevjo v sredini" loading="lazy"><b>ROMB DESKA 67</b><span data-i18n="el_c4">WPC deska za fasado ali ograjo, profil romb Z ALU CEVJO v sredini romba — dimenzija 67 × 26 × 5800 mm.</span></div>
+          <div class="el-card"><img src="slike/pokoncna/romb-cepi.jpg" alt="WPC čepa za profil romb" loading="lazy"><b>WPC čep za profil romb</b><span data-i18n="el_c5">Levi in desni čep za zaključek romb profila na koncu; za zaključevanje prečne romb ograje je na voljo tudi letev.</span></div>
+          <div class="el-card"><img src="slike/pokoncna/rocaj-95x45.jpg" alt="Ročaj za ograjo 95 × 45 mm" loading="lazy"><b>Ročaj za ograjo</b><span data-i18n="el_c6">Dimenzija 95 × 45 × 5800 mm; na zalogi samo še v WHITE odtenku — ostali odtenki so na voljo v polnem profilu.</span></div>
+          <div class="el-card"><img src="slike/pokoncna/rocaj-92x45-poln.jpg" alt="Ročaj za ograjo – poln profil 92 × 45 mm" loading="lazy"><b>Ročaj za ograjo – poln profil</b><span data-i18n="el_c7">Dimenzija 92 × 45 × 5800 mm, notranja dimenzija 55 × 30 mm; samostojna prodaja ročajev ni možna.</span></div>
+        </div>
+      </div>
+      <div class="ref-sect">
+        <div class="st" data-i18n="pal_h">Barvni odtenki</div>
+        <div class="ref-grid pal-grid">
+          <figure class="pal-fig"><img src="slike/pokoncna/paleta-57.jpg" alt="Barvna paleta POLNA DESKA 57/32" loading="lazy"><figcaption data-i18n="pal_c1">POLNA DESKA 57/32 — na voljo 4 barve.</figcaption></figure>
+          <figure class="pal-fig"><img src="slike/pokoncna/paleta-100.jpg" alt="Barvna paleta POLNA DESKA 100" loading="lazy"><figcaption data-i18n="pal_c2">POLNA DESKA 100 — na voljo 8 barv.</figcaption></figure>
+          <figure class="pal-fig"><img src="slike/pokoncna/paleta-128.jpg" alt="Barvna paleta POLNA DESKA 128" loading="lazy"><figcaption data-i18n="pal_c3">POLNA DESKA 128 — na voljo 6 barv.</figcaption></figure>
+          <figure class="pal-fig"><img src="slike/pokoncna/paleta-romb.jpg" alt="Barvna paleta ROMB DESKA 67" loading="lazy"><figcaption data-i18n="pal_c4">ROMB DESKA 67 — na voljo 7 barv.</figcaption></figure>
+        </div>
+      </div>
+      <div class="ref-sect">
+        <div class="st" data-i18n="stor_h">Skladiščenje</div>
+        <p class="hint" data-i18n="stor_t">WoodCore WPC deske je pred montažo potrebno hraniti v suhem in zračnem prostoru. Podlaga za shranjevanje naj bo ravna in čista. Deske naj bodo na odlagalni podlagi po celotni dolžini in širini. V primeru neustreznega skladiščenja se reklamacija ne upošteva.</p>
+        <div class="st" data-i18n="inq_h">Povpraševanje</div>
+        <p class="hint" data-i18n="inq_t">Za brezplačno ponudbo nam sporočite dolžino in višino ograje, tip ograje (profil polna, profil terasna ali profil romb) ter želeni razmak. Pošljite povpraševanje na info@roksal.com; če je mogoče, priložite tudi tloris in slike.</p>
+      </div>
     </div>
     <div class="exp-foot">
       <div class="exp-note" id="tmplNote"></div>
@@ -2654,13 +2719,13 @@ $("loadFile").onchange=function(e){
 var PAL_KLASIK=["Amazon wood","Ash wood","Golden teak","Burma teak","Oak wood"];
 var PAL_RUSTIK=["Rustic oak","Rustic walnut"];
 var WC={
-  romb67:{n:"ROMB-67",w:67,t:26,len:5800,max:145,fix:"skrito — L-kotnik in alu cev v sredini profila",
-    allowed:["precna","pokoncna","fasada","pregrada"],post:{precna:1450,pokoncna:1500},rail:{pokoncna:1100},
-    facade:{studMax:800,buildup:"71–75 mm"},drill:"3.9 vijak → Ø3.2 v alu, Ø4.2–4.5 v WPC",
+  romb67:{n:"ROMB-67",w:67,t:26,len:5800,max:145,fix:"skrito — L-kotnik in alu cev v sredini profila (montaža brez alu cevi ni mogoča)",
+    allowed:["precna","pokoncna","fasada","pregrada"],post:{precna:1450,pokoncna:1450},rail:{pokoncna:1100},
+    facade:{studMax:800,buildup:"71–75 mm"},drill:"3.9 vijak → Ø3.2 v alu, Ø4.2–4.5 v WPC; obvezna alu cev v sredini romba",
     palette:PAL_KLASIK.concat(PAL_RUSTIK)},
-  polna128:{n:"POLNA-128",w:128,t:16.5,len:2200,max:110,fix:"vidno spredaj — predvrtanje +1 mm",
-    allowed:["precna","pokoncna","pregrada"],post:{precna:1100,pokoncna:1500},rail:{pokoncna:1000},
-    drill:"predvrtanje Ø vijak +1 mm, vijak 30 mm od roba",
+  polna128:{n:"POLNA-128",w:128,t:16,len:2200,max:110,fix:"vidno spredaj — predvrtanje +1 mm",
+    allowed:["precna","pokoncna","pregrada"],post:{precna:1100,pokoncna:1800},rail:{pokoncna:1000},
+    drill:"predvrtanje v WPC: luknja +1 mm od vijaka; v kovinsko cev večja luknja (temperatura); vijak 30–150 mm od roba",
     palette:["Amazon wood","Ash wood","Burma teak","Oak wood"].concat(PAL_RUSTIK)},
   deska150:{n:"DESKA-150",w:150,t:25,len:4000,max:130,fix:"vidno spredaj — predvrtanje +1 mm",
     allowed:["precna","terasa","pregrada"],post:{precna:1300}, /* uradni max razpon 130 cm (roksal.com) */
@@ -2668,11 +2733,11 @@ var WC={
     palette:PAL_KLASIK.concat(PAL_RUSTIK)},
   polna57:{n:"POLNA-57/32",w:57,t:32,len:5800,max:150,fix:"skrito zadaj — RF vijaki skozi cev",
     allowed:["pokoncna","pregrada"],post:{pokoncna:1500},rail:{pokoncna:1000},
-    drill:"skrito vijačenje, 57 ali 32 mm naleganje",
+    drill:"vijak ≈ 2/3 globine profila; v WPC luknja manjša od vijaka, v konstrukciji večja (raztezanje); skrito vijačenje — 57 ali 32 mm naleganje",
     palette:["Amazon wood","Oak wood"].concat(PAL_RUSTIK)},
   polna100:{n:"POLNA-100",w:100,t:12,len:5800,max:180,fix:"vidno spredaj — predvrtanje +1 mm",
-    allowed:["pokoncna","fasada","pregrada","napusc"],post:{pokoncna:1500},rail:{pokoncna:800},
-    facade:{studMax:500,buildup:"~60 mm"},drill:"predvrtanje Ø vijak +1 mm, vijak 30 mm od roba",
+    allowed:["pokoncna","fasada","pregrada","napusc"],post:{pokoncna:1800},rail:{pokoncna:800},
+    facade:{studMax:500,buildup:"~60 mm"},drill:"predvrtanje v WPC: luknja +1 mm od vijaka; v kovinsko cev večja luknja (temperatura); vijak 30–150 mm od roba",
     palette:PAL_KLASIK.concat(["White"],PAL_RUSTIK)},
   kubo80:{n:"KUBO-80/42",w:80,t:42,len:5800,max:120,fix:"skrito — alu cev 20x60x2 mm v profilu",
     allowed:["fasada","pregrada"],facade:{studMax:1000,buildup:"82 ali 120 mm"},
@@ -2744,7 +2809,9 @@ function roksalUseNotes(p,use,H){
   if(use==="pokoncna"){
     var t=p.n+": stebri ≤ "+lim.v+" mm; vodoravne cevi "+rows+"×, razmak ≤ "+rail+" mm.";
     t+=(V("mountType")==="bočno na ploščo")?" Vijak ≤100 mm od roba reza; na ploščo ≤150 mm.":" Vijak 30–150 mm od roba reza.";
-    if(p.n.indexOf("ROMB")>=0)t+=" Romb: čepi na koncih, alu cev v profilu.";
+    if(p.n.indexOf("POLNA-57")>=0)t+=" Vijak ≈ 2/3 globine profila; v WPC luknja manjša od vijaka, v konstrukciji večja.";
+    else if(p.n.indexOf("POLNA-100")>=0||p.n.indexOf("POLNA-128")>=0)t+=" Priporočen razmak med deskami 5–30 mm; možno prekrivanje (montaža iz obeh strani).";
+    if(p.n.indexOf("ROMB")>=0)t+=" Romb: čepi na koncih; obvezna alu cev v sredini profila — montaža brez nje ni mogoča.";
     return t;
   }
   if(use==="fasada"){
@@ -2794,7 +2861,7 @@ function applySystem(){
     "Material: WoodCore WPC — 60 % bambusovih vlaken, 30 % recikliranega HDPE, 10 % dodatkov; 15 let garancije.",
     "Barva: "+color+" ("+surf+"); odtenek se v prvem letu posvetli za 5–10 %.",
     extra,
-    "Montaža nad +5 °C; izvrtina v WPC 1 mm večja od vijaka, vijak 30–150 mm od roba.",
+    (p.n.indexOf("POLNA-57")>=0?"Montaža nad +5 °C; v WPC luknja manjša od vijaka, v konstrukciji večja (raztezanje); vijak ≈ 2/3 globine profila.":"Montaža nad +5 °C; izvrtina v WPC 1 mm večja od vijaka, vijak 30–150 mm od roba."),
     "Dilatacijske reže po Roksal temperaturni tabeli; vogal 1 mm.",
     "Garancija: 15 let na material, 2 leti na dela izvedena s strani Roksal/a."];
   if(!notesTouched)$("notes").value=nt.join("\n");
@@ -4873,7 +4940,7 @@ var TEMPLATES={
   lpovratek:{icon:"↩️",name:"L-povratek",desc:"kotni steber · W2=2100",set:{use:"precna",profile:"romb67",L:"7800",H:"1050",D:"2100",n:"12",gap:"20",w2:"2100"}},
   korita:{icon:"🌺",name:"Korita za rože",desc:"2× korito (1100+1400)",set:{use:"precna",profile:"romb67",L:"4200",H:"1050",D:"1200",n:"12",gap:"20",koritoList:"1100;300\n1400;1900"}}
 };
-function openTemplates(){if($("expOverlay").classList.contains("on"))return;$("tmplNote").textContent="";renderTmplGrid();$("tmplOverlay").classList.add("on")}
+function openTemplates(){if($("expOverlay").classList.contains("on"))return;$("tmplNote").textContent="";renderTmplGrid();renderRefGrid();$("tmplOverlay").classList.add("on")}
 function closeTemplates(){$("tmplOverlay").classList.remove("on")}
 function renderTmplGrid(){
   var g=$("tmplGrid");if(!g)return;
@@ -4902,6 +4969,53 @@ $("tmplClose").onclick=closeTemplates;
 $("tmplOverlay").addEventListener("click",function(e){if(e.target===this)closeTemplates()});
 document.addEventListener("keydown",function(e){if($("tmplOverlay").classList.contains("on")&&e.key==="Escape")closeTemplates()});
 window.openTemplates=openTemplates;window.applyTemplate=applyTemplate;window.toast=toast;
+/* Reference — pokončna ograja z WoodCore deskami:4 profili,4 foto eksponata (Faza 0.5 galerija).
+   Kartica naloži uporabo »pokoncna« + ustrezen profil registra WC (applySystem nastavi širino/
+   debelino/razmike), izračuna število navpičnih desk čez L ter generira risbo. */
+var REFS=[
+  {key:"polna57",img:"slike/pokoncna/polna57-eksponat.jpg",name:"POLNA DESKA 57/32",
+   alt:"Eksponat pokončne ograje — profil POLNA DESKA 57/32",cap:"ref_c1",
+   txt:"Eksponat ograje iz polnih desk širine 5,7 ali 3,2 cm, dolžine 5,8 m."},
+  {key:"polna100",img:"slike/pokoncna/polna100-ograja.jpg",name:"POLNA DESKA 100",
+   alt:"Pokončna ograja — profil POLNA DESKA 100",cap:"ref_c2",
+   txt:"Ograja s polnimi deskami širine 10 cm, dolžine 5,8 m."},
+  {key:"polna128",img:"slike/pokoncna/polna128-balkon.jpg",name:"POLNA DESKA 128",
+   alt:"Balkonska ograja — profil POLNA DESKA 128",cap:"ref_c3",
+   txt:"Ograja iz polnih desk širine 12,8 cm, dolžine 2,2 m."},
+  {key:"romb67",img:"slike/pokoncna/romb67-fasada.jpg",name:"ROMB DESKA 67",
+   alt:"Ograjne deske na čopu — profil ROMB DESKA 67",cap:"ref_c4",
+   txt:"Ograjne deske profila ROMB širine 6,7 cm, dolžine 2,8 m."}
+];
+function renderRefGrid(){
+  var g=$("refGrid");if(!g)return;
+  g.innerHTML=REFS.map(function(r){
+    return '<button class="ref-card" data-refkey="'+r.key+'" type="button">'+
+      '<img src="'+r.img+'" alt="'+E(r.alt)+'" loading="lazy">'+
+      '<b>'+E(r.name)+'</b>'+
+      '<span data-i18n="'+r.cap+'">'+E(r.txt)+'</span></button>';
+  }).join("");
+  [].slice.call(g.querySelectorAll("[data-refkey]")).forEach(function(b){
+    b.addEventListener("click",function(){applyRef(b.getAttribute("data-refkey"))});
+  });
+  applyLang(lngGet());
+}
+function applyRef(key){
+  var r=null;REFS.forEach(function(x){if(x.key===key)r=x});
+  if(!r||!WC[key])return;
+  function ev(id,type){var el=$(id);if(!el)return;el.dispatchEvent(new Event(type,{bubbles:true}))}
+  $("sysUse").value="pokoncna";ev("sysUse","change");
+  $("sysProfile").value=key;ev("sysProfile","change");
+  $("L").value="4000";ev("L","input");
+  $("H").value="1200";ev("H","input");
+  $("D").value="1200";ev("D","input");
+  $("gap").value="20";ev("gap","input");
+  var sw=WC[key].w,gap=20;
+  $("n").value=String(Math.max(2,Math.round((4000+gap)/(sw+gap))));ev("n","input");
+  closeTemplates();
+  $("gen").click();
+  toast("Referenca naložena: "+r.name,"ok");
+}
+window.renderRefGrid=renderRefGrid;window.applyRef=applyRef;window.REFS=REFS;
 
 /* ---------- Faza 2: 3D pogled — zbirni model (enaka logika kot STEP) + rotacija (azimut/elevacija) ---------- */
 function collectSolids(){
@@ -5073,7 +5187,38 @@ var LANG_EN={
   b_proposal:"Railing proposal on photo",
   status_legend:"Markers: ✓ measured · ∑ calculated · ≈ estimated · ?? unknown",
   "Predlog ograje na sliki":"Railing proposal on photo",
-  "Oznake: ✓ izmerjeno · ∑ izračunano · ≈ ocenjeno · ?? neznano":"Markers: ✓ measured · ∑ calculated · ≈ estimated · ?? unknown"
+  "Oznake: ✓ izmerjeno · ∑ izračunano · ≈ ocenjeno · ?? neznano":"Markers: ✓ measured · ∑ calculated · ≈ estimated · ?? unknown",
+  /* Reference — pokončna ograja (galerija foto eksponatov) */
+  ref_h:"Reference — vertical fences with WoodCore boards",
+  ref_intro:"Four WoodCore board profiles are available for vertical fences: POLNA DESKA 57/32, POLNA DESKA 100, POLNA DESKA 128 and ROMB DESKA 67. Below are four examples of vertical fences with different board profiles — click a card to load the profile.",
+  ref_c1:"Exhibit fence of solid boards 5.7 or 3.2 cm wide, 5.8 m long.",
+  ref_c2:"Fence with solid boards 10 cm wide, 5.8 m long.",
+  ref_c3:"Fence of solid boards 12.8 cm wide, 2.2 m long.",
+  ref_c4:"ROMB-profile fence boards 6.7 cm wide, 2.8 m long.",
+  fix_h:"Board fixing characteristics",
+  fix_intro:"Minimum screw distance from the cut edge is 3 cm. For plate-mounted structures (balcony, driveway fence) the maximum screw distance from the cut edge is 15 cm; for side-mounted structures (balcony) it is 10 cm.",
+  fix_b57:"It can be mounted on the 5.7 cm or 3.2 cm side; the screw should be about 2/3 of the profile depth. It is fastened with RF screws through the tube from the back — the screws are not visible. A hole smaller than the screw is drilled in the composite material and a larger one in the structure, allowing the material to expand. Maximum post spacing is 150 cm regardless of fence height; maximum allowed distance between carriers is 100 cm.",
+  fix_b100:"Both boards can be cut to any length and worked like wood — rounding or custom shapes are possible. Recommended gap between boards is 0.5–3 cm; overlapping boards are also possible (mounting from both sides). Maximum post spacing is 180 cm for fences up to 150 cm high and 150 cm for taller ones. Screws are visible from the face — screwing from the face is mandatory. Where the board is screwed to a metal tube, pre-drill a hole larger than the screw (thermal movement); in the WoodCore board drill a hole 1 mm larger than the screw.",
+  fix_br:"The board can be cut to any length. It is fastened with stainless screws through the post into the aluminium tube in the middle of the romb profile from the back — the screw is not visible from the face. Maximum distance between posts with L-brackets is 145 cm. The hole in the composite material is always larger than the screw due to expansion (example: for a 3.9 screw, drill 3.2 in the romb and aluminium, then enlarge the hole in the romb profile to 4.2–4.5). WARNING: mounting a romb board without the aluminium tube is impossible! The romb profile can only be purchased together with the alu tube, already included in the price.",
+  fix_a1:"Face-screwing example — screws are visible from the face.",
+  fix_a2:"Corner detail — boards fastened from the face into the structure.",
+  el_h:"Elements for WoodCore WPC fences",
+  el_c1:"WPC solid board 5.7 cm or 3.2 cm wide — dimension 57 × 32 × 5800 mm; it can lie on the 57 or 32 mm side.",
+  el_c2:"WPC solid board for fences — dimension 100 × 12 × 5800 mm; intended for vertical fences only.",
+  el_c3:"WPC solid board for fences — dimension 128 × 16 × 2200 mm; for vertical or horizontal fences.",
+  el_c4:"WPC board for facade or fence, ROMB profile WITH ALUMINIUM TUBE in the middle — dimension 67 × 26 × 5800 mm.",
+  el_c5:"Left and right end cap for closing the romb profile; a strip is also available for closing horizontal romb fences.",
+  el_c6:"Dimension 95 × 45 × 5800 mm; only WHITE in stock — other colours are available in the full profile.",
+  el_c7:"Dimension 92 × 45 × 5800 mm, inner dimension 55 × 30 mm; handrails are not sold separately.",
+  pal_h:"Colour options",
+  pal_c1:"POLNA DESKA 57/32 — 4 colours available.",
+  pal_c2:"POLNA DESKA 100 — 8 colours available.",
+  pal_c3:"POLNA DESKA 128 — 6 colours available.",
+  pal_c4:"ROMB DESKA 67 — 7 colours available.",
+  stor_h:"Storage",
+  stor_t:"WoodCore WPC boards must be stored in a dry, ventilated space before installation. The base for storage should be flat and clean. Boards should rest on a support along their entire length and width. In case of improper storage, complaints will not be accepted.",
+  inq_h:"Enquiry",
+  inq_t:"For a free quote, send us the length and height of your fence, the fence type (solid profile, terrace profile or romb profile) and the desired spacing. Send your enquiry to info@roksal.com; if possible, include a floor plan and photos."
 };
 function lngGet(){try{return localStorage.getItem("draftwright-lang")||"sl"}catch(e){return"sl"}}
 
@@ -5099,7 +5244,8 @@ var UI_MSG=[
   [/^Najprej zaznaj lamele/,"Detect slats first"],
   [/^Predlog ograje je za zdaj/,"Railing proposal currently available only with 2-point calibration"],
   [/^Predlog ograje je viden.*/,"Railing proposal shown — dimensions come from the drawing, not the photo"],
-  [/^Predlog ograje skrit/,"Railing proposal hidden"]
+  [/^Predlog ograje skrit/,"Railing proposal hidden"],
+  [/^Referenca naložena: /,"Reference loaded: "]
 ];
 function uiMsg(s){
   if(lngGet()!=="en"||typeof s!=="string")return s;
