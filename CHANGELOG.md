@@ -40,6 +40,15 @@ Vse pomembnejše spremembe projekta **Draftwright — Tehnična risba PRO** so d
 - **Nova sekcija galerije »Terasne deske — navodila za montažo (WoodCore)«** s 4 karticami (priprava podlage, podložne letve, montaža desk in reže, zaključki in odvodnjavanje) in strukturnim opozorilom; EN pariteta (`ter_h`, `ter_w`, `ter_c1..4`).
 - `tests/reference-gallery.test.js` dopolnjen s **8 preverjanji** terasnega kataloga (skupaj 77), `tests/roksal-p1.test.js` s 3 preverjanji novih opozoril v kontrolnem listu. Zlati posnetki nespremenjeni (kontrolni list ni vrisan vanje). Skupaj **67 testnih surov**. CSP hash-i regenerirani.
 
+### Spremenjeno (uskladitev s spletno stranjo »WPC prečne deske za pregradne stene«)
+
+**Prebrana uradna produktne stran roksal.com (tekstovno in vizualno, vključno s paletami in prerezi)**
+- **Popravek mere: POLNA DESKA-128 je 128 × 16,5 × 2200 mm** (uradna stran + prvotni register) — prej začasno 16 mm po katalogskem zapisu. Register `WC`, kartica elementov in testi posodobljeni.
+- **ROMB DESKA-67 pri pregradah**: maksimalni razmak 145 cm velja **samo**, kadar je L-kotnik na vsakem stebru **levo in desno**; vijačenje skrito (rf vijaki skozi kotnik v alu cev iz zadnje strani). Pri razmaku > 145 cm je potrebna **vmesna povezava — ni privijačena v tla, ampak iz zgornje cevi** — možna do < 180 cm; pri ≥ 180 cm dodaten stebriček. Zaključek s čepi ali letvico.
+- **Prečno vijačenje POLNA-128 / DESKA-150**: vijak na sredini deske (DESKA-150 v sredino rebra), predvrtanje luknja +1 mm od vijaka, vijaki vidni iz lica; stebri 110 cm (128) oziroma 130 cm (150).
+- **DESKA-150**: 150 × 25 × 4000 mm (tudi 2200), 7 barv in **3 površine** (rebra na eni strani bolj na gosto, na drugi na široko; Rustic enostransko gladke), zaključek z **zaključnim pokrovčkom**.
+- Nova sekcija galerije **»Pregradne stene s prečnimi deskami (WoodCore)«** (3 kartice) z EN pariteto; kontrolni list veje `pregrada` dopolnjen (vmesna povezava, obojestranski kotniki, sredina deske). `tests/reference-gallery.test.js`: **82 PASS** (+5). Zlati posnetki nespremenjeni. CSP hash-i regenerirani.
+
 ## [2026.11.22] — 2026-11-24
 
 ### Dodano (lokalne izboljšave brez omrežja)

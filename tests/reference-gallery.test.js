@@ -107,7 +107,7 @@ function check(name, ok, info) {
   check("register: romb67 stebri z L-kotniki 1450", RL(W.romb67, "pokoncna", 1200).v === 1450);
   check("register: polna57 stebri 1500 ne glede na višino", RL(W.polna57, "pokoncna", 2000).v === 1500);
   check("register: polna57 nosilci ≤ 1000 mm", RR(W.polna57) === 1000);
-  check("register: polna128 dimenzija kataloga 128×16×2200", W.polna128.t === 16 && W.polna128.len === 2200);
+  check("register: polna128 dimenzija kataloga 128×16,5×2200 (uradna stran)", W.polna128.t === 16.5 && W.polna128.len === 2200);
   check("register: polna57 drill — vijak 2/3 globine, luknja v WPC manjša od vijaka",
     /2\/3/.test(W.polna57.drill) && /manjša/.test(W.polna57.drill) && /večja/.test(W.polna57.drill));
   check("register: romb67 — obvezna alu cev (fix + drill)",
@@ -122,7 +122,7 @@ function check(name, ok, info) {
     check("klik: uporaba = pokončna ograja", $("sysUse").value === "pokoncna", $("sysUse").value);
     check("klik: profil = polna128", $("sysProfile").value === "polna128", $("sysProfile").value);
     check("klik: applySystem nastavi širino iz registra (128 mm)", $("sw").value === "128", $("sw").value);
-    check("klik: applySystem nastavi debelino iz registra (16 mm — katalog 128×16×2200)", $("st").value === "16", $("st").value);
+    check("klik: applySystem nastavi debelino iz registra (16,5 mm — katalog 128×16,5×2200)", $("st").value === "16.5", $("st").value);
     check("klik: modal galerije zaprt", !$("tmplOverlay").classList.contains("on"));
     check("klik: risba generirana", !!document.querySelector("#prev svg"));
     check("klik: število desk čez L je smiselno (≥ 2)",
@@ -174,6 +174,8 @@ function check(name, ok, info) {
   check("EN: povpraševanje prevedeno", catEn.includes("For a free quote"));
   check("EN: terase prevedeno (PDF navodila)",
     catEn.includes("Terrace boards — installation instructions") && catEn.includes("not structural elements") && catEn.includes("void the warranty") && catEn.includes("freezing water inside the board can crack it"));
+  check("EN: pregradne stene prevedene (uradna stran)",
+    catEn.includes("Partition walls with transverse boards") && catEn.includes("valid ONLY") && catEn.includes("from the top tube") && catEn.includes("end cap"));
   $("langBtn").click();
   const catSl = $("tmplOverlay").textContent;
   check("povratek v SL: katalog spet slovensko",
@@ -204,7 +206,7 @@ function check(name, ok, info) {
   check("katalog: ROMB — OPOZORILO brez alu cevi ni mogoča",
     cat.includes("brez aluminijaste cevi ni mogoča") && cat.includes("vključena v ceno"));
   check("katalog: elementi — dimenzije vseh elementov",
-    ["57 × 32 × 5800", "100 × 12 × 5800", "128 × 16 × 2200", "67 × 26 × 5800", "95 × 45 × 5800", "92 × 45 × 5800", "55 × 30"].every((d) => cat.includes(d)));
+    ["57 × 32 × 5800", "100 × 12 × 5800", "128 × 16,5 × 2200", "67 × 26 × 5800", "95 × 45 × 5800", "92 × 45 × 5800", "55 × 30"].every((d) => cat.includes(d)));
   check("katalog: elementi — polna100 samo za pokončno, romb Z ALU CEVJO",
     cat.includes("samo za pokončno ograjo") && cat.includes("Z ALU CEVJO"));
   check("katalog: elementi — čepi, ročaj WHITE in brez samostojne prodaje",
@@ -229,6 +231,14 @@ function check(name, ok, info) {
     cat.includes("5–6 mm") && cat.includes("do cca 10 mm na 4 m") && cat.includes("vseh sten ≥ 6 mm"));
   check("katalog: terase — L letev ≤ 2 m / 30 cm, rez 30°, odvodne Ø4,2 mm",
     cat.includes("≤ 2 m") && cat.includes("vsakih 30 cm") && cat.includes("kotom 30°") && cat.includes("Ø4,2 mm") && cat.includes("zmrznjena voda"));
+  check("katalog: pregradne stene — 3 profili (romb, 128, deska150)",
+    cat.includes("Pregradne stene s prečnimi deskami") && cat.includes("DESKA-150 (terasna deska)"));
+  check("katalog: pregradne stene — ROMB 145 cm samo ob kotnikih levo in desno",
+    cat.includes("levo in desno") && cat.includes("velja SAMO") && cat.includes("iz zgornje cevi") && cat.includes("180 cm"));
+  check("katalog: pregradne stene — POLNA-128 16,5 mm / 110 cm / sredina deske",
+    cat.includes("128 × 16,5 × 2200") && cat.includes("110 cm") && cat.includes("sredini deske"));
+  check("katalog: pregradne stene — DESKA-150 130 cm, 3 površine, pokrovček",
+    cat.includes("130 cm") && cat.includes("3 površine") && cat.includes("zaključnim pokrovčkom") && cat.includes("popolnoma gladke"));
 
   const fixImgs = Array.from(document.querySelectorAll('#tmplOverlay img[src^="slike/"]'));
   check("vse katalogske slike so krajevne", fixImgs.every((im) => /^slike\/pokoncna\/[a-z0-9-]+\.jpg$/.test(im.getAttribute("src") || "")));
