@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- CSP: strict script allowlist by hash. No unsafe-inline / unsafe-eval. frame-ancestors is set in vercel.json (unsupported in meta). -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-XJWK2Ebn2Wf4/W+mc89Va4+ph2j5bG7sblujNxXESY8=' 'sha256-I/BjyPUG0x3qvHnJlpXbWhHcSUhIKR9xbMp7bVHfxy0=' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-qbmlk1eM834hjlyLt6IsjIbcSGzpKQUi3OdMQkr511Q='; style-src 'self' 'sha256-o68CI6+lyXlvfPBh8A9CxCfnNYjJp9hfyAbRoous0IY='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-A9QRJwFKY3E2iFMkpT2dEPfovUdTV1rE6fKOwgFR+kg=' 'sha256-+nXEtgKk+ScHYKZ/ie15Bv0gu+L97q0St+rXFk+1qrA=' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-evTnd57LTPf+2bIiej6q93k/DzZ5ak5Vxd5U7EAMUu8='; style-src 'self' 'sha256-o68CI6+lyXlvfPBh8A9CxCfnNYjJp9hfyAbRoous0IY='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Tehnična risba PRO – fotografija do končnega lista</title>
 <!-- >>> GENERATED: seo-jsonld — uredi scripts/generate-seo.js, ne to kopijo -->
 <script type="application/ld+json">[
@@ -20,7 +20,7 @@
     "applicationSubCategory": "Technical drawing / CAD",
     "operatingSystem": "Web (PWA) — Windows, macOS, Linux, Android, iOS",
     "applicationSuite": "WoodCore WPC (Roksal)",
-    "softwareVersion": "2026.11.27",
+    "softwareVersion": "2026.11.28",
     "datePublished": "2026-11-25",
     "offers": {
       "@type": "Offer",
@@ -149,16 +149,13 @@
   }
 ]</script>
 <script>var DW_RELEASE={
-  "version": "2026.11.27",
+  "version": "2026.11.28",
   "date": "2026-11-25",
   "notes": [
-    "Tehnična risba: pariteta z referenčnim dokumentom (ročno sestavljen list »Ograja s koriti za rože 5000×1200«) — sprednji pogled dobi verigo kotov položaja korit (odmiki od levega roba), rob korita + skrito gladino zemlje ter oznako prereza A–A skozi steber; napis pod pogledom je profilno označen (odstranjen trdo kodiran »U-profil«) + pokrivna višina (N×67+razmaki).",
-    "Prerez A–A: korito dobi šrafuro zemlje, PE vložek in drenažne reže v dnu (kot detajl D2 na referenčnem listu).",
-    "Detajl pritrjevanja: oznake po referenčnem listu — L-kotnik + vijak iz zadnje strani (skrito), predvrtanje po registru (p.drill, npr. Ø3,2 → WPC Ø4,2–4,5), min. 30 / maks. 150 mm od roba reza.",
-    "Opombe na listu: zmogljivost 8 → 11 vrstic; samodejno se dodata opombi Rezanje/spoji (kosi iz tovariških dolžin, spoji vedno na stebru, folije po montaži) in Sidranje (odvisno od podlage, ni predmet risbe); korita dobijo konstrukcijsko opombo (okvir ALU 30×30×2, obloga profila, PE vložek 2 mm + drenaža, dno z razmakom 3 mm, statiko preveri projektant).",
-    "BOM na listu: nova vrstica »2a Surova deska (razrez)« iz optimizacije tovariških dolžin (isti vir kot rezalni načrt — kos iz 5800 mm + odpad) ter razčlenjene vrstice korit (okvir in obloga, dno z drenažo, konzole L 60×60×5 + vijaki M6×16).",
-    "Noga lista: vir sistema (Roksal d.o.o., Kranj — roksal.com), oznaka risbe, LIST 1/1, opomba o preverjanju mer na objektu.",
-    "Zlati posnetki osveženi (precna-osnovna, dvonadstropna-lpovratek, terasa-deska150); stopniscna, pokoncna-referencna in kosovnica-osnovna nespremenjeni. Skupaj 72 testnih surov, 0 FAIL."
+    "Dokumentacijski list (HTML) — meni *Datoteka → Izvozi dokumentacijski list (HTML)* sestavi samostojen tehnični dokument naročila po vzoru referenčnega lista »Ograja s koriti za rože 5000×1200« (ročno sestavljen dokument iz drugega klepeta): glava z žigom (naslov, sistem/profil, ključne mere, RISBA ŠT., DATUM, LIST 1/1), vgrajena A3 risba (vsi pogledi, prerezi, detajli), vhodni podatki z izračuni (št. lamel, pokrivna višina, omejitev nosilcev, tovariške dolžine, korita), tehnične opombe (istovirne listu, vključno s koritno konstrukcijsko opombo), BOM (surove deske z odpadom + razčlenjena korita), naslovna polja (naročnik/izdelal/preveril/list) in noga (vir Roksal).",
+    "Varnost dokumenta: brez skript, zunanjih povezav in e-poštnih povezav; vnešeni podatki so escape-ani; izpis je determinističen.",
+    "BOM in opombe lista imajo zdaj enega vira (bomRows(), composeNotes()), ki ga uporabljata tako SVG list kot dokumentacijski list; parseSegs() izvzeti segmentni parser.",
+    "Nova suita doc-sheet (23): vsebina dokumenta, izračuni, BOM, varnost (brez href/src/mailto, escape), determinizem. Skupaj 73 testnih surov (prej 72), 0 FAIL."
   ]
 };</script>
 <!-- <<< END GENERATED: seo-jsonld -->
@@ -563,6 +560,7 @@ body.viewmode .viewbar{display:flex}
       <button class="mi" data-call="dlCsv">Izvozi kosovnico (CSV)</button>
       <button class="mi" data-call="dlPlan">Izvozi montažni načrt (CSV)</button>
       <button class="mi" id="menuDlTech">Izvozi tehnični list materiala (TXT)</button>
+      <button class="mi" id="menuDlDoc">Izvozi dokumentacijski list (HTML)</button>
       <div class="sep"></div>
       <div class="label">Rezalnica in poslovanje</div>
       <button class="mi" id="menuBuildCut" data-call="buildCut">Izračunaj rezalni načrt (kerf)</button>
@@ -2346,9 +2344,7 @@ function generate(){
   var innerHmm=Math.max(10,H-topHmm-botHmm-baseHmm);
 
   /* FRONT — ena ograja ALI več segmentov (F4: vrstica = naziv;širina;višina) */
-  var segs=[];
-  (V("segList")||"").trim().split("\n").forEach(function(sgl){var sgp=sgl.split(";"),sgw=parseFloat(sgp[1]),sgh=parseFloat(sgp[2]);
-    if(sgp[0]&&sgp[0].trim()&&sgw>0&&sgh>0)segs.push({n:sgp[0].trim(),w:sgw,h:sgh})});
+  var segs=parseSegs();
   var fx=20,fy=99,fs=Math.min(212/L,76/H),fw=L*fs,fh=H*fs;
   /* P2.2: prikaz z »prelomom« (break view) za dolge ograje — komprimirana širina + lomljeni črti. */
   var BV=7600,bv=L>BV,bvGap=bv?Math.max(4,fw*0.06):0;
@@ -2555,37 +2551,16 @@ function generate(){
   s+=tx(280,213.5,"L-KOTNIK + VIJAK IZ ZADNJE STRANI (SKRITO) · MIN. 30 / MAKS. 150 mm OD ROBA REZA",1.9,"start");
   s+=tx(280,217.5,"PREDVRTANJE: "+(WC[$("sysProfile").value]||WC.romb67).drill,1.9,"start");
 
-  /* BOM */
+  /* BOM — en vir vrstic (bomRows) za list, dokumentacijski list in balone */
   var m=mass();
-  var rows=[
-    ["1","Zgornji profil","Alu/jeklo",V("topP"),"1"],
-    ["2","Lamela "+(WC[$("sysProfile").value]||WC.romb67).n,"WPC",f(sw)+"x"+f(stn)+"x2 · "+lamelaBreakdown(),String(lamelaTotal())],
-    ["3","Spodnji profil","Alu/jeklo",V("botP"),"1"],
-    ["4","Vertikalni profil","Alu/jeklo",V("postP"),String(postCount())],
-    ["5","Nosilec – konzola","Jeklo",V("bracket"),String(postCount()*2)],
-    ["6","Steber","Jeklo",V("postP"),String(postCount()*2)],
-    ["7","Pritrdilni vijak","Inox",V("bolt"),String(postCount()*Math.max(0,n("nbolt")))],
-    ["8","Sidro","Inox",V("anchor"),String(postCount()*2)]
-  ];
-  var kdB=getKoritaData(),seKb=(segs.length<2)?kdB.items:[];
-  /* 2a: surove deske — isti vir kot rezalni načrt (optimizeStock) — kot vrstica »surova deska« na referenčnem listu */
-  var sdS=suroveDeske();
-  if(sdS)rows.splice(2,0,["2a","Surova deska (razrez)","WoodCore WPC",sdS.dim,sdS.kos]);
-  if(seKb.length&&kdB.active){
-    var kq=String(seKb.length);
-    rows.push(["9","Cvetlično korito – okvir in obloga","Alu / WPC","okvir ALU 30×30×2, obloga "+(WC[$("sysProfile").value]||WC.romb67).n+", PE vložek 2 mm + drenaža; globina "+f(kdB.D)+" × višina "+f(kdB.H)+" — širine: "+seKb.map(function(kt){return f(kt.w)}).join(", "),kq+" kpl"]);
-    rows.push(["10","Korito – dno z drenažo","WPC / PE","dno iz desk z razmakom 3 mm (referenčni list)",kq+" kpl"]);
-    rows.push(["11","Konzolni nosilec korita","Jeklo","L 60×60×5 + vijaki M6×16 — max(2, ceil(širina/600)+1) na korito — ocena",String(seKb.reduce(function(a,kt){return a+koritoNosilci(kt.w)},0))]);
-  }
+  var rows=bomRows(segs.length);
   window.BOM_ROWS=rows; /* P2.3: register za interaktivne balone */
   s+=panel(12,226,238,48,"SEZNAM SESTAVNIH DELOV");
   s+=tbl(14,230,[8,50,28,120,28],rows,["Št.","Naziv dela","Material","Dimenzije (mm)","Količ."],rows.length>8?Math.max(3.0,44/(rows.length+1)):undefined);
 
   /* NOTES */
   s+=panel(256,226,152,48,"TEHNIČNI PODATKI IN OPOMBE");
-  var nt=V("notes").split("\n").filter(function(x){return x.trim()});
-  if(seKb.length&&kdB.active)nt.splice(Math.min(4,nt.length),0,"Korita: okvir ALU 30×30×2, obloga iz profila, PE vložek 2 mm z drenažo, dno z razmakom 3 mm; nosilnost preveri projektant.");
-  nt.push("Barva: "+V("ral")+" · Masa konstrukcije: "+f(m)+" kg");
+  var nt=composeNotes(!!(seKt.length&&kdSe.active),m);
   var yy=234;nt.slice(0,11).forEach(function(line,idx){s+=tx(259,yy,(idx+1)+". "+line,2.0);yy+=3.85});
 
   /* TITLE BLOCK — 2 vrstici (F3): PROJEKT/RISBA·REV/MERILO/FORMAT/DATUM/RISAL + OBJEKT/TIP/MATERIAL/BARVA */
@@ -3286,6 +3261,44 @@ function suroveDeske(){
     return {kos:String(boards),dim:"kos "+f(piece)+" mm iz tovariških "+stocks.map(function(x){return f(x)}).join("/")+" mm · odpad "+f(Math.round(waste))+" mm"};
   }catch(e){return null}
 }
+/* segmenti (F4: vrstica = naziv;širina;višina) — en vir za izris, BOM in dokumentacijski list */
+function parseSegs(){
+  var segs=[];
+  (V("segList")||"").trim().split("\n").forEach(function(sgl){var sgp=sgl.split(";"),sgw=parseFloat(sgp[1]),sgh=parseFloat(sgp[2]);
+    if(sgp[0]&&sgp[0].trim()&&sgw>0&&sgh>0)segs.push({n:sgp[0].trim(),w:sgw,h:sgh})});
+  return segs;
+}
+/* opombe lista — en vir (referenčni list: korita dobijo konstrukcijsko opombo) */
+function composeNotes(koritaActive,m){
+  var nt=V("notes").split("\n").filter(function(x){return x.trim()});
+  if(koritaActive)nt.splice(Math.min(4,nt.length),0,"Korita: okvir ALU 30×30×2, obloga iz profila, PE vložek 2 mm z drenažo, dno z razmakom 3 mm; nosilnost preveri projektant.");
+  nt.push("Barva: "+V("ral")+" · Masa konstrukcije: "+f(m)+" kg");
+  return nt;
+}
+/* BOM vrstice — EN VIR za list (SEZNAM SESTAVNIH DELOV), dokumentacijski list in balone */
+function bomRows(segCount){
+  var rows=[
+    ["1","Zgornji profil","Alu/jeklo",V("topP"),"1"],
+    ["2","Lamela "+(WC[$("sysProfile").value]||WC.romb67).n,"WPC",f(n("sw"))+"x"+f(n("st"))+"x2 · "+lamelaBreakdown(),String(lamelaTotal())],
+    ["3","Spodnji profil","Alu/jeklo",V("botP"),"1"],
+    ["4","Vertikalni profil","Alu/jeklo",V("postP"),String(postCount())],
+    ["5","Nosilec – konzola","Jeklo",V("bracket"),String(postCount()*2)],
+    ["6","Steber","Jeklo",V("postP"),String(postCount()*2)],
+    ["7","Pritrdilni vijak","Inox",V("bolt"),String(postCount()*Math.max(0,n("nbolt")))],
+    ["8","Sidro","Inox",V("anchor"),String(postCount()*2)]
+  ];
+  var kdB=getKoritaData(),seKb=(segCount<2)?kdB.items:[];
+  /* 2a: surove deske — isti vir kot rezalni načrt (optimizeStock) — kot vrstica »surova deska« na referenčnem listu */
+  var sdS=suroveDeske();
+  if(sdS)rows.splice(2,0,["2a","Surova deska (razrez)","WoodCore WPC",sdS.dim,sdS.kos]);
+  if(seKb.length&&kdB.active){
+    var kq=String(seKb.length);
+    rows.push(["9","Cvetlično korito – okvir in obloga","Alu / WPC","okvir ALU 30×30×2, obloga "+(WC[$("sysProfile").value]||WC.romb67).n+", PE vložek 2 mm + drenaža; globina "+f(kdB.D)+" × višina "+f(kdB.H)+" — širine: "+seKb.map(function(kt){return f(kt.w)}).join(", "),kq+" kpl"]);
+    rows.push(["10","Korito – dno z drenažo","WPC / PE","dno iz desk z razmakom 3 mm (referenčni list)",kq+" kpl"]);
+    rows.push(["11","Konzolni nosilec korita","Jeklo","L 60×60×5 + vijaki M6×16 — max(2, ceil(širina/600)+1) na korito — ocena",String(seKb.reduce(function(a,kt){return a+koritoNosilci(kt.w)},0))]);
+  }
+  return rows;
+}
 /* P2: korita za rože — vrstica v koritoList = "širina;odmik od levega roba" (mm).
    Višina/globina iz polj koritoH/koritoD (privzeti 310×220 po referenčni risbi uporabnika).
    ENOTEN VIR (Faza 3 P2): vse uporabe — izris, prerez, BOM, kosovnica, montažni načrt,
@@ -3680,6 +3693,81 @@ function povprasevanjeTxt(){
   return L.join("\n");
 }
 $("menuDlTech").onclick=function(){saveBlob(V("drw")+"-tehnicni-list.txt",techListTxt(),"text/plain;charset=utf-8")};
+/* Dokumentacijski list (HTML) — celovit tehnični dokument naročila po vzoru referenčnega lista
+   (glava + risba + vhodni podatki + tehnične opombe + BOM + naslovna polja + noga).
+   Samostojen prenos (saveBlob) brez zunanjih virov in skript; niz »style« je sestavljen
+   kosovno, da ga CSP generator v aplikaciji ne obravnava kot inline slog. */
+function docSheetHtml(){
+  generate();
+  var svg=svgEl()?new XMLSerializer().serializeToString(svgEl()):"";
+  var p=WC[$("sysProfile").value]||WC.romb67,use=V("sysUse"),H=n("H"),L=n("L"),lim=roksalLimit(p,use,H);
+  var segs=parseSegs(),kd=getKoritaData(),kItems=(segs.length<2)?kd.items:[];
+  var N=Math.max(1,Math.round(n("n"))),sw=n("sw"),stn=n("st"),gap=n("gap");
+  var rows=bomRows(segs.length),nt=composeNotes(!!(kItems.length&&kd.active),mass());
+  function hv(v){return E(String(v==null?"":v))}
+  function two(a,b){return "<tr><td>"+hv(a)+"</td><td>"+hv(b)+"</td></tr>"}
+  var inputs=[
+    ["Naziv",V("proj")],
+    ["Risba št. / revizija",V("drw")+" / "+V("rev")],
+    ["Sistem / profil","Roksal d.o.o., Kranj — WoodCore WPC · "+p.n],
+    ["Dolžina L",f(L)+" mm"],
+    ["Višina H",f(H)+" mm"],
+    ["Globina D",f(n("D"))+" mm"],
+    ["Lamela (širina × debelina)",f(sw)+" × "+f(stn)+" mm"],
+    ["Število lamel",String(N)],
+    ["Pokrivna višina",f(Math.round(N*sw+(N-1)*gap))+" mm (razmak/reža "+f(gap)+" mm)"],
+    ["Nosilci (stebrčki)",postCount()+" kos · "+lim.label+" ≤ "+lim.v+" mm"],
+    ["Tovariške dolžine desk",String($("stockLen").value)+" mm"],
+    ["Korita za rože",kItems.length?kItems.map(function(kt){return f(kt.w)+" × "+f(kd.D)+" × "+f(kd.H)}).join(", ")+" mm":"brez"],
+    ["Barva / površina",V("sysColor")+" ("+V("sysSurface")+") · "+V("ral")],
+    ["Način pritrditve",V("mountType")+" · podlaga "+V("subType")],
+    ["Merilo / format",V("scale")+" · "+V("paper")+" · LIST 1/1"]
+  ];
+  var css="*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#e9ecef}"+
+    ".sheet{background:#fff;color:#111;border:2px solid #111;padding:22px 26px 26px;max-width:1400px;margin:14px auto}"+
+    ".hdr{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #111;padding-bottom:10px;gap:20px}"+
+    ".hdr h1{font-size:21px;margin:0 0 4px;letter-spacing:.02em;text-transform:uppercase}"+
+    ".hdr .sub{font-size:12.5px;color:#333;line-height:1.5}"+
+    ".hdr .stamp{text-align:right;font-size:11px;line-height:1.6;white-space:nowrap}"+
+    ".hdr .stamp .brand{font-size:14px;font-weight:bold;letter-spacing:.12em;background:#2f3437;color:#fff;padding:4px 10px;display:inline-block;margin-bottom:4px}"+
+    ".caption{font-size:11.5px;font-weight:bold;letter-spacing:.12em;text-transform:uppercase;border-bottom:1.5px solid #111;padding-bottom:3px;margin:20px 0 8px;display:flex;justify-content:space-between}"+
+    ".caption .sc{font-weight:normal;letter-spacing:.04em;color:#444}"+
+    ".dwg{width:100%;height:auto;display:block;background:#fff}"+
+    "table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid #111;padding:4px 7px;text-align:left;vertical-align:top}"+
+    "th{background:#edf0f2;font-size:11px;letter-spacing:.05em;text-transform:uppercase}"+
+    "ol.notes{margin:4px 0 0;padding-left:20px;font-size:12.2px;line-height:1.55;columns:2;column-gap:34px}ol.notes li{margin-bottom:5px;break-inside:avoid}"+
+    ".tb .lbl{background:#edf0f2;font-weight:bold;text-transform:uppercase;font-size:10px;letter-spacing:.06em}"+
+    ".foot{margin-top:16px;font-size:10.5px;color:#555;display:flex;justify-content:space-between;border-top:1.5px solid #111;padding-top:6px}";
+  var h="<!doctype html><html lang=\"sl\"><head><meta charset=\"utf-8\">"+
+    "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">"+
+    "<title>"+hv(V("proj"))+" – tehnična dokumentacija</title>"+
+    "<"+"style>"+css+"<"+"/style></head><body><div class=\"sheet\">";
+  h+="<div class=\"hdr\"><div><h1>"+hv(V("proj"))+" – tehnična risba</h1>"+
+    "<div class=\"sub\">WPC lamelna ograja po sistemu <b>Roksal d.o.o., Kranj – WoodCore</b>, profil <b>"+hv(p.n)+"</b><br>"+
+    "Dolžina <b>"+f(L)+" mm</b> · višina <b>"+f(H)+" mm</b> · lamel <b>"+N+"</b>"+(kItems.length?" · korita za rože <b>"+kItems.length+"×</b>":"")+" · barva <b>"+hv(V("sysColor"))+"</b></div></div>"+
+    "<div class=\"stamp\"><div class=\"brand\">TEHNIČNA DOKUMENTACIJA</div><br>"+
+    "RISBA ŠT.: <b>"+hv(V("drw"))+"</b><br>DATUM: "+hv(V("date"))+"<br>LIST: 1/1 · VSE MERE V mm</div></div>";
+  h+="<div class=\"caption\"><span>01 Risba — pogledi, prerezi in detajli</span><span class=\"sc\">"+hv(V("scale"))+" · "+hv(V("paper"))+"</span></div>";
+  h+="<div class=\"dwg\">"+svg+"</div>";
+  h+="<div class=\"caption\"><span>02 Vhodni podatki</span><span class=\"sc\">povzetek specifikacije</span></div>";
+  h+="<table><tr><th style=\"width:38%\">Parameter</th><th>Vrednost / opomba</th></tr>"+inputs.map(function(r){return two(r[0],r[1])}).join("")+"</table>";
+  h+="<div class=\"caption\"><span>03 Tehnične opombe (po navodilih Roksal d.o.o.)</span><span class=\"sc\">obvezno upoštevati pri izdelavi in montaži</span></div>";
+  h+="<ol class=\"notes\">"+nt.map(function(t){return "<li>"+hv(t)+"</li>"}).join("")+"</ol>";
+  h+="<div class=\"caption\"><span>04 Seznam materiala (BOM)</span><span class=\"sc\">okvirne količine za izdelavo</span></div>";
+  h+="<table><tr><th>Št.</th><th>Naziv dela</th><th>Material</th><th>Dimenzije (mm)</th><th>Količ.</th></tr>"+
+    rows.map(function(r){return "<tr>"+r.map(function(c){return "<td>"+hv(c)+"</td>"}).join("")+"</tr>"}).join("")+"</table>";
+  h+="<div class=\"caption\"><span>05 Naslovna polja</span><span class=\"sc\">potrditev / izvedba</span></div>";
+  h+="<table class=\"tb\">"+
+    "<tr><td class=\"lbl\">Naročnik</td><td>"+hv(V("stranka")||"—")+"</td><td class=\"lbl\">Objekt / lokacija</td><td>"+hv(V("objekt")||"—")+"</td><td class=\"lbl\">Merilo</td><td>"+hv(V("scale"))+"</td></tr>"+
+    "<tr><td class=\"lbl\">Naziv risbe</td><td>"+hv(V("proj"))+"</td><td class=\"lbl\">Risba št. / rev.</td><td>"+hv(V("drw"))+" / "+hv(V("rev"))+"</td><td class=\"lbl\">Datum</td><td>"+hv(V("date"))+"</td></tr>"+
+    "<tr><td class=\"lbl\">Izdelal</td><td>"+hv(V("aut")||"—")+"</td><td class=\"lbl\">Preveril</td><td>"+hv(V("chk")||"—")+"</td><td class=\"lbl\">List</td><td>1 / 1</td></tr>"+
+    "</table>";
+  h+="<div class=\"foot\"><span>Vir sistema in montažnih navodil: Roksal d.o.o., Savska Loka 21, 4000 Kranj – WoodCore WPC (roksal.com).</span><span>"+hv(V("drw"))+"</span></div>";
+  h+="</div></body></html>";
+  return h;
+}
+function buildDocSheet(){saveBlob(V("drw")+"-dokumentacijski-list.html",docSheetHtml(),"text/html;charset=utf-8")}
+$("menuDlDoc").onclick=function(){buildDocSheet()};
 $("menuDlEnquiry").onclick=function(){saveBlob(V("drw")+"-povprasevanje.txt",povprasevanjeTxt(),"text/plain;charset=utf-8")};
 function buildChecklist(){
   var p=WC[$("sysProfile").value]||WC.romb67,use=V("sysUse"),H=n("H"),lim=roksalLimit(p,use,H),rail=roksalRailLimit(p),rowsN=Math.max(2,Math.ceil(H/rail)+1);

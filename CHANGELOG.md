@@ -2,6 +2,18 @@
 
 Vse pomembnejše spremembe projekta **Draftwright — Tehnična risba PRO** so dokumentirane v tej datoteki. Oblika sledi [Keep a Changelog](https://keepachangelog.com/sl/1.1.0/); datumski sufiksi v oznakah (npr. `[2026.11.15]`) so zaporedne podrazličice mesečne različice `APP_VERSION` (trenutno `2026.11`).
 
+## [2026.11.28] — 2026-11-25
+
+### Dodano
+- **Dokumentacijski list (HTML)** — meni *Datoteka → Izvozi dokumentacijski list (HTML)* sestavi samostojen tehnični dokument naročila po vzoru referenčnega lista »Ograja s koriti za rože 5000×1200« (ročno sestavljen dokument iz drugega klepeta): **glava z žigom** (naslov, sistem/profil, ključne mere, RISBA ŠT., DATUM, LIST 1/1), **vgrajena A3 risba** (vsi pogledi, prerezi, detajli), **vhodni podatki z izračuni** (št. lamel, pokrivna višina, omejitev nosilcev, tovariške dolžine, korita), **tehnične opombe** (istovirne listu, vključno s koritno konstrukcijsko opombo), **BOM** (surove deske z odpadom + razčlenjena korita), **naslovna polja** (naročnik/izdelal/preveril/list) in **noga** (vir Roksal).
+- Varnost dokumenta: brez skript, zunanjih povezav in e-poštnih povezav; vnešeni podatki so escape-ani; izpis je determinističen.
+
+### Spremenjeno
+- BOM in opombe lista imajo zdaj **enega vira** (`bomRows()`, `composeNotes()`), ki ga uporabljata tako SVG list kot dokumentacijski list; `parseSegs()` izvzeti segmentni parser.
+
+### Preizkušeno
+- Nova suita `doc-sheet` (23): vsebina dokumenta, izračuni, BOM, varnost (brez href/src/mailto, escape), determinizem. **Skupaj 73 testnih surov** (prej 72), 0 FAIL.
+
 ## [2026.11.27] — 2026-11-25
 
 ### Spremenjeno
