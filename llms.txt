@@ -1,0 +1,193 @@
+# Tehnična risba PRO
+
+> Tehnična risba PRO (DraftWright) iz fotografije ograje, balkona ali terase pripravi tehnično risbo z dimenzijami, kosovnico in montažnimi opombami za WoodCore WPC sisteme. Podpira prečno in pokončno ograjo, fasado, teraso, pregradno steno in napušč; izračuna razmake stebrov in nosilcev po Roksal pravilih ter izvaža PDF, SVG, DXF, STEP in CSV. Deluje kot PWA tudi brez signala na terenu.
+
+- Vrsta: spletna aplikacija (PWA) — deluje tudi brez signala na terenu
+- Licenca: MIT
+- Platforma: Web (PWA) — Windows, macOS, Linux, Android, iOS
+- Izvozi: PDF, SVG, DXF, STEP; kosovnica, montažni načrt, rezalni načrt, predračun (CSV); naročilnik, checklist, tehnični list, povpraševanje Roksal (TXT)
+- Zadnja različica: 2026.11.24 (2026-11-25)
+- Materialni katalog: WoodCore WPC (Roksal d.o.o.) — profili, palete, razmaki in pravila pritrjevanja
+- Zasebnost: brez zunanjih omrežnih klicev — fotografije in meritve ostanejo na napravi
+
+## Zmogljivosti
+
+- Fotografija → umeritev (2 ali 4 točke) → dimenzije v milimetrih
+- Register WoodCore: ROMB-67, POLNA-128, DESKA-150, POLNA-57/32, POLNA-100, KUBO-80/42
+- Avtomatski izračun stebrov in nosilcev po Roksal pravilih (prečna/pokončna ograja, fasada, terasa, pregrada, napušč)
+- Dilatacijske reže po uradni temperaturni tabeli
+- Izvoz PDF, SVG, DXF, STEP, kosovnica (CSV), montažni načrt, rezalni načrt, predračun
+- Deluje brez signala (PWA) — fotografije in podatki ostanejo lokalno
+
+## Od fotografije do tehnične risbe WPC ograje
+
+Pet korakov v aplikaciji Tehnična risba PRO: nalaganje fotografije, umeritev, parametri sistema WoodCore, generiranje risbe in izvoz dokumentacije.
+
+1. **Naložite fotografijo** — V meniju Datoteka naložite fotografijo ograje, balkona ali terase ali izberite pripravljen primer risbe.
+2. **Umerite sliko** — Z znano mero (npr. višina stebra) umerite sliko s 2 ali 4 točkami; merilo se pretvori v milimetre.
+3. **Nastavite parametre** — Vnesite dolžino L, višino H, število desk, profil WoodCore in uporabo (prečna ali pokončna ograja, fasada, terasa, pregrada, napušč).
+4. **Generirajte risbo** — Aplikacija po Roksal pravilih izračuna razmake stebrov in nosilcev, doda montažne opombe in kontrolni list ter generira tehnično risbo.
+5. **Izvozite dokumentacijo** — Izvozite PDF, SVG, DXF ali STEP, kosovnico (CSV), montažni načrt, rezalni načrt, predračun ali povpraševanje Roksal (TXT).
+
+## Profili WoodCore WPC
+
+### ROMB-67
+
+- Mere: 67 × 26 × 5800 mm (do 145 cm).
+- Pritrditev: skrito — L-kotnik levo in desno na stebru, alu cev v sredini profila (montaža brez alu cevi ni mogoča).
+- Uporabe: prečna ograja, pokončna ograja, fasada, pregradna stena.
+- Omejitve: prečna ograja — razmak med stebri ≤ 1450 mm; pokončna ograja — razmak med stebri ≤ 1450 mm; fasada — razmak podkonstrukcije ≤ 800 mm; pregradna stena — razmak stebrov (pokončno) ≤ 1450 mm.
+- Pokončno: vodoravne cevi z razmakom ≤ 1100 mm (vsaj 2 vrsti; število = ⌈H/1100⌉+1).
+- Fasada: podkonstrukcija ≤ 800 mm, skupna debelina na izolaciji 71–75 mm.
+- Vrtanje: 3.9 vijak → Ø3.2 v alu, Ø4.2–4.5 v WPC; obvezna alu cev v sredini romba.
+- Barvne palete: Amazon wood, Ash wood, Golden teak, Burma teak, Oak wood, Rustic oak, Rustic walnut.
+- Pravila aplikacije (opomba za risbo):
+  - prečna ograja: ROMB-67: razmak med stebri ≤ 1450 mm; predvrtanje +1 mm, vijak 30 mm od roba reza. Pri >1450 mm dodaj vmesno povezavo do <1800 mm, nad tem nov steber.
+  - pokončna ograja: ROMB-67: stebri ≤ 1450 mm; vodoravne cevi 3×, razmak ≤ 1100 mm. Vijak 30–150 mm od roba reza. Romb: čepi na koncih; obvezna alu cev v sredini profila — montaža brez nje ni mogoča.
+  - fasada: ROMB-67: podkonstrukcija ≤ 800 mm; skupna debelina na izolaciji 71–75 mm; okoli odprtin alu pločevina 2 mm.
+  - pregradna stena: ROMB-67: prečno stebri ≤ 1450 mm (odvisno od profila), pokončno 150–180 cm po profilu (57/32 in romb 150; polna 100/128 180 do višine 150 cm, višje 150). Romb: kotnik na vsakem nosilcu levo in desno (145 cm velja samo ob obojestranskih kotnikih); pri >145 cm vmesna povezava iz zgornje cevi (ni v tla) do <180 cm, sicer nov stebriček; pokončno: vodoravne cevi ≤ 110 cm s kotnikom, vertikalni nosilci ≤ 100 cm (kotnik ali ploščat aluminij na vsakem nosilcu); odprtine zakriti (vdor vode do alu cevi); čepi ne garantirajo pred vdorom vode.
+
+### POLNA-128
+
+- Mere: 128 × 16,5 × 2200 mm (do 110 cm).
+- Pritrditev: vidno spredaj — predvrtanje +1 mm.
+- Uporabe: prečna ograja, pokončna ograja, pregradna stena.
+- Omejitve: prečna ograja — razmak med stebri ≤ 1100 mm; pokončna ograja — razmak med stebri ≤ 1800 mm do višine 1500 mm, višje ≤ 1500 mm; pregradna stena — razmak stebrov (pokončno) ≤ 1800 mm do višine 1500 mm, višje ≤ 1500 mm.
+- Pokončno: vodoravne cevi z razmakom ≤ 1000 mm (vsaj 2 vrsti; število = ⌈H/1000⌉+1).
+- Vrtanje: predvrtanje v WPC: luknja +1 mm od vijaka; v kovinsko cev večja luknja (temperatura); vijak 30–150 mm od roba.
+- Barvne palete: Amazon wood, Ash wood, Burma teak, Oak wood, Rustic oak, Rustic walnut.
+- Pravila aplikacije (opomba za risbo):
+  - prečna ograja: POLNA-128: razmak med stebri ≤ 1100 mm; predvrtanje +1 mm, vijak 30 mm od roba reza.
+  - pokončna ograja: POLNA-128: stebri ≤ 1500 mm; vodoravne cevi 3×, razmak ≤ 1000 mm. Vijak 30–150 mm od roba reza. Priporočen razmak med deskami 5–30 mm; možno prekrivanje (montaža iz obeh strani).
+  - pregradna stena: POLNA-128: prečno stebri ≤ 1450 mm (odvisno od profila), pokončno 150–180 cm po profilu (57/32 in romb 150; polna 100/128 180 do višine 150 cm, višje 150). Prečno vijačenje: vijak na sredini deske (DESKA-150 v sredino rebra), predvrtanje luknja +1 mm od vijaka; vijaki vidni iz lica.
+
+### DESKA-150
+
+- Mere: 150 × 25 × 4000 mm (do 130 cm).
+- Pritrditev: vidno spredaj — predvrtanje +1 mm.
+- Uporabe: prečna ograja, terasa, pregradna stena.
+- Omejitve: prečna ograja — razmak med stebri ≤ 1300 mm; terasa — razmak podložnih letev ≤ 350 mm; pregradna stena — razmak stebrov (pokončno) ≤ 1800 mm do višine 1500 mm, višje ≤ 1500 mm.
+- Vrtanje: predvrtanje Ø vijak +1 mm, vijačenje v sredino rebra.
+- Barvne palete: Amazon wood, Ash wood, Golden teak, Burma teak, Oak wood, Rustic oak, Rustic walnut.
+- Pravila aplikacije (opomba za risbo):
+  - prečna ograja: DESKA-150: razmak med stebri ≤ 1300 mm; predvrtanje +1 mm, vijak 30 mm od roba reza.
+  - terasa: Terasa: podložne letve 30–35 cm (center 33–35; PDF navodila 33–38), padec ≥ 10 mm/m, reža 5–6 mm + dilatacija po tabeli, odmik od vseh sten ≥ 6 mm; točkovno podlaganje samo z alu cevmi max 60 cm; turbo vijaki za beton 6,7×80 mm; drenažne luknje Ø4,2 mm 5 cm od roba v vsak prekat; rez spodnje stene 30° (uradni PDF) / 5° (FAQ pri pravokotnem polaganju).
+  - pregradna stena: DESKA-150: prečno stebri ≤ 1450 mm (odvisno od profila), pokončno 150–180 cm po profilu (57/32 in romb 150; polna 100/128 180 do višine 150 cm, višje 150). Prečno vijačenje: vijak na sredini deske (DESKA-150 v sredino rebra), predvrtanje luknja +1 mm od vijaka; vijaki vidni iz lica.
+
+### POLNA-57/32
+
+- Mere: 57 × 32 × 5800 mm (do 150 cm).
+- Pritrditev: skrito zadaj — RF vijaki skozi cev.
+- Uporabe: pokončna ograja, pregradna stena.
+- Omejitve: pokončna ograja — razmak med stebri ≤ 1500 mm; pregradna stena — razmak stebrov (pokončno) ≤ 1500 mm.
+- Pokončno: vodoravne cevi z razmakom ≤ 1000 mm (vsaj 2 vrsti; število = ⌈H/1000⌉+1).
+- Vrtanje: vijak ≈ 2/3 globine profila; v WPC luknja manjša od vijaka, v konstrukciji večja (raztezanje); skrito vijačenje — 57 ali 32 mm naleganje.
+- Barvne palete: Amazon wood, Oak wood, Rustic oak, Rustic walnut.
+- Pravila aplikacije (opomba za risbo):
+  - pokončna ograja: POLNA-57/32: stebri ≤ 1500 mm; vodoravne cevi 3×, razmak ≤ 1000 mm. Vijak 30–150 mm od roba reza. Vijak ≈ 2/3 globine profila; v WPC luknja manjša od vijaka, v konstrukciji večja.
+  - pregradna stena: POLNA-57/32: prečno stebri ≤ 1450 mm (odvisno od profila), pokončno 150–180 cm po profilu (57/32 in romb 150; polna 100/128 180 do višine 150 cm, višje 150). Prečno vijačenje: vijak na sredini deske (DESKA-150 v sredino rebra), predvrtanje luknja +1 mm od vijaka; vijaki vidni iz lica.
+
+### POLNA-100
+
+- Mere: 100 × 12 × 5800 mm (do 180 cm).
+- Pritrditev: vidno spredaj — predvrtanje +1 mm.
+- Uporabe: pokončna ograja, fasada, pregradna stena, napušč.
+- Omejitve: pokončna ograja — razmak med stebri ≤ 1800 mm do višine 1500 mm, višje ≤ 1500 mm; fasada — razmak podkonstrukcije ≤ 500 mm; pregradna stena — razmak stebrov (pokončno) ≤ 1800 mm do višine 1500 mm, višje ≤ 1500 mm; napušč — razmak podkonstrukcije (macesen 4×7 cm) ≤ 800 mm.
+- Pokončno: vodoravne cevi z razmakom ≤ 800 mm (vsaj 2 vrsti; število = ⌈H/800⌉+1).
+- Fasada: podkonstrukcija ≤ 500 mm, skupna debelina na izolaciji ~60 mm.
+- Vrtanje: predvrtanje v WPC: luknja +1 mm od vijaka; v kovinsko cev večja luknja (temperatura); vijak 30–150 mm od roba.
+- Barvne palete: Amazon wood, Ash wood, Golden teak, Burma teak, Oak wood, White, Rustic oak, Rustic walnut.
+- Pravila aplikacije (opomba za risbo):
+  - pokončna ograja: POLNA-100: stebri ≤ 1500 mm; vodoravne cevi 4×, razmak ≤ 800 mm. Vijak 30–150 mm od roba reza. Priporočen razmak med deskami 5–30 mm; možno prekrivanje (montaža iz obeh strani).
+  - fasada: POLNA-100: podkonstrukcija ≤ 500 mm; skupna debelina na izolaciji ~60 mm; okoli odprtin alu pločevina 2 mm.
+  - pregradna stena: POLNA-100: prečno stebri ≤ 1450 mm (odvisno od profila), pokončno 150–180 cm po profilu (57/32 in romb 150; polna 100/128 180 do višine 150 cm, višje 150). Prečno vijačenje: vijak na sredini deske (DESKA-150 v sredino rebra), predvrtanje luknja +1 mm od vijaka; vijaki vidni iz lica.
+  - napušč: Napušč: macesnove letve 4×7 cm v razmaku 70–80 cm (vertikalna postavitev → horizontalne letve 2×7 cm ≤ 50 cm); vidni RF svetleči vijaki, vijačenje v opeko; izolacija v ravnini fasade stanjšana ≥ 6 cm; okna/vrata: črna pločevina 2 mm.
+
+### KUBO-80/42
+
+- Mere: 80 × 42 × 5800 mm (do 120 cm).
+- Pritrditev: skrito — alu cev v profilu (surova ali eloksirana; na prostem obvezno eloksirana).
+- Uporabe: fasada, pregradna stena.
+- Omejitve: fasada — razmak podkonstrukcije ≤ 1000 mm; pregradna stena — razpon (z alu cevjo 20×60×2) ≤ 2600 mm.
+- Fasada: podkonstrukcija ≤ 1000 mm, skupna debelina na izolaciji 82 ali 120 mm.
+- Vrtanje: notranja alu cev 20×60×2 / 25×25×2 / 20×20×2 mm (izbira vpliva na ceno in razpon); pritrditev zgoraj/spodaj do 2500 mm; montaža na vidno širino 80 ali 42 mm.
+- Barvne palete: Amazon wood, Oak wood, Rustic oak, Rustic walnut.
+- Pravila aplikacije (opomba za risbo):
+  - fasada: KUBO-80/42: podkonstrukcija ≤ 1000 mm; skupna debelina na izolaciji 82 ali 120 mm; okoli odprtin alu pločevina 2 mm. KUBO samo do 2500 mm z alu cevjo 20×60×2 mm, pritrditev zgoraj/spodaj.
+  - pregradna stena: KUBO-80/42: prečno stebri ≤ 1450 mm (odvisno od profila), pokončno 150–180 cm po profilu (57/32 in romb 150; polna 100/128 180 do višine 150 cm, višje 150). KUBO: brez vmesnih nosilcev zgoraj in spodaj z alu cevjo 20×60 mm, samo do višine 2500 mm; razpon ≤ 1200 mm brez cevi, ≤ 2600 mm z alu 20×60×2 mm, nad tem močnejša (alu/inox) cev; na prostem obvezno eloksirana.
+
+## Dilatacijske reže
+
+Priporočen razmak (mm) po dolžini deske (1–5 m) in temperaturi ob montaži, po uradnem PDF navodilu WoodCore:
+
+| Temperatura ob montaži (°C) | 1 m | 2 m | 3 m | 4 m | 5 m |
+|---|---|---|---|---|---|
+| -25 | 2.75 | 5.5 | 8.25 | 11 | 11 |
+| -20 | 2.5 | 5 | 7.5 | 10 | 10 |
+| -15 | 2.5 | 5 | 7.5 | 10 | 10 |
+| -10 | 2.25 | 4.5 | 6.75 | 9 | 9 |
+| -5 | 2 | 4 | 6 | 8 | 8 |
+| 0 | 1.75 | 3.5 | 5.25 | 7 | 7 |
+| 5 | 1.75 | 3.5 | 5.25 | 7 | 7 |
+| 10 | 1.5 | 3 | 4.5 | 6 | 6 |
+| 15 | 1.25 | 2.5 | 3.75 | 5 | 5 |
+| 20 | 1.25 | 2.5 | 3.75 | 5 | 5 |
+| 25 | 1 | 2 | 3 | 4 | 4 |
+| 30 | 1 | 1.5 | 2.25 | 3 | 3 |
+| 35 | 1 | 1.5 | 1.8 | 2 | 2 |
+
+Vogalna reža 1 mm. Deske niso konstrukcijski element; med montažo distančniki ohranjajo zračenje.
+
+## Pogosta vprašanja
+
+### Katere profile WoodCore WPC podpira Tehnična risba PRO?
+
+Aplikacija pozna šest profilov WoodCore: ROMB-67 (67 × 26 × 5800 mm), POLNA-128 (128 × 16,5 × 2200 mm), DESKA-150 (150 × 25 × 4000 mm), POLNA-57/32 (57 × 32 × 5800 mm), POLNA-100 (100 × 12 × 5800 mm) in KUBO-80/42 (80 × 42 × 5800 mm). Za vsak profil upošteva katalogske razmake stebrov in nosilcev ter pravila pritrjevanja.
+
+### Ali so izračuni in risbe zavezujoča dokumentacija?
+
+Ne. Izračuni so orientacijske narave in niso pogodbena dokumenta; vse mere so v milimetrih (mm) in jih je pred izdelavo treba preveriti na objektu. Predračun je orientacijski in ni ponudba — za zavezujočo ponudbo in DDV velja pogodbeni obrazec.
+
+### Kakšen je največji razmak stebrov pri pokončni ograji?
+
+Največji razmak stebrov je odvisen od profila: ROMB-67 do 1450 mm, POLNA-57/32 do 1500 mm ter POLNA-100 in POLNA-128 do 1800 mm do višine 1500 mm, nad to višino pa 1500 mm. Pri pregradnih stenah znaša razmak stebrov 150–180 cm po profilu.
+
+### Ali je pri profilu ROMB-67 potrebna aluminijasta cev?
+
+Da. ROMB-67 se montira skrito z L-kotniki levo in desno na stebru, aluminijasta cev v sredini profila pa je obvezna in vključena v ceno romb deske — montaža brez alu cevi ni mogoča. Vijak 3,9 mm se privija z vrtino Ø3,2 mm v alu cev in romb ter Ø4,2–4,5 mm v WPC.
+
+### Kako poteka pritrjevanje WPC desk na konstrukcijo?
+
+Najmanjši odmik vijaka od roba reza je 3 cm, pri konstrukciji na ploščo največ 15 cm, pri bočni montaži na ploščo pa 10 cm. Izvrtina v WPC je 1 mm večja od vijaka (predvrtanje +1 mm), pri profilu POLNA-57/32 pa je luknja v WPC manjša od vijaka in v konstrukciji večja. Vijak je 30–150 mm od roba deske, montaža poteka nad +5 °C.
+
+### Kako vzdrževati WPC vrtno pohištvo?
+
+Površino očistite z vodo. Za dodatno vodoodbojno zaščito nanesite WEPOS WPC impregnacijo na dobro očiščeno in popolnoma suho površino, predvsem na mizne plošče in sedeže.
+
+### Kako skladiščiti WPC deske?
+
+Deske hranite v suhem in zračnem prostoru, na ravni in čisti podlagi po celotni dolžini in širini. Ob neustreznem skladiščenju se reklamacija ne upošteva.
+
+### Kakšna je garancija za WoodCore WPC?
+
+Garancija znaša 15 let na material in 2 leti na dela izvedena s strani Roksal/a. Odtenek deske se v prvem letu posvetli za 5–10 %.
+
+## Opozorila in pravne opombe
+
+- Vse mere so v milimetrih (mm); pred izdelavo preveriti na objektu.
+- Izračuni so orientacijske narave in niso pogodbena dokumenta — pred naročilom potrditi pri Roksalu.
+- Dilatacijske reže po uradni temperaturni tabeli; vogal 1 mm.
+- predračun je orientacijski, ni ponudba; za zavezujočo ponudbo in DDV glej pogodbeni obrazec.
+- 15 let na material, 2 leti na dela izvedena s strani Roksal/a.
+- Dobavitelj: Roksal d.o.o., pogoji splošni pogoji v5.0.
+- Povpraševanje: info@roksal.com (navadno besedilo — aplikacija ne vzpostavlja omrežnih povezav)
+
+## Viri
+
+Katalogski podatki so povzeti iz uradnih Roksal WoodCore virov:
+
+- [WoodCore WPC desks — catalogue](https://roksal.com/woodcore-wpc-deske/)
+- [Partition walls — transverse boards](https://roksal.com/woodcore-wpc-deske/pregradne-stene/precne-deske/)
+- [Partition walls — vertical boards](https://roksal.com/woodcore-wpc-deske/pregradne-stene/pokoncne-deske/)
+- [WoodCore installation manual (PDF, SL)](https://roksal.com/wp-content/uploads/WOODCORE_navodila_za_montazo-sl.pdf)
+

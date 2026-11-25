@@ -2,6 +2,22 @@
 
 Vse pomembnejše spremembe projekta **Draftwright — Tehnična risba PRO** so dokumentirane v tej datoteki. Oblika sledi [Keep a Changelog](https://keepachangelog.com/sl/1.1.0/); datumski sufiksi v oznakah (npr. `[2026.11.15]`) so zaporedne podrazličice mesečne različice `APP_VERSION` (trenutno `2026.11`).
 
+## [2026.11.24] — 2026-11-25
+
+### Dodano
+- **Strojno berljiva predstavitev aplikacije** — `llms.txt` / `llms.en.txt` po vzoru [llmstxt.org](https://llmstxt.org): profili WoodCore (mere, omejitve, vrtanje, pritrjevanje, uporabe, palete), dilatacijska tabela iz `js/dilatation.js` (13 temperatur), FAQ (8 vprašanj), pravne opombe in viri (uradna Roksal dokumentacija). Generator `scripts/generate-llms.js` bere **enega vira resnice** — register `WC` (prek `scripts/lib/catalog.js`), `scripts/lib/seo-content.js` in `CHANGELOG.md`.
+- **schema.org JSON-LD** v `<head>` (označen blok `seo-jsonld`, generator `scripts/generate-seo.js`): `SoftwareApplication` (kategorija, platforma, `softwareVersion`/`datePublished` iz CHANGELOG snapshota, MIT licenca, zastonj, izvozi PDF/DXF/CSV/STEP), `HowTo` (5 korakov: fotografija → umeritev → parametri → risba → izvoz) in `FAQPage` (iz istega vira kot llms.txt).
+- **Vsebinski gate** `scripts/check-content.js` (vzor `check-legal`/`check-community` iz soma-website): `validateRegistry()`, obstoj vseh slik in SW_ASSETS na disku, i18n pariteta `data-i18n`↔`LANG_EN`, neprazna kontaktna/EULA/opozorila brez TODO, števci surov `package.json`↔README ter svežina generiranih llms/seo artefaktov (drift gate).
+
+### Spremenjeno
+- `scripts/lib/catalog.js` — nalagalnik registra WoodCore v `vm` sandbox brez DOM (en vir podatkov za generatorje, brez odvisnosti od jsdom).
+- `scripts/lib/changelog.js` — parser CHANGELOG snapshota (verzija + datum), osnova za `softwareVersion` in »Kaj je novega«.
+- **APP_VERSION / »Kaj je novega«** sta po vzoru soma snapshota vezana na CHANGELOG — test `seo` preverja usklajenost, ne več ročno štetje.
+- README: števci surov usklajeni z resničnim stanjem (dejansko je bilo v verigi **68** surov, README je zaostajal pri 67) in dokumentacija novih artefaktov.
+
+### Preizkušeno
+- 3 nove suite: `llms` (23), `seo` (21), `content-gate` (10; vključno z negativnimi dokazi okvar). **Skupaj 71 testnih surov** (prej 68), 0 FAIL.
+
 ## [2026.11.23] — 2026-11-25
 
 ### Dodano (reference — pokončna ograja z WoodCore deskami)
