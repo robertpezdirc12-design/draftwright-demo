@@ -6,7 +6,7 @@
 - License: MIT
 - Platforms: modern browsers: Windows, macOS, Linux, Android, iOS
 - Exports: PDF, SVG, DXF, STEP; BOM, assembly plan, cutting plan, quotation (CSV); order, checklist, material sheet, Roksal enquiry (TXT)
-- Latest version: 2026.11.24 (2026-11-25)
+- Latest version: 2026.11.25 (2026-11-25)
 - Material catalogue: WoodCore WPC (Roksal d.o.o.) — profiles, palettes, spacing and fastening rules
 - Privacy: no external network calls — photos and measurements stay on the device
 

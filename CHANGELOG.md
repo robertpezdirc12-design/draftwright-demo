@@ -2,6 +2,15 @@
 
 Vse pomembnejše spremembe projekta **Draftwright — Tehnična risba PRO** so dokumentirane v tej datoteki. Oblika sledi [Keep a Changelog](https://keepachangelog.com/sl/1.1.0/); datumski sufiksi v oznakah (npr. `[2026.11.15]`) so zaporedne podrazličice mesečne različice `APP_VERSION` (trenutno `2026.11`).
 
+## [2026.11.25] — 2026-11-25
+
+### Spremenjeno
+- **WebP katalogske slike** (vzor `scripts/images.mjs` iz soma-website): vseh 25 slik galerije `slike/pokoncna/` je preklopljenih z `.jpg` na `.webp` (kakovost 82) v aplikaciji, SW predpomnilniku in testih; skupaj 1,57 → 1,16 MB (**≈26 % manjši offline cache** — slike so bile že prej optimizirane kot JPEG q85). Izvorne `.jpg` ostanejo v repozitoriju kot vir za regeneracijo (`npm run images:webp` / `node scripts/images.mjs`, lokalno orodje s sharp — CI ga ne potrebuje, saj testi in `--check` avdit samo berejo disk).
+- `reference-gallery` surov: pravila za krajevne slike sedaj zahtevajo `.webp`.
+
+### Preizkušeno
+- Nova suita `images` (12): RIFF/WEBP magic, `.webp` manjši od izvora, HTML↔SW↔disk ujemanje, avdit brez sharp. **Skupaj 72 testnih surov** (prej 71), 0 FAIL.
+
 ## [2026.11.24] — 2026-11-25
 
 ### Dodano

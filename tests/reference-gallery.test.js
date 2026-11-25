@@ -66,7 +66,7 @@ function check(name, ok, info) {
   const imgs = Array.from(grid ? grid.querySelectorAll("img") : []);
   check("vsaka kartica ima fotografijo", imgs.length === 4, "slik: " + imgs.length);
   check("vse slike so krajevne (slike/pokoncna/) — brez egress",
-    imgs.length === 4 && imgs.every((im) => /^slike\/pokoncna\/[a-z0-9-]+\.jpg$/.test(im.getAttribute("src") || "")),
+    imgs.length === 4 && imgs.every((im) => /^slike\/pokoncna\/[a-z0-9-]+\.webp$/.test(im.getAttribute("src") || "")),
     imgs.map((im) => im.getAttribute("src")).join(", "));
   check("alt besedila so izpolnjena",
     imgs.length === 4 && imgs.every((im) => (im.getAttribute("alt") || "").length > 5));
@@ -265,7 +265,7 @@ function check(name, ok, info) {
     cat.includes("WEPOS WPC impregnacijo") && cat.includes("vodoodbojno zaščito") && cat.includes("popolnoma suha") && cat.includes("mizne plošče"));
 
   const fixImgs = Array.from(document.querySelectorAll('#tmplOverlay img[src^="slike/"]'));
-  check("vse katalogske slike so krajevne", fixImgs.every((im) => /^slike\/pokoncna\/[a-z0-9-]+\.jpg$/.test(im.getAttribute("src") || "")));
+  check("vse katalogske slike so krajevne", fixImgs.every((im) => /^slike\/pokoncna\/[a-z0-9-]+\.webp$/.test(im.getAttribute("src") || "")));
   check("vse katalogske slike obstajajo na disku",
     fixImgs.length >= 17 && fixImgs.every((im) => fs.existsSync(path.join(root, im.getAttribute("src")))), fixImgs.length + " slik");
   const swAll = read("sw.js");
