@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- CSP: strict script allowlist by hash. No unsafe-inline / unsafe-eval. frame-ancestors is set in vercel.json (unsupported in meta). -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-A9QRJwFKY3E2iFMkpT2dEPfovUdTV1rE6fKOwgFR+kg=' 'sha256-+nXEtgKk+ScHYKZ/ie15Bv0gu+L97q0St+rXFk+1qrA=' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-evTnd57LTPf+2bIiej6q93k/DzZ5ak5Vxd5U7EAMUu8='; style-src 'self' 'sha256-o68CI6+lyXlvfPBh8A9CxCfnNYjJp9hfyAbRoous0IY='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-A9QRJwFKY3E2iFMkpT2dEPfovUdTV1rE6fKOwgFR+kg=' 'sha256-+nXEtgKk+ScHYKZ/ie15Bv0gu+L97q0St+rXFk+1qrA=' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-Ljr+9b8HJmymNJ6CzE0+lzO+f7gejTBK6lMVtLFQs0A='; style-src 'self' 'sha256-o68CI6+lyXlvfPBh8A9CxCfnNYjJp9hfyAbRoous0IY='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Tehnična risba PRO – fotografija do končnega lista</title>
 <!-- >>> GENERATED: seo-jsonld — uredi scripts/generate-seo.js, ne to kopijo -->
 <script type="application/ld+json">[
@@ -3258,7 +3258,7 @@ function suroveDeske(){
     var piece=Math.round(items[0].len),r=optimizeStock(piece,N,stocks,kerf);
     if(!r||!r.traki||!r.traki.length)return null;
     var boards=r.traki.length,waste=r.traki.reduce(function(a,t){return a+t.waste},0);
-    return {kos:String(boards),dim:"kos "+f(piece)+" mm iz tovariških "+stocks.map(function(x){return f(x)}).join("/")+" mm · odpad "+f(Math.round(waste))+" mm"};
+    return {kos:String(boards),dim:"kos "+f(piece)+" mm iz tovariških "+stocks.map(function(x){return f(x)}).join("/")+" mm · odpad "+f(Math.round(waste/Math.max(1,boards)))+" mm/desko (skupaj "+f(Math.round(waste))+" mm)"};
   }catch(e){return null}
 }
 /* segmenti (F4: vrstica = naziv;širina;višina) — en vir za izris, BOM in dokumentacijski list */
@@ -3730,7 +3730,7 @@ function docSheetHtml(){
     ".hdr .sub{font-size:12.5px;color:#333;line-height:1.5}"+
     ".hdr .stamp{text-align:right;font-size:11px;line-height:1.6;white-space:nowrap}"+
     ".hdr .stamp .brand{font-size:14px;font-weight:bold;letter-spacing:.12em;background:#2f3437;color:#fff;padding:4px 10px;display:inline-block;margin-bottom:4px}"+
-    ".caption{font-size:11.5px;font-weight:bold;letter-spacing:.12em;text-transform:uppercase;border-bottom:1.5px solid #111;padding-bottom:3px;margin:20px 0 8px;display:flex;justify-content:space-between}"+
+    ".caption{font-size:11.5px;font-weight:bold;letter-spacing:.12em;text-transform:uppercase;border-bottom:1.5px solid #111;padding-bottom:3px;margin:20px 0 8px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:2px 12px}"+
     ".caption .sc{font-weight:normal;letter-spacing:.04em;color:#444}"+
     ".dwg{width:100%;height:auto;display:block;background:#fff}"+
     "table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid #111;padding:4px 7px;text-align:left;vertical-align:top}"+
