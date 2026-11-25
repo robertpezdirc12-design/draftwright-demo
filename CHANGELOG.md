@@ -2,6 +2,19 @@
 
 Vse pomembnejše spremembe projekta **Draftwright — Tehnična risba PRO** so dokumentirane v tej datoteki. Oblika sledi [Keep a Changelog](https://keepachangelog.com/sl/1.1.0/); datumski sufiksi v oznakah (npr. `[2026.11.15]`) so zaporedne podrazličice mesečne različice `APP_VERSION` (trenutno `2026.11`).
 
+## [2026.11.27] — 2026-11-25
+
+### Spremenjeno
+- **Tehnična risba: pariteta z referenčnim dokumentom** (ročno sestavljen list »Ograja s koriti za rože 5000×1200«) — sprednji pogled dobi **verigo kotov položaja korit** (odmiki od levega roba), rob korita + skrito gladino zemlje ter **oznako prereza A–A** skozi steber; napis pod pogledom je profilno označen (odstranjen trdo kodiran »U-profil«) + **pokrivna višina** (N×67+razmaki).
+- **Prerez A–A**: korito dobi šrafuro zemlje, PE vložek in drenažne reže v dnu (kot detajl D2 na referenčnem listu).
+- **Detajl pritrjevanja**: oznake po referenčnem listu — L-kotnik + vijak **iz zadnje strani (skrito)**, predvrtanje po registru (`p.drill`, npr. Ø3,2 → WPC Ø4,2–4,5), min. 30 / maks. 150 mm od roba reza.
+- **Opombe na listu**: zmogljivost 8 → 11 vrstic; samodejno se dodata opombi **Rezanje/spoji** (kosi iz tovariških dolžin, spoji vedno na stebru, folije po montaži) in **Sidranje** (odvisno od podlage, ni predmet risbe); korita dobijo **konstrukcijsko opombo** (okvir ALU 30×30×2, obloga profila, PE vložek 2 mm + drenaža, dno z razmakom 3 mm, statiko preveri projektant).
+- **BOM na listu**: nova vrstica **»2a Surova deska (razrez)«** iz optimizacije tovariških dolžin (isti vir kot rezalni načrt — kos iz 5800 mm + odpad) ter razčlenjene vrstice korit (okvir in obloga, dno z drenažo, konzole L 60×60×5 + vijaki M6×16).
+- **Noga lista**: vir sistema (Roksal d.o.o., Kranj — roksal.com), oznaka risbe, LIST 1/1, opomba o preverjanju mer na objektu.
+
+### Preizkušeno
+- Zlati posnetki osveženi (`precna-osnovna`, `dvonadstropna-lpovratek`, `terasa-deska150`); `stopniscna`, `pokoncna-referencna` in `kosovnica-osnovna` nespremenjeni. **Skupaj 72 testnih surov**, 0 FAIL.
+
 ## [2026.11.26] — 2026-11-25
 
 ### Dodano
