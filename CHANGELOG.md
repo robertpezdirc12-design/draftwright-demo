@@ -2,6 +2,14 @@
 
 Vse pomembnejše spremembe projekta **Draftwright — Tehnična risba PRO** so dokumentirane v tej datoteki. Oblika sledi [Keep a Changelog](https://keepachangelog.com/sl/1.1.0/); datumski sufiksi v oznakah (npr. `[2026.11.15]`) so zaporedne podrazličice mesečne različice `APP_VERSION` (trenutno `2026.11`).
 
+## [2026.11.35] — 2026-11-26
+
+### Popravljeno
+- **Izbira vidnih sklopov: Escape** — prejšnja različica je Escape ujela šele na `document`, a nadrejeni meni ga je ustavil in zaprl samega sebe. Zdaj izbiro ujame ovojnica `.fieldpick`: zapre le izbiro, meni ostane odprt, fokus pa se vrne na gumb.
+
+### Preizkušeno
+- `tests/a11y.test.js` (**45 preverjanj**) pošlje Escape na gumb (mehurčenje), ne neposredno na `document`; v brskalniku meni ostane odprt, fokus je na gumbu.
+
 ## [2026.11.34] — 2026-11-26
 
 ### Popravljeno

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- CSP: strict script allowlist by hash. No unsafe-inline / unsafe-eval. frame-ancestors is set in vercel.json (unsupported in meta). -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-lJuWGc4gTGvMG1jsupw9YqbTVJRdliT6XgLemCbsbzs=' 'sha256-qzv8HvQc+lLSlulCQL6g2btnLWjOnnNJl+nbP9vvGp4=' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-7p57GJpZQxeteItpSDX3ewghy9GOrs281lPUPGJ6/hs='; style-src 'self' 'sha256-FoagumGQjeRIiyVr4TPgDTtnMCHTTg5+mclC/wzcYXw='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-JJ6Nbjlr46K9VJ6nsDP7Q6DPjy/smbrg1puyp94KGBQ=' 'sha256-4xIJMdigrTCCV2R8GKQl2DXOTam9hQRk2kJ03h++hRY=' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-YPtS6YI+LYKVUTf8iFTHse1gFSGPavjJWcpVJndQoSY='; style-src 'self' 'sha256-FoagumGQjeRIiyVr4TPgDTtnMCHTTg5+mclC/wzcYXw='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Tehnična risba PRO – fotografija do končnega lista</title>
 <!-- >>> GENERATED: seo-jsonld — uredi scripts/generate-seo.js, ne to kopijo -->
 <script type="application/ld+json">[
@@ -20,7 +20,7 @@
     "applicationSubCategory": "Technical drawing / CAD",
     "operatingSystem": "Web (PWA) — Windows, macOS, Linux, Android, iOS",
     "applicationSuite": "WoodCore WPC (Roksal)",
-    "softwareVersion": "2026.11.34",
+    "softwareVersion": "2026.11.35",
     "datePublished": "2026-11-26",
     "offers": {
       "@type": "Offer",
@@ -149,11 +149,11 @@
   }
 ]</script>
 <script>var DW_RELEASE={
-  "version": "2026.11.34",
+  "version": "2026.11.35",
   "date": "2026-11-26",
   "notes": [
-    "Izbira vidnih sklopov — gumb v meniju »Plošča« ni javljal stanja; zdaj ima aria-expanded in aria-controls, skupina potrditvenih polj pa ime. Escape zapre samo to izbiro (ne še celega menija) in vrne fokus na gumb, klik zunaj pa uskladi stanje.",
-    "tests/a11y.test.js (45 preverjanj) preverja stanje, Escape in klik zunaj; v brskalniku meni ostane odprt, fokus pa se vrne na gumb."
+    "Izbira vidnih sklopov: Escape — prejšnja različica je Escape ujela šele na document, a nadrejeni meni ga je ustavil in zaprl samega sebe. Zdaj izbiro ujame ovojnica .fieldpick: zapre le izbiro, meni ostane odprt, fokus pa se vrne na gumb.",
+    "tests/a11y.test.js (45 preverjanj) pošlje Escape na gumb (mehurčenje), ne neposredno na document; v brskalniku meni ostane odprt, fokus je na gumbu."
   ]
 };</script>
 <!-- <<< END GENERATED: seo-jsonld -->
@@ -4842,11 +4842,14 @@ $("fieldBtn").onclick=function(){
   m.classList.toggle("open",open);
   this.setAttribute("aria-expanded",open?"true":"false");
 };
-document.addEventListener("keydown",function(e){
+/* Escape mora ujeti .fieldpick (prednik), ne document: nadrejeni meni
+   posluša Escape na svojem vozlišču in ustavi mehurčenje. */
+var fieldPickWrap=$("fieldBtn").closest(".fieldpick");
+if(fieldPickWrap)fieldPickWrap.addEventListener("keydown",function(e){
   var m=$("fieldMenu");
   if(e.key!=="Escape"||!m||!m.classList.contains("open"))return;
   e.preventDefault();
-  e.stopImmediatePropagation();
+  e.stopPropagation();
   m.classList.remove("open");
   $("fieldBtn").setAttribute("aria-expanded","false");
   try{$("fieldBtn").focus()}catch(_e){}
