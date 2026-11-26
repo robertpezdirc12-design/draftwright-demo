@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- CSP: strict script allowlist by hash. No unsafe-inline / unsafe-eval. frame-ancestors is set in vercel.json (unsupported in meta). -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-lOElI2z5z/oWAUVgP9bUNOxxUH6fMLzQlw7H8JUOXmY=' 'sha256-pQ571wbVKAOnylmrdXpsU8frnKXWJLIXEun5UKEHc3k=' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-4jBBbwpB60+JRUFVMfEckLTmvJc4BO7zu4UlBrOGOmM='; style-src 'self' 'sha256-UAmxzAJlTrP92DeOwaBmKE+jTmy/iQ2ni64MG8BxJMQ='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-lOElI2z5z/oWAUVgP9bUNOxxUH6fMLzQlw7H8JUOXmY=' 'sha256-pQ571wbVKAOnylmrdXpsU8frnKXWJLIXEun5UKEHc3k=' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-BWFXVPw/SdQeu3EgKSj4YBBO3DCcfLMw+8hY4uvAfHI='; style-src 'self' 'sha256-UAmxzAJlTrP92DeOwaBmKE+jTmy/iQ2ni64MG8BxJMQ='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Tehnična risba PRO – fotografija do končnega lista</title>
 <!-- >>> GENERATED: seo-jsonld — uredi scripts/generate-seo.js, ne to kopijo -->
 <script type="application/ld+json">[
@@ -1267,7 +1267,7 @@ Konstrukcija odporna na vremenske vplive.</textarea>
       <div class="exp-label">Povezava</div>
       <div class="exp-field">
         <label for="aiEndpoint">API endpoint (OpenAI-združljiv /chat/completions)</label>
-        <input type="text" id="aiEndpoint" placeholder="https://api.example.com/v1/chat/completions" autocomplete="off">
+        <input type="text" id="aiEndpoint" placeholder="/api/chat/completions" autocomplete="off">
       </div>
       <div class="exp-field">
         <label for="aiKey">API ključ</label>
@@ -1285,7 +1285,7 @@ Konstrukcija odporna na vremenske vplive.</textarea>
           <option value="gemini-2.0-flash"></option>
         </datalist>
       </div>
-      <p class="hint" data-s="s46">Nasvet: za DeepAI ali drug ponudnik uporabite endpoint, ki podpira format <code>POST /chat/completions</code>. Če ključ ali endpoint ne delujeta, pustite prazno — program deluje normalno brez AI.</p>
+      <p class="hint" data-s="s46">Nasvet: zaradi varnostne politike (<code>connect-src 'self'</code>) so dovoljeni le endpointi na istem izvoru — npr. lasten proxy, ki podpira <code>POST /chat/completions</code>. Brez ključa AI ostane izklopljen.</p>
     </div>
     <div class="exp-foot">
       <div class="exp-note" id="aiNote"></div>
@@ -5999,6 +5999,8 @@ $("aiClear").onclick=function(){
 $("aiTest").onclick=async function(){
   var s={endpoint:$("aiEndpoint").value.trim(),key:$("aiKey").value.trim(),model:$("aiModel").value.trim()};
   if(!s.endpoint||!s.key){$("aiNote").textContent="Vnesite endpoint in API ključ za preizkus.";$("aiNote").className="exp-note err";return}
+  var u;try{u=new URL(s.endpoint,location.href)}catch(_e){$("aiNote").textContent="Neveljaven endpoint.";$("aiNote").className="exp-note err";return}
+  if(u.origin!==location.origin){$("aiNote").textContent="Zunanji endpoint ni dovoljen — aplikacija ne pošilja podatkov na tuje strežnike. Uporabite endpoint na istem izvoru (npr. lasten proxy).";$("aiNote").className="exp-note err";return}
   $("aiNote").textContent="Preizkušam povezavo…";$("aiNote").className="exp-note";
   try{
     var r=await fetch(s.endpoint,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+s.key},body:JSON.stringify({model:s.model||"gpt-4o-mini",messages:[{role:"user",content:"Reply with OK"}],max_tokens:5})});

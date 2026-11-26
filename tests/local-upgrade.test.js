@@ -105,7 +105,7 @@ check("SL: povratek na slovenski gumb", tx("proposalBtn") === "Predlog ograje na
 
 /* --- 4) offline jamstvo ostane --- */
 const fetchCalls = [...html.matchAll(/fetch\s*\(\s*([^)]*)/g)];
-check("še vedno natanko en fetch (lokalni font)", fetchCalls.length === 1, "fetch=" + fetchCalls.length);
+check("še vedno natanko 2 fetch (font + uporabniško sprožen AI test)", fetchCalls.length === 2, "fetch=" + fetchCalls.length);
 check("novi handler ne kliče omrežja",
   !/proposalBtn[\s\S]{0,600}?fetch\(/.test(html));
 check("brez JS napak", errors.length === 0, errors.join(" | "));
