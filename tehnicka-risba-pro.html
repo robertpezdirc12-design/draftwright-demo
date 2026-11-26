@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- CSP: strict script allowlist by hash. No unsafe-inline / unsafe-eval. frame-ancestors is set in vercel.json (unsupported in meta). -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-RVpokZZSQffD3I42R4QEsvuWjMg6+PgusjlwwORJWL4=' 'sha256-nEgSWGBsJiqEE5kRzvZhv/YzUdGregJiZtv/ZpP9auE=' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-zH+WdZ9iZ46Gh7V/ab7Gl5ko4Jj4aHbva2wG0lwThf4='; style-src 'self' 'sha256-FoagumGQjeRIiyVr4TPgDTtnMCHTTg5+mclC/wzcYXw='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-lJuWGc4gTGvMG1jsupw9YqbTVJRdliT6XgLemCbsbzs=' 'sha256-qzv8HvQc+lLSlulCQL6g2btnLWjOnnNJl+nbP9vvGp4=' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-7p57GJpZQxeteItpSDX3ewghy9GOrs281lPUPGJ6/hs='; style-src 'self' 'sha256-FoagumGQjeRIiyVr4TPgDTtnMCHTTg5+mclC/wzcYXw='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Tehnična risba PRO – fotografija do končnega lista</title>
 <!-- >>> GENERATED: seo-jsonld — uredi scripts/generate-seo.js, ne to kopijo -->
 <script type="application/ld+json">[
@@ -20,7 +20,7 @@
     "applicationSubCategory": "Technical drawing / CAD",
     "operatingSystem": "Web (PWA) — Windows, macOS, Linux, Android, iOS",
     "applicationSuite": "WoodCore WPC (Roksal)",
-    "softwareVersion": "2026.11.33",
+    "softwareVersion": "2026.11.34",
     "datePublished": "2026-11-26",
     "offers": {
       "@type": "Offer",
@@ -149,12 +149,11 @@
   }
 ]</script>
 <script>var DW_RELEASE={
-  "version": "2026.11.33",
+  "version": "2026.11.34",
   "date": "2026-11-26",
   "notes": [
-    "Rezultat in povečana fotografija — zadnja dva dialoga sta imela vsebino zunaj landmarkov (axe region); zdaj imata role=\"dialog\", aria-modal in ime iz naslova, fokus ob odprtju in zaprtju pa ureja skupni sistem.",
-    "Oznaki materiala in formata lista — #matSel in #expPaper sta dobila povezano oznako; test dostopnosti zdaj pri \u003cselect> ne šteje besedila možnosti kot imena (prej lažno zelen).",
-    "tests/a11y.test.js (41 preverjanj) preverja vseh 13 dialogov, ime rezultata in povečave ter fokus; axe na obeh ne najde kršitev."
+    "Izbira vidnih sklopov — gumb v meniju »Plošča« ni javljal stanja; zdaj ima aria-expanded in aria-controls, skupina potrditvenih polj pa ime. Escape zapre samo to izbiro (ne še celega menija) in vrne fokus na gumb, klik zunaj pa uskladi stanje.",
+    "tests/a11y.test.js (45 preverjanj) preverja stanje, Escape in klik zunaj; v brskalniku meni ostane odprt, fokus pa se vrne na gumb."
   ]
 };</script>
 <!-- <<< END GENERATED: seo-jsonld -->
@@ -626,8 +625,8 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:none}
       <div class="sep"></div>
       <div class="label">Vidnost</div>
       <div class="fieldpick">
-        <button class="btn" id="fieldBtn" type="button">Vidni sklopi in polja…</button>
-        <div class="fieldmenu" id="fieldMenu">
+        <button class="btn" id="fieldBtn" type="button" aria-expanded="false" aria-controls="fieldMenu">Vidni sklopi in polja…</button>
+        <div class="fieldmenu" id="fieldMenu" role="group" aria-label="Vidni sklopi in polja">
           <div class="fm-title">Sklopi</div>
           <label><input type="checkbox" data-fg="photo"> Fotografija</label>
           <label><input type="checkbox" data-fg="cal"> Umeritev</label>
@@ -4838,7 +4837,20 @@ function applyFieldVisibility(){
   if(lc)lc.textContent=boxes.filter(function(b){return b.checked}).length+"/"+boxes.length;
   saveFieldState();
 }
-$("fieldBtn").onclick=function(){$("fieldMenu").classList.toggle("open")};
+$("fieldBtn").onclick=function(){
+  var m=$("fieldMenu"),open=!m.classList.contains("open");
+  m.classList.toggle("open",open);
+  this.setAttribute("aria-expanded",open?"true":"false");
+};
+document.addEventListener("keydown",function(e){
+  var m=$("fieldMenu");
+  if(e.key!=="Escape"||!m||!m.classList.contains("open"))return;
+  e.preventDefault();
+  e.stopImmediatePropagation();
+  m.classList.remove("open");
+  $("fieldBtn").setAttribute("aria-expanded","false");
+  try{$("fieldBtn").focus()}catch(_e){}
+});
 $("fieldReset").onclick=function(){
   fieldBoxes().forEach(function(b){b.checked=!!FIELD_FALLBACK[b.getAttribute("data-fg")]});
   applyFieldVisibility();
@@ -4846,7 +4858,10 @@ $("fieldReset").onclick=function(){
 fieldBoxes().forEach(function(b){b.addEventListener("change",applyFieldVisibility)});
 document.addEventListener("click",function(e){
   var m=$("fieldMenu");if(!m||!m.classList.contains("open"))return;
-  if(!e.target.closest(".fieldpick"))m.classList.remove("open");
+  if(!e.target.closest(".fieldpick")){
+    m.classList.remove("open");
+    var fb=$("fieldBtn"); if(fb)fb.setAttribute("aria-expanded","false");
+  }
 });
 
 /* ---------- UI/UX additions: guided/expert, accordion, presets, shortcuts, autosave ---------- */

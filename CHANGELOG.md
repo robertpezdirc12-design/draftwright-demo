@@ -2,6 +2,14 @@
 
 Vse pomembnejše spremembe projekta **Draftwright — Tehnična risba PRO** so dokumentirane v tej datoteki. Oblika sledi [Keep a Changelog](https://keepachangelog.com/sl/1.1.0/); datumski sufiksi v oznakah (npr. `[2026.11.15]`) so zaporedne podrazličice mesečne različice `APP_VERSION` (trenutno `2026.11`).
 
+## [2026.11.34] — 2026-11-26
+
+### Popravljeno
+- **Izbira vidnih sklopov** — gumb v meniju »Plošča« ni javljal stanja; zdaj ima `aria-expanded` in `aria-controls`, skupina potrditvenih polj pa ime. Escape zapre samo to izbiro (ne še celega menija) in vrne fokus na gumb, klik zunaj pa uskladi stanje.
+
+### Preizkušeno
+- `tests/a11y.test.js` (**45 preverjanj**) preverja stanje, Escape in klik zunaj; v brskalniku meni ostane odprt, fokus pa se vrne na gumb.
+
 ## [2026.11.33] — 2026-11-26
 
 ### Popravljeno
