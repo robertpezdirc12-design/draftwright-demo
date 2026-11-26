@@ -89,23 +89,27 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   /* ---------- 3) sklopi stranske plošče so tipkovnični ---------- */
   const heads = Array.from(d.querySelectorAll("aside section h2"));
   check("najdenih 9 naslovov sklopov", heads.length === 9, "n=" + heads.length);
-  check("naslovi sklopov so role=button", heads.every((h) => h.getAttribute("role") === "button"));
-  check("naslovi sklopov so fokusabilni (tabindex=0)", heads.every((h) => h.getAttribute("tabindex") === "0"));
-  check("naslovi sklopov javljajo aria-expanded (true/false)",
-    heads.every((h) => ["true", "false"].includes(h.getAttribute("aria-expanded"))));
+  check("naslovi sklopov nimajo nedovoljene role=button", heads.every((h) => !h.hasAttribute("role")));
+  const toggles = Array.from(d.querySelectorAll("aside section h2 > button.sec-btn"));
+  check("vsak naslov ima pravi gumb", toggles.length === 9 && toggles.every((b) => b.tagName === "BUTTON" && !b.disabled));
+  check("gumbi sklopov javljajo aria-expanded (true/false)",
+    toggles.every((b) => ["true", "false"].includes(b.getAttribute("aria-expanded"))));
 
-  const sec0 = heads[0].parentNode;
+  const sec0 = heads[0].closest("section");
   const before = sec0.classList.contains("collapsed");
-  heads[0].click();
+  toggles[0].click();
   check("klik na naslov obrne stanje sklopa", sec0.classList.contains("collapsed") !== before);
-  check("po kliku je aria-expanded usklajen s stanjem", heads[0].getAttribute("aria-expanded") === (sec0.classList.contains("collapsed") ? "false" : "true"));
+  check("po kliku je aria-expanded usklajen s stanjem", toggles[0].getAttribute("aria-expanded") === (sec0.classList.contains("collapsed") ? "false" : "true"));
 
   const beforeK = sec0.classList.contains("collapsed");
-  heads[0].dispatchEvent(new w.KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true }));
+  toggles[0].dispatchEvent(new w.KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true }));
   check("Enter na naslovu odpre/zapre sklop", sec0.classList.contains("collapsed") !== beforeK);
   const beforeK2 = sec0.classList.contains("collapsed");
-  heads[0].dispatchEvent(new w.KeyboardEvent("keydown", { key: " ", bubbles: true, cancelable: true }));
+  toggles[0].dispatchEvent(new w.KeyboardEvent("keydown", { key: " ", bubbles: true, cancelable: true }));
   check("preslednica na naslovu odpre/zapre sklop", sec0.classList.contains("collapsed") !== beforeK2);
+  const beforeRow = sec0.classList.contains("collapsed");
+  heads[0].dispatchEvent(new w.MouseEvent("click", { bubbles: true }));
+  check("klik na preostanek naslova preklopi sklop", sec0.classList.contains("collapsed") !== beforeRow);
 
   /* ---------- 4) meniji javljajo stanje ---------- */
   const menuBtns = Array.from(d.querySelectorAll("[data-menu] > button"));

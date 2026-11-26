@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- CSP: strict script allowlist by hash. No unsafe-inline / unsafe-eval. frame-ancestors is set in vercel.json (unsupported in meta). -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-lOElI2z5z/oWAUVgP9bUNOxxUH6fMLzQlw7H8JUOXmY=' 'sha256-pQ571wbVKAOnylmrdXpsU8frnKXWJLIXEun5UKEHc3k=' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-aPxZAzeLhASDiwh5UsSKcVRL/2dHPPT6txc7DmJX7Mg='; style-src 'self' 'sha256-UAmxzAJlTrP92DeOwaBmKE+jTmy/iQ2ni64MG8BxJMQ='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-lOElI2z5z/oWAUVgP9bUNOxxUH6fMLzQlw7H8JUOXmY=' 'sha256-6oJRNVvNteogerdgy7iC9P6L4aLo5Np1LTPUgKMhVpA=' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-n0ayYHvByOvk7zd5jO/SvUUW3daM8XhOPk728nstIbw='; style-src 'self' 'sha256-FoagumGQjeRIiyVr4TPgDTtnMCHTTg5+mclC/wzcYXw='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Tehnična risba PRO – fotografija do končnega lista</title>
 <!-- >>> GENERATED: seo-jsonld — uredi scripts/generate-seo.js, ne to kopijo -->
 <script type="application/ld+json">[
@@ -153,10 +153,11 @@
   "date": "2026-11-26",
   "notes": [
     "Preskoči na vsebino — pred menijem je bilo 40 tab-postajališč, preden je fokus prišel do lista. Prvi Tab zdaj pokaže povezavo, ki fokus prestavi na predogled (WCAG 2.4.1).",
-    "Sklopi stranske plošče so tipkovnični — naslovi sklopov so role=\"button\", fokusabilni, z aria-expanded; Enter in preslednica odpirata/zapirata enako kot klik. Stanje vzdržuje observer, ker sklope preklapljajo tudi ukazi v meniju Plošča.",
+    "Sklopi stranske plošče so tipkovnični — naslovi sklopov imajo prave gumbe znotraj h2 (brez nedovoljene role=\"button\" na naslovu), fokusabilne, z aria-expanded; Enter in preslednica odpirata/zapirata enako kot klik. Stanje vzdržuje observer, ker sklope preklapljajo tudi ukazi v meniju Plošča.",
     "Meniji javljajo stanje — aria-haspopup=\"true\" in aria-expanded na vseh šestih gumbih; ↓ odpre meni in premakne fokus na prvo postavko, Esc ga zapre in vrne fokus na gumb.",
     "Fokus v dialogih — odprtje premakne fokus v dialog, zaprtje ga vrne na sprožilec; prej je to počel samo izvozni dialog, zdaj še preostalih deset. Stranska plošča ima vodilno oznako, main pa id/tabindex=\"-1\" za ciljanje.",
-    "Nova suita tests/a11y.test.js (28 preverjanj): imena dialogov, gumbov in polj, tipkovnica po sklopih (klik/Enter/preslednica + aria-expanded), stanje menijev (klik, Esc, ↓), premik in vrnitev fokusa, preskočna povezava kot prva postaja v DOM-u."
+    "Dostopnost po axe pregledu — stran ima zdaj h1 in header landmark; gumb »Prikaži primer risbe« dosega kontrast 5,0:1 (prej 4,41:1).",
+    "Nova suita tests/a11y.test.js (36 preverjanj): imena dialogov, gumbov in polj, tipkovnica po sklopih (klik/Enter/preslednica + aria-expanded), stanje menijev (klik, Esc, ↓), premik in vrnitev fokusa, preskočna povezava kot prva postaja v DOM-u."
   ]
 };</script>
 <!-- <<< END GENERATED: seo-jsonld -->
@@ -177,7 +178,7 @@
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
 /* Menu bar */
 .menubar{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:4px;padding:0 10px;height:40px;background:var(--bar);border-bottom:1px solid var(--line)}
-.brand{font-size:13px;font-weight:600;color:var(--tx);margin-right:8px;white-space:nowrap}
+.brand{font-size:13px;font-weight:600;color:var(--tx);margin:0 8px 0 0;white-space:nowrap}
 .brand small{color:var(--mut);font-weight:400;margin-left:6px}
 .menu{position:relative}
 .menu>button{background:transparent;color:var(--tx);border:1px solid transparent;border-radius:6px;padding:5px 9px;font:inherit;font-size:12.5px;cursor:pointer}
@@ -266,7 +267,11 @@ main.drop{outline:2px dashed var(--ac);outline-offset:-10px}
 .fg-hide{display:none!important}
 .quickbar,.modebar{display:none !important}
 .preset-btns{display:none !important}
-section h2{cursor:pointer;user-select:none}section h2::after{content:"−";float:right;color:var(--mut)}section.collapsed h2::after{content:"+"}
+section h2{display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none}
+.sec-btn{all:unset;display:flex;align-items:center;gap:9px;flex:1 1 auto;cursor:pointer;border-radius:4px}
+.sec-btn:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+section h2::after{content:"−";color:var(--mut);font-size:14px;line-height:1;flex:0 0 auto;margin-left:auto}
+section.collapsed h2::after{content:"+"}
 section.collapsed>*:not(h2){display:none}
 .guided .advanced{display:none!important}
 input.invalid,select.invalid,input[data-dw-invalid],select[data-dw-invalid]{border-color:var(--bad)!important;box-shadow:0 0 0 1px var(--bad);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%23d98a2b' d='M8 1 15 14H1z'/%3E%3Cpath fill='%23241a10' d='M7.2 5h1.6v5.2H7.2zm0 6.2h1.6v1.6H7.2z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 7px center;background-size:14px 14px;padding-right:27px}
@@ -527,7 +532,7 @@ aside section{padding-bottom:14px;margin-bottom:16px}
 aside h2{display:flex;align-items:center;gap:9px;font-size:11.5px;letter-spacing:.85px;color:var(--tx);font-weight:600;margin-bottom:11px}
 aside h2 i{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:5px;background:var(--p2);border:1px solid var(--line);color:var(--ac);font-size:10.5px;font-weight:600;margin:0}
 aside section h2:hover{color:var(--ac)}
-section h2::after{color:var(--dim);font-size:14px;line-height:1;float:right;margin-left:auto}
+section h2::after{color:var(--dim);font-size:14px;line-height:1}
 label{font-size:11px;letter-spacing:.2px;color:var(--dim);margin-bottom:4px}
 input,select,textarea{background:var(--p2);border-color:var(--line);border-radius:7px;padding:8px 9px;font-size:13px;transition:border-color .12s,box-shadow .12s,background .12s}
 input:hover,select:hover,textarea:hover{border-color:var(--dim)}
@@ -554,8 +559,8 @@ main .sheet:has(>#prev.empty){width:min(100%,860px);min-width:0;aspect-ratio:420
 #prev.empty b{display:block;font-size:15px;font-weight:600;letter-spacing:.2px;color:var(--ink);margin-bottom:10px}
 #prev.empty .btn{background:#fff;border-color:var(--paper-line);color:var(--ink);font-size:12.5px;padding:8px 13px}
 #prev.empty .btn:hover{border-color:#c05a36;color:#c05a36}
-#prev.empty .btn:first-child{background:#c05a36;border-color:#c05a36;color:#fff}
-#prev.empty .btn:first-child:hover{background:#ad4f2f;border-color:#ad4f2f;color:#fff}
+#prev.empty .btn:first-child{background:#ad4f2f;border-color:#ad4f2f;color:#fff}
+#prev.empty .btn:first-child:hover{background:#9a4326;border-color:#9a4326;color:#fff}
 
 /* 6 — svetla tema: površine, ki so ostale temne */
 [data-theme="light"] main{background:var(--bg)}
@@ -605,8 +610,8 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:none}
 </head>
 <body>
 <a class="skiplink" href="#main">Preskoči na predogled lista</a>
-<div class="menubar" id="menubar">
-  <div class="brand">Tehnična risba PRO <small>slika → risba → izvoz</small></div>
+<header class="menubar" id="menubar">
+  <h1 class="brand">Tehnična risba PRO <small>slika → risba → izvoz</small></h1>
   <div class="menu panelmenu" data-menu>
     <button type="button" id="panelBtn" title="Odpri izbiro stranske plošče (Alt+P)">Plošča ▾</button>
     <div class="drop" id="panelDrop">
@@ -753,7 +758,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:none}
   </div>
   <span id="fieldCount" data-s="s35">4/10</span>
   <button class="primarybar" type="button" data-call="gen">Generiraj risbo</button>
-</div>
+</header>
 
 <div class="viewbar" id="viewBar">
   <span class="vb-title" id="vbTitle">Tehnična risba PRO</span><span class="m" id="vbApprovalStatus" data-s="s14"></span>
@@ -766,7 +771,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:none}
 <div class="steps" id="steps"><span data-i18n="st1" data-step="1">1 Slika</span><span data-i18n="st2" data-step="2">2 Umeritev</span><span data-i18n="st3" data-step="3">3 Mere</span><span data-i18n="st4" data-step="4">4 Risba</span></div>
 
 <section data-panel="photo">
-<h2 data-i18n="h_photo"><i>1</i>Slika</h2>
+<h2><button type="button" class="sec-btn" data-i18n="h_photo"><i>1</i>Slika</button></h2>
 <input type="file" id="file" accept="image/*" aria-label="Naloži fotografijo ograje">
 <div class="photo" id="photoBox"><img id="img" alt="foto"><svg id="ov" xmlns="http://www.w3.org/2000/svg"></svg></div>
 <p class="hint">Prilepite z <span class="kbd">Ctrl+V</span>, povlecite ali izberite datoteko. Za merjenje naj bo v kadru merilo ali znan predmet.</p>
@@ -776,7 +781,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:none}
 </section>
 
 <section data-panel="cal">
-<h2 data-i18n="h_cal"><i>2</i>Umeritev</h2>
+<h2><button type="button" class="sec-btn" data-i18n="h_cal"><i>2</i>Umeritev</button></h2>
 <div class="btns"><button class="btn on" id="mLinear">2 točki</button><button class="btn" id="mPlane">4 točke (perspektiva)</button></div>
 <div class="btns" data-s="s46"><button class="btn" id="pickCal">Izberi referenčne točke</button><button class="btn" id="clearCal">Počisti</button></div>
 <div class="row" data-s="s46">
@@ -789,7 +794,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:none}
 </section>
 
 <section data-panel="detect">
-<h2 data-i18n="h_detect"><i>3</i>Samodejno zaznavanje lamel</h2>
+<h2><button type="button" class="sec-btn" data-i18n="h_detect"><i>3</i>Samodejno zaznavanje lamel</button></h2>
 <div class="btns"><button class="btn" id="detect">Zaznaj lamele s slike</button></div>
 <div class="row" data-s="s46">
 <div><label for="sens">Prag robov (višji = manj zaznav)</label><input class="range" type="range" id="sens" min="1" max="30" value="12"></div>
@@ -800,7 +805,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:none}
 </section>
 
 <section data-panel="dims">
-<h2 data-i18n="h_dims"><i>4</i>Mere in parametri</h2>
+<h2><button type="button" class="sec-btn" data-i18n="h_dims"><i>4</i>Mere in parametri</button></h2>
 <div class="sysbox">
 <div class="st">WoodCore sistem (Roksal)</div>
 <div class="row">
@@ -865,7 +870,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:none}
 </section>
 
 <section data-panel="sheet">
-<h2 data-i18n="h_sheet"><i>5</i>List in opombe</h2>
+<h2><button type="button" class="sec-btn" data-i18n="h_sheet"><i>5</i>List in opombe</button></h2>
 <div class="row">
 <div><label for="paper">Format</label><select id="paper"><option value="A3">A3 420×297</option><option value="A4">A4 297×210</option><option value="A2">A2 594×420</option></select></div>
 <div><label for="sheetStyle">Slog lista</label><select id="sheetStyle"><option value="klasicen">Klasičen</option><option value="iso">ISO 7200</option><option value="ansi">ANSI</option></select></div>
@@ -895,7 +900,7 @@ Konstrukcija odporna na vremenske vplive.</textarea>
 </section>
 
 <section data-panel="plan">
-<h2 data-i18n="h_plan"><i>6</i>Montaža in količine</h2>
+<h2><button type="button" class="sec-btn" data-i18n="h_plan"><i>6</i>Montaža in količine</button></h2>
 <div class="btns"><button class="btn" id="makePlan">Pripravi montažni načrt</button><button class="btn" id="buildCut">Rezalni načrt (kerf)</button><button class="btn" id="buildQuote">Predračun</button><button class="btn" id="buildChecklist">Montažni checklist</button></div>
 <div class="row3" data-s="s46">
 <div><label for="stockLen">Tovariške dolžine desk (mm, loči z ;)</label><input id="stockLen" value="5800; 4000; 2200"></div>
@@ -933,7 +938,7 @@ Konstrukcija odporna na vremenske vplive.</textarea>
 </section>
 
 <section data-panel="export">
-<h2 data-i18n="h_export"><i>7</i>Izdelava</h2>
+<h2><button type="button" class="sec-btn" data-i18n="h_export"><i>7</i>Izdelava</button></h2>
 <p class="hint" data-s="s41">Sklope odpirate iz zgornje vrstice <b>Plošča ▾</b> — kliknite samo tistega, ki ga potrebujete. Polja izbivate tam pod <b>Vidni sklopi in polja…</b>, celoten izvoz (risba + priloge) pripravite prek <b>Datoteka → Izvozi…</b> (Ctrl+E); posamezne hitre izvoze najdete v istem meniju.</p>
 <div class="btns" data-s="s42">
   <button class="btn go" id="gen">Generiraj risbo</button>
@@ -944,7 +949,7 @@ Konstrukcija odporna na vremenske vplive.</textarea>
 </section>
 
 <section data-panel="tloris">
-<h2 data-i18n="h_tloris"><i>8</i>Tloris (interaktivno)</h2>
+<h2><button type="button" class="sec-btn" data-i18n="h_tloris"><i>8</i>Tloris (interaktivno)</button></h2>
 <p class="hint" data-s="s41">Kliknite po mreži za oglišča trase — 1 piksel = 10 mm (platno 6000×4000 mm). <span class="kbd">Escape</span> zaključi traso. Nosilci se izpeljejo po Roksal limitih za izbrano uporabo/profil.</p>
 <svg id="tlorisSvg" viewBox="0 0 600 400" data-s="s65"></svg>
 <div class="btns" data-s="s46">
@@ -959,7 +964,7 @@ Konstrukcija odporna na vremenske vplive.</textarea>
 </section>
 
 <section data-panel="skica">
-<h2 data-i18n="h_skica"><i>9</i>Terenska skica (prazen list)</h2>
+<h2><button type="button" class="sec-btn" data-i18n="h_skica"><i>9</i>Terenska skica (prazen list)</button></h2>
 <p class="hint" data-s="s41">Popolnoma prazen list (A4/A3, obe orientaciji) — brez mreže, okvirja in predloge po privzetku. Vsa kotiranje je <b>ročni vnos</b> in ni povezano z izmerjenimi vrednostmi. Tisk v dejanski velikosti prek <b>Tisk (A4/A3)</b>.</p>
 <div class="btns">
   <span><label data-s="s26">Orodje</label></span>
@@ -4861,19 +4866,28 @@ $("modeExpert").onclick=function(){setMode(true)};
    fokusabilni (Enter/Space), z aria-expanded, ki ga vzdržuje observer — sklope
    odpirajo tudi ukazi v meniju Plošča (openPanel) in applyFieldVisibility.
    WCAG 2.1.1 (tipkovnica) + 4.1.2 (stanje). */
-var SEC_H2=[].slice.call(document.querySelectorAll("aside section h2"));
+var SEC_TOGGLES=[].slice.call(document.querySelectorAll("aside section h2 > .sec-btn"));
 function syncSecAria(){
-  SEC_H2.forEach(function(h){
-    var sec=h.parentNode; if(!sec)return;
-    h.setAttribute("aria-expanded",sec.classList.contains("collapsed")?"false":"true");
+  SEC_TOGGLES.forEach(function(b){
+    var sec=b.closest("section"); if(!sec)return;
+    b.setAttribute("aria-expanded",sec.classList.contains("collapsed")?"false":"true");
   });
 }
-SEC_H2.forEach(function(h){
-  h.setAttribute("role","button");
-  h.setAttribute("tabindex","0");
-  h.onclick=function(){h.parentNode.classList.toggle("collapsed");syncSecAria()};
-  h.addEventListener("keydown",function(e){
-    if(e.key==="Enter"||e.key===" "||e.key==="Spacebar"){e.preventDefault();h.onclick();}
+SEC_TOGGLES.forEach(function(b){
+  b.addEventListener("click",function(){
+    var sec=b.closest("section"); if(!sec)return;
+    sec.classList.toggle("collapsed");syncSecAria();
+  });
+  b.addEventListener("keydown",function(e){
+    if(e.key==="Enter"||e.key===" "||e.key==="Spacebar"){e.preventDefault();b.click();}
+  });
+});
+/* Klik na preostanek naslova (npr. indikator −/+) naj še vedno preklopi. */
+[].slice.call(document.querySelectorAll("aside section h2")).forEach(function(h){
+  h.addEventListener("click",function(e){
+    if(e.target.closest(".sec-btn"))return;
+    var sec=h.closest("section"); if(!sec)return;
+    sec.classList.toggle("collapsed");syncSecAria();
   });
 });
 syncSecAria();
