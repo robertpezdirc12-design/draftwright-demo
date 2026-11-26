@@ -3,7 +3,7 @@
  *
  * Pre-fiks: sklope stranske plošče je bilo mogoče odpreti/zapreti SAMO s klikom
  * (h2 ni bil fokusabilen, brez role/aria-expanded), gumbi menijev niso javljali
- * aria-haspopup/aria-expanded, dialogi (razen izvoznega) pa ob zaprtju niso vrnili
+ * aria-expanded, dialogi (razen izvoznega) pa ob zaprtju niso vrnili
  * fokusa na sprožilec. Suita preverja obnašanje na pravi aplikaciji prek jsdom in
  * statične zahteve na oznakah; na stari kodi bi PADLA (brez role=button, brez
  * aria-expanded, brez obnove fokusa).
@@ -153,7 +153,8 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
   /* ---------- 4) meniji javljajo stanje ---------- */
   const menuBtns = Array.from(d.querySelectorAll("[data-menu] > button"));
-  check("menijski gumbi javljajo aria-haspopup=true", menuBtns.length >= 6 && menuBtns.every((b) => b.getAttribute("aria-haspopup") === "true"), "n=" + menuBtns.length);
+  check("menijski gumbi so disclosure z aria-controls (brez napačnega aria-haspopup)",
+    menuBtns.length >= 6 && menuBtns.every((b) => !b.hasAttribute("aria-haspopup") && b.getAttribute("aria-controls") && d.getElementById(b.getAttribute("aria-controls"))), "n=" + menuBtns.length);
   check("menijski gumbi javljajo aria-expanded=false", menuBtns.every((b) => b.getAttribute("aria-expanded") === "false"));
 
   const mb = menuBtns[0], mm = mb.parentNode;

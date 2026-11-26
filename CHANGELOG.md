@@ -2,6 +2,14 @@
 
 Vse pomembnejše spremembe projekta **Draftwright — Tehnična risba PRO** so dokumentirane v tej datoteki. Oblika sledi [Keep a Changelog](https://keepachangelog.com/sl/1.1.0/); datumski sufiksi v oznakah (npr. `[2026.11.15]`) so zaporedne podrazličice mesečne različice `APP_VERSION` (trenutno `2026.11`).
 
+## [2026.11.36] — 2026-11-26
+
+### Popravljeno
+- **Menijski gumbi** — `aria-haspopup="true"` je obljubljal meni z `role=menu`, pojavno okno pa je mešanica gumbov, oznak in potrditvenih polj. Gumbi so zdaj poštena disclosure kontrola: `aria-expanded` in `aria-controls` na povezan `.drop`, brez napačne napovedi menija. Tipkovnica (↓, Esc) ostaja enaka.
+
+### Preizkušeno
+- `tests/a11y.test.js` (**45 preverjanj**) preverja `aria-controls`, odsotnost `aria-haspopup`, odprtje/zaprtje in Escape; v brskalniku se meni odpre in zapre kot prej.
+
 ## [2026.11.35] — 2026-11-26
 
 ### Popravljeno
