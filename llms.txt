@@ -6,7 +6,7 @@
 - Licenca: MIT
 - Platforma: Web (PWA) — Windows, macOS, Linux, Android, iOS
 - Izvozi: PDF, SVG, DXF, STEP; kosovnica, montažni načrt, rezalni načrt, predračun (CSV); naročilnik, checklist, tehnični list, povpraševanje Roksal (TXT)
-- Zadnja različica: 2026.11.34 (2026-11-26)
+- Zadnja različica: 2026.11.35 (2026-11-26)
 - Materialni katalog: WoodCore WPC (Roksal d.o.o.) — profili, palete, razmaki in pravila pritrjevanja
 - Zasebnost: brez zunanjih omrežnih klicev — fotografije in meritve ostanejo na napravi
 

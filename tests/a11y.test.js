@@ -100,7 +100,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   fieldBtn.closest("[data-menu]").querySelector(":scope > button").click(); await sleep(20);
   fieldBtn.click(); await sleep(20);
   check("odprta izbira polj javi aria-expanded=true", fieldBtn.getAttribute("aria-expanded") === "true" && fieldMenu.classList.contains("open"));
-  d.dispatchEvent(new w.KeyboardEvent("keydown", { key: "Escape", bubbles: true, cancelable: true })); await sleep(20);
+  fieldBtn.dispatchEvent(new w.KeyboardEvent("keydown", { key: "Escape", bubbles: true, cancelable: true })); await sleep(20);
   check("Escape zapre izbiro polj in vrne fokus", !fieldMenu.classList.contains("open") && fieldBtn.getAttribute("aria-expanded") === "false" && d.activeElement === fieldBtn, "odprt=" + fieldMenu.classList.contains("open") + ", expanded=" + fieldBtn.getAttribute("aria-expanded") + ", fokus=" + (d.activeElement && (d.activeElement.id || d.activeElement.tagName)));
   fieldBtn.click(); await sleep(20);
   d.body.click(); await sleep(20);
