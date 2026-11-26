@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- CSP: strict script allowlist by hash. No unsafe-inline / unsafe-eval. frame-ancestors is set in vercel.json (unsupported in meta). -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-m3HQsK7w4D5N3PWWTn3w3PY0ROHG3DdSO5dXqknHSoA=' 'sha256-IePeLOyE2UHBm7POnJY0qmU1lCmKgF/cr194r7q3+Bo=' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-+IUar8tvHhEU5eEV/yZkKUdJVgv6f9Pfq9WChvoSvDI='; style-src 'self' 'sha256-FoagumGQjeRIiyVr4TPgDTtnMCHTTg5+mclC/wzcYXw='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-SS+djc6AOU4lvzplVhcInvFYKHcq1AJL9U1nZLK2fac=' 'sha256-jzPAkXBxFW8Zk52ukNT9xOGY/VQnsJhy4dxYXrXC3BQ=' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-0JMAoy9u6pccZdmr1Qm9keF739kTjFeoqoTWeVUNG7c='; style-src 'self' 'sha256-VdRoT8rX1CikhO1SqdzO/fToFiSY10Vp7dzAcpEeRGo='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Tehnična risba PRO – fotografija do končnega lista</title>
 <!-- >>> GENERATED: seo-jsonld — uredi scripts/generate-seo.js, ne to kopijo -->
 <script type="application/ld+json">[
@@ -20,7 +20,7 @@
     "applicationSubCategory": "Technical drawing / CAD",
     "operatingSystem": "Web (PWA) — Windows, macOS, Linux, Android, iOS",
     "applicationSuite": "WoodCore WPC (Roksal)",
-    "softwareVersion": "2026.11.36",
+    "softwareVersion": "2026.11.37",
     "datePublished": "2026-11-26",
     "offers": {
       "@type": "Offer",
@@ -149,11 +149,11 @@
   }
 ]</script>
 <script>var DW_RELEASE={
-  "version": "2026.11.36",
+  "version": "2026.11.37",
   "date": "2026-11-26",
   "notes": [
-    "Menijski gumbi — aria-haspopup=\"true\" je obljubljal meni z role=menu, pojavno okno pa je mešanica gumbov, oznak in potrditvenih polj. Gumbi so zdaj poštena disclosure kontrola: aria-expanded in aria-controls na povezan .drop, brez napačne napovedi menija. Tipkovnica (↓, Esc) ostaja enaka.",
-    "tests/a11y.test.js (45 preverjanj) preverja aria-controls, odsotnost aria-haspopup, odprtje/zaprtje in Escape; v brskalniku se meni odpre in zapre kot prej."
+    "Povečava fotografije — SVG risba #ov je prekrivala sliko in požirala klike, zato se povečava ni odprla z miško. Risba je zdaj pointer-events:none, slika pa je fokusabilna (role=button, tabindex=0, ime) in se odpre s klikom ali Enter/preslednico; Escape zapre pogled in vrne fokus na sliko.",
+    "tests/a11y.test.js (47 preverjanj) preverja fokusabilno sliko, odpiranje z Enter, Escape in vrnitev fokusa; v brskalniku klik na sliko odpre povečavo, Escape jo zapre."
   ]
 };</script>
 <!-- <<< END GENERATED: seo-jsonld -->
@@ -230,7 +230,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--ac)}textarea{min-heig
 .hint{font-size:11px;color:var(--mut);margin:6px 0 0}
 .status{font-size:12px;color:var(--ok);min-height:17px;margin-top:6px}.status.warn{color:var(--wa)}.status.bad{color:var(--bad)}
 .photo{position:relative;width:100%;display:none;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#000}
-.photo.on{display:block}.photo img{display:block;width:100%;height:auto}#ov{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair;touch-action:none}
+.photo.on{display:block}.photo img{display:block;width:100%;height:auto;cursor:zoom-in}#ov{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;touch-action:none}
 .sheet{background:#fff;display:inline-block;min-width:100%;box-shadow:0 12px 40px #0009}#prev{width:100%;height:auto;display:block}
 .empty{padding:36px 20px;text-align:center;color:var(--mut);border:1px dashed var(--line);border-radius:8px;cursor:pointer}.empty b{display:block;color:var(--tx);font-weight:500;margin-bottom:8px}
 .warnbox{margin-top:8px;padding:8px;border:1px solid #7a5a22;background:#2a2113;border-radius:6px;font-size:11px;color:var(--wa);display:none}
@@ -769,7 +769,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:none}
 <section data-panel="photo">
 <h2><button type="button" class="sec-btn" data-i18n="h_photo"><i>1</i>Slika</button></h2>
 <input type="file" id="file" accept="image/*" aria-label="Naloži fotografijo ograje">
-<div class="photo" id="photoBox"><img id="img" alt="foto"><svg id="ov" xmlns="http://www.w3.org/2000/svg"></svg></div>
+<div class="photo" id="photoBox"><img id="img" alt="foto" role="button" tabindex="0" aria-label="Povečaj fotografijo"><svg id="ov" xmlns="http://www.w3.org/2000/svg"></svg></div>
 <p class="hint">Prilepite z <span class="kbd">Ctrl+V</span>, povlecite ali izberite datoteko. Za merjenje naj bo v kadru merilo ali znan predmet.</p>
 <button class="btn" id="applySuggestedProf" data-s="s30" title="Uporabi predlagani profil"></button>
 <button class="btn" id="proposalBtn" data-i18n="b_proposal" title="Lokalni predlog nove ograje čez fotografijo (brez omrežja)">Predlog ograje na sliki</button>
@@ -5992,9 +5992,17 @@ document.addEventListener("keydown",function(e){if($("resultOverlay").classList.
 window.showResult=showResult;window.closeResult=closeResult;
 
 /* Foto: klik na sliko → povečan pogled */
-$("img").addEventListener("click",function(){
-  $("photoZoomImg").src=$("img").src;
+function openPhotoZoom(){
+  var im=$("img");
+  if(!im||!im.src)return;
+  $("photoZoomImg").src=im.src;
   $("photoZoomOverlay").classList.add("on");
+}
+$("img").addEventListener("click",openPhotoZoom);
+$("img").addEventListener("keydown",function(e){
+  if(e.key!=="Enter"&&e.key!==" "&&e.key!=="Spacebar")return;
+  e.preventDefault();
+  openPhotoZoom();
 });
 $("photoZoomClose").onclick=function(){$("photoZoomOverlay").classList.remove("on")};
 $("photoZoomOverlay").addEventListener("click",function(e){if(e.target===this)$("photoZoomOverlay").classList.remove("on")});
