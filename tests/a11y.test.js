@@ -93,6 +93,19 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   await sleep(30);
   check("povečava: Escape zapre dialog", !zoomOv.classList.contains("on"));
 
+  /* 1c) izbira vidnih sklopov je gumb z stanjem in skupino potrditvenih polj. */
+  const fieldBtn = d.getElementById("fieldBtn"), fieldMenu = d.getElementById("fieldMenu");
+  check("izbira polj javlja stanje in nadzoruje skupino", fieldBtn.getAttribute("aria-expanded") === "false" && fieldBtn.getAttribute("aria-controls") === "fieldMenu" && fieldMenu.getAttribute("role") === "group" && accName(fieldMenu) === "Vidni sklopi in polja");
+  /* Gumb je v spustnem meniju, zato najprej odpremo njegov meni (sicer je display:none in fokus ne deluje). */
+  fieldBtn.closest("[data-menu]").querySelector(":scope > button").click(); await sleep(20);
+  fieldBtn.click(); await sleep(20);
+  check("odprta izbira polj javi aria-expanded=true", fieldBtn.getAttribute("aria-expanded") === "true" && fieldMenu.classList.contains("open"));
+  d.dispatchEvent(new w.KeyboardEvent("keydown", { key: "Escape", bubbles: true, cancelable: true })); await sleep(20);
+  check("Escape zapre izbiro polj in vrne fokus", !fieldMenu.classList.contains("open") && fieldBtn.getAttribute("aria-expanded") === "false" && d.activeElement === fieldBtn, "odprt=" + fieldMenu.classList.contains("open") + ", expanded=" + fieldBtn.getAttribute("aria-expanded") + ", fokus=" + (d.activeElement && (d.activeElement.id || d.activeElement.tagName)));
+  fieldBtn.click(); await sleep(20);
+  d.body.click(); await sleep(20);
+  check("klik zunaj zapre izbiro polj in uskladi stanje", !fieldMenu.classList.contains("open") && fieldBtn.getAttribute("aria-expanded") === "false");
+
   /* ---------- 2) gumbi in polja imajo ime ----------
      Gumbi v <div class="hooks" aria-hidden="true"> so namerno skriti programski
      sprožilci (JS jih klika), zato jih vidnostni filter izloči — enako velja za
