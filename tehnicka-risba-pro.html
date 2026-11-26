@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- CSP: strict script allowlist by hash. No unsafe-inline / unsafe-eval. frame-ancestors is set in vercel.json (unsupported in meta). -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-JJ6Nbjlr46K9VJ6nsDP7Q6DPjy/smbrg1puyp94KGBQ=' 'sha256-4xIJMdigrTCCV2R8GKQl2DXOTam9hQRk2kJ03h++hRY=' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-YPtS6YI+LYKVUTf8iFTHse1gFSGPavjJWcpVJndQoSY='; style-src 'self' 'sha256-FoagumGQjeRIiyVr4TPgDTtnMCHTTg5+mclC/wzcYXw='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-m3HQsK7w4D5N3PWWTn3w3PY0ROHG3DdSO5dXqknHSoA=' 'sha256-IePeLOyE2UHBm7POnJY0qmU1lCmKgF/cr194r7q3+Bo=' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-+IUar8tvHhEU5eEV/yZkKUdJVgv6f9Pfq9WChvoSvDI='; style-src 'self' 'sha256-FoagumGQjeRIiyVr4TPgDTtnMCHTTg5+mclC/wzcYXw='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Tehnična risba PRO – fotografija do končnega lista</title>
 <!-- >>> GENERATED: seo-jsonld — uredi scripts/generate-seo.js, ne to kopijo -->
 <script type="application/ld+json">[
@@ -20,7 +20,7 @@
     "applicationSubCategory": "Technical drawing / CAD",
     "operatingSystem": "Web (PWA) — Windows, macOS, Linux, Android, iOS",
     "applicationSuite": "WoodCore WPC (Roksal)",
-    "softwareVersion": "2026.11.35",
+    "softwareVersion": "2026.11.36",
     "datePublished": "2026-11-26",
     "offers": {
       "@type": "Offer",
@@ -149,11 +149,11 @@
   }
 ]</script>
 <script>var DW_RELEASE={
-  "version": "2026.11.35",
+  "version": "2026.11.36",
   "date": "2026-11-26",
   "notes": [
-    "Izbira vidnih sklopov: Escape — prejšnja različica je Escape ujela šele na document, a nadrejeni meni ga je ustavil in zaprl samega sebe. Zdaj izbiro ujame ovojnica .fieldpick: zapre le izbiro, meni ostane odprt, fokus pa se vrne na gumb.",
-    "tests/a11y.test.js (45 preverjanj) pošlje Escape na gumb (mehurčenje), ne neposredno na document; v brskalniku meni ostane odprt, fokus je na gumbu."
+    "Menijski gumbi — aria-haspopup=\"true\" je obljubljal meni z role=menu, pojavno okno pa je mešanica gumbov, oznak in potrditvenih polj. Gumbi so zdaj poštena disclosure kontrola: aria-expanded in aria-controls na povezan .drop, brez napačne napovedi menija. Tipkovnica (↓, Esc) ostaja enaka.",
+    "tests/a11y.test.js (45 preverjanj) preverja aria-controls, odsotnost aria-haspopup, odprtje/zaprtje in Escape; v brskalniku se meni odpre in zapre kot prej."
   ]
 };</script>
 <!-- <<< END GENERATED: seo-jsonld -->
@@ -6151,11 +6151,17 @@ mn.addEventListener("drop",function(e){e.preventDefault();if(e.dataTransfer.file
       if(was&&refocus){var b=menuBtn(m);if(b){try{b.focus()}catch(_e){}}}
     });
   }
-  menus.forEach(function(m){
+  menus.forEach(function(m,mi){
     var btn=menuBtn(m);
     if(btn){
-      /* WCAG 4.1.2: gumb pove, da odpira meni, in ali je odprt. */
-      btn.setAttribute('aria-haspopup','true');
+      /* WCAG 4.1.2: gumb pove, ali je pojavno okno odprto. To ni meni z
+         role=menu (vsebuje tudi skupine in potrditvena polja), zato ne
+         obljubljamo aria-haspopup; povežemo ga z aria-controls. */
+      var dropEl=m.querySelector('.drop');
+      if(dropEl){
+        if(!dropEl.id)dropEl.id='menuDrop'+(mi+1);
+        btn.setAttribute('aria-controls',dropEl.id);
+      }
       btn.setAttribute('aria-expanded','false');
       btn.addEventListener('click',function(e){
         e.stopPropagation();
