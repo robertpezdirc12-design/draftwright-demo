@@ -171,6 +171,42 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     check("najdem meni Pomoč in postavko za AI dialog", false);
   }
 
+  /* 5c) ARIA modal: globalne bližnjice ne smejo posegati v ozadje.
+     Pre-fiks: guard je preverjal samo #expOverlay, zato so Ctrl+G/S/E, Ctrl+Z/Y
+     in ± delovali za odprtim AI/help/prj dialogom (WCAG 2.1.2, načelo modalnosti). */
+  Array.from(d.querySelectorAll('[class*="overlay"].on')).forEach((o) => o.classList.remove("on"));
+  await sleep(30);
+  const prev = d.getElementById("prev");
+  const lInput = d.getElementById("L");
+  prev.innerHTML = "";
+  lInput.value = "4321";
+  d.dispatchEvent(new w.KeyboardEvent("keydown", { key: "g", ctrlKey: true, bubbles: true, cancelable: true }));
+  await sleep(60);
+  const genBase = prev.innerHTML;
+  check("bližnjica Ctrl+G brez dialoga generira risbo (kontrola)", genBase.length > 0, "len=" + genBase.length);
+
+  ai.classList.add("on");
+  await sleep(30);
+  lInput.value = "1234";
+  const modalGenAllowed = d.dispatchEvent(new w.KeyboardEvent("keydown", { key: "g", ctrlKey: true, bubbles: true, cancelable: true }));
+  await sleep(60);
+  check("odprt dialog: Ctrl+G ne generira v ozadju", prev.innerHTML === genBase, "len=" + prev.innerHTML.length);
+  check("odprt dialog: Ctrl+G prepreči tudi browserjevo iskanje", !modalGenAllowed);
+
+  const exp = d.getElementById("expOverlay");
+  d.dispatchEvent(new w.KeyboardEvent("keydown", { key: "e", ctrlKey: true, bubbles: true, cancelable: true }));
+  await sleep(40);
+  check("odprt dialog: Ctrl+E ne odpre izvoza", !exp.classList.contains("on"));
+
+  ai.classList.remove("on");
+  await sleep(30);
+  d.dispatchEvent(new w.KeyboardEvent("keydown", { key: "g", ctrlKey: true, bubbles: true, cancelable: true }));
+  await sleep(60);
+  check("po zaprtju dialoga Ctrl+G spet generira", prev.innerHTML !== genBase && prev.innerHTML.length > 0);
+
+  const modalGuards = (html.match(/modalShortcutGuard\(e\)/g) || []).length;
+  check("vsi globalni shortcut handlerji imajo modalOpen guard", modalGuards >= 5, "n=" + modalGuards);
+
   /* ---------- 6) preskoči na vsebino (WCAG 2.4.1) ---------- */
   const skip = d.querySelector(".skiplink");
   check("obstaja povezava Preskoči na vsebino", !!skip && /Presko/i.test(skip.textContent));

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- CSP: strict script allowlist by hash. No unsafe-inline / unsafe-eval. frame-ancestors is set in vercel.json (unsupported in meta). -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-lOElI2z5z/oWAUVgP9bUNOxxUH6fMLzQlw7H8JUOXmY=' 'sha256-pQ571wbVKAOnylmrdXpsU8frnKXWJLIXEun5UKEHc3k=' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-ia3iPYBEw8sAyj2hzWtvCq8h3qZVq/o9xHfy9DvTYVA='; style-src 'self' 'sha256-UAmxzAJlTrP92DeOwaBmKE+jTmy/iQ2ni64MG8BxJMQ='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-lOElI2z5z/oWAUVgP9bUNOxxUH6fMLzQlw7H8JUOXmY=' 'sha256-pQ571wbVKAOnylmrdXpsU8frnKXWJLIXEun5UKEHc3k=' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-aPxZAzeLhASDiwh5UsSKcVRL/2dHPPT6txc7DmJX7Mg='; style-src 'self' 'sha256-UAmxzAJlTrP92DeOwaBmKE+jTmy/iQ2ni64MG8BxJMQ='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Tehnična risba PRO – fotografija do končnega lista</title>
 <!-- >>> GENERATED: seo-jsonld — uredi scripts/generate-seo.js, ne to kopijo -->
 <script type="application/ld+json">[
@@ -1498,6 +1498,20 @@ Konstrukcija odporna na vremenske vplive.</textarea>
 "use strict";
 var $=function(id){return document.getElementById(id)};
 function V(id){return $(id).value}
+/* ARIA modal: dokler je odprt kateri koli dialog, globalne bližnjice ne smejo
+   posegati v ozadje (Tab ujame focus-trap; tipke pa so doslej tekle naprej). */
+function modalOpen(){return !!document.querySelector('[class*="overlay"].on')}
+/* Ko je modal odprt, aplikacijske bližnjice ne izvajamo, a browserju preprečimo
+   isto dejanje (npr. Ctrl+S = shrani stran). Med tipkanjem v polju native
+   undo/zoom ostaneta nedotaknjena. */
+function modalShortcutGuard(e){
+  if(!modalOpen())return false;
+  var t=document.activeElement,typing=/INPUT|TEXTAREA|SELECT/.test((t&&t.tagName)||"");
+  var k=(e.key||"").toLowerCase();
+  if(!typing&&(e.ctrlKey||e.metaKey)&&"gsezy".indexOf(k)>=0)e.preventDefault();
+  if(!typing&&(e.key==="+"||e.key==="-"))e.preventDefault();
+  return true;
+}
 /* Issue #41 §3.A: številski vnos sprejme slovensko decimalno VEJICO ("3,8" → 3.8).
    V slovenski lokalizaciji je decimalni ločilec VEJICA, tisočni ločilec PIKA,
    zato sta pravili nedvoumni:
@@ -4447,6 +4461,7 @@ function exportPdf(sv,paper){
   $("exportDialog").onclick=openExport;
   document.addEventListener("keydown",function(e){if(EXP.open&&e.key==="Escape")cancelExport()});
   document.addEventListener("keydown",function(e){
+    if(modalShortcutGuard(e))return;
     if(!/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)&&(e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="e"){e.preventDefault();openExport()}
   });
 })();
@@ -4525,7 +4540,7 @@ function tlrRedo(){if(!TLR.redo.length)return;TLR.undo.push(JSON.stringify({w:TL
     $("globalStatus").textContent="Tloris → izračun: L = "+f(total)+" mm ("+TLR.walls.length+" segmentov).";
   };
   document.addEventListener("keydown",function(e){
-    if($("expOverlay").classList.contains("on"))return;
+    if((e.ctrlKey||e.metaKey)&&modalShortcutGuard(e))return;
     var typing=/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName);
     var tlSec=document.querySelector('section[data-panel="tloris"]');
     if(!tlSec||tlSec.classList.contains("collapsed"))return;
@@ -4767,7 +4782,7 @@ $("skPaper").onchange=function(){skPushUndo();SK.paper=this.value;skRender()};
 $("skOrient").onchange=function(){skPushUndo();SK.orient=this.value;skRender()};
 $("skGrid").onchange=function(){skPushUndo();SK.mreza=this.checked;skRender()};
 document.addEventListener("keydown",function(e){
-  if($("expOverlay").classList.contains("on"))return;
+  if(modalShortcutGuard(e))return;
   var typing=/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName);
   if(typing)return;
   var skSec=document.querySelector('section[data-panel="skica"]');
@@ -4890,6 +4905,7 @@ function updateGlobalStatus(msgs){
 }
 document.addEventListener("keydown",function(e){
   var typing=/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName);
+  if(modalShortcutGuard(e))return;
   if(!typing&&(e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="g"){e.preventDefault();generate()}
   if(!typing&&(e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="s"){e.preventDefault();$("save").click()}
   if(!typing&&e.key==="+")setZoom(zoom+10);
@@ -5009,6 +5025,7 @@ function seedDomain(t){
 }
 document.addEventListener("keydown",function(e){
   if(!(e.ctrlKey||e.metaKey))return;
+  if(modalShortcutGuard(e))return;
   var k=(e.key||"").toLowerCase();
   var tg=e.target&&e.target.tagName?e.target.tagName:"";
   if(/INPUT|TEXTAREA|SELECT/.test(tg))return;
