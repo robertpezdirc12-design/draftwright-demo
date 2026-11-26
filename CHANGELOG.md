@@ -2,6 +2,22 @@
 
 Vse pomembnejše spremembe projekta **Draftwright — Tehnična risba PRO** so dokumentirane v tej datoteki. Oblika sledi [Keep a Changelog](https://keepachangelog.com/sl/1.1.0/); datumski sufiksi v oznakah (npr. `[2026.11.15]`) so zaporedne podrazličice mesečne različice `APP_VERSION` (trenutno `2026.11`).
 
+## [2026.11.29] — 2026-11-26
+
+### Popravljeno
+- **Odvečni znaki `>` v obrazcih** — iz 75 vnosnih polj in spustnih seznamov odstranjeno podvojeno zaključno oglato oklepaj; pod vsakim poljem se je izpisal tuj `>`, v `<select>` pa je nastalo neveljavno tekstovno vozlišče.
+- **Podvojeni ID-ji** — iz skritega bloka `hooks` odstranjena podvojena skupina gumbov (10 ID-jev: `themeBtn`, `langBtn`, `helpBtn`, `zoomIn`, `zoomOut`, `zoomFit`, `panBtn`, `fsBtn`, `isoBtn`, `showExample`). Stran ima zdaj 287 enoličnih ID-jev in nobenega podvojenega.
+- **Manjkajoči spremenljivki** `--p3` in `--dim` sta bili uporabljeni, a nikoli definirani — pravila z njima (slike katalogа, `[data-s="s10"]`) so bila mrtva.
+
+### Spremenjeno
+- **Profesionalna lupina** — poenoteni naslovi sklopov z oštevilčenimi značkami, tipografija obrazcev, fokusni obroči, čipi korakov, spustni seznami z lastno puščico, risalna mreža na platnu, čip števca vidnih polj.
+- **Svetla tema je zdaj celovita** — prej so ostale temne površine (`main`, `.sysbox`, `.exp-sec`, `.exp-row`, `.exp-sl`, `.warnbox`, `.kbd`, aktivni čipi, poudarki).
+- **Prazno stanje** je list A3 s pravim razmerjem 420 : 297, s sredinskim klicem k dejanju in berljivim kontrastom.
+- **Mobilna vrstica** — ukrep »Generiraj risbo« je v prvi vrstici ob imenu, meniji se prelomijo pod njim; prej je bila vrstica visoka tri vrstice z gumbom samim v tretji.
+- `theme-color` usklajen z barvo menijske vrstice (`#141c24` → `#181816`).
+
+### Preizkušeno
+- Vse surov zelene (0 FAIL) in samoprevera **126/126**; `pwa` surov zdaj preverja `theme-color` proti spremenljivki `--bar`, ne proti zapisani vrednosti.
 ## [2026.11.28] — 2026-11-25
 
 ### Dodano

@@ -55,7 +55,8 @@ function pngSize(file) {
   check("ikone: PNG 192×192 in 512×512", !!i192 && i192.w === 192 && i192.h === 192 && !!i512 && i512.w === 512 && i512.h === 512);
 
   /* 4) HTML: meta oznake + registracija + mobilni CSS */
-  check("HTML: link manifest + theme-color + apple-touch-icon", html.includes('rel="manifest" href="manifest.webmanifest"') && html.includes('name="theme-color" content="#141c24"') && html.includes('rel="apple-touch-icon" href="icon-192.png"'));
+  const barColor = ((html.match(/--bar:(#[0-9a-f]{3,6})/i) || [])[1] || "").toLowerCase();
+  check("HTML: link manifest + theme-color + apple-touch-icon", html.includes('rel="manifest" href="manifest.webmanifest"') && barColor && html.includes('name="theme-color" content="' + barColor + '"') && html.includes('rel="apple-touch-icon" href="icon-192.png"'));
   check("HTML: registracija SW varovana (https/localhost, catch)", html.includes('"serviceWorker" in navigator&&(window.location.protocol==="https:"||window.location.hostname==="localhost")') && /register\("sw\.js"\)\.catch/.test(html));
   check("HTML: mobilni predal @media 760 (aside fiksni + transform + dotiki)", html.includes("@media(max-width:760px)") && html.includes("body.aside-hidden aside{display:block;transform:translateX(-104%)}") && html.includes("min-height:44px"));
 

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- CSP: strict script allowlist by hash. No unsafe-inline / unsafe-eval. frame-ancestors is set in vercel.json (unsupported in meta). -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-A9QRJwFKY3E2iFMkpT2dEPfovUdTV1rE6fKOwgFR+kg=' 'sha256-+nXEtgKk+ScHYKZ/ie15Bv0gu+L97q0St+rXFk+1qrA=' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-Ljr+9b8HJmymNJ6CzE0+lzO+f7gejTBK6lMVtLFQs0A='; style-src 'self' 'sha256-o68CI6+lyXlvfPBh8A9CxCfnNYjJp9hfyAbRoous0IY='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-p7cgGoZvsTfZpz5JDDi5E8a9t7W1WwpCHYwxDfm5NqM=' 'sha256-6J6DTGfjfS9TzsmC/mavrq5Of84CejQrwL+z8h2S/CA=' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-Ljr+9b8HJmymNJ6CzE0+lzO+f7gejTBK6lMVtLFQs0A='; style-src 'self' 'sha256-4FSnEol/oCYUGkNhmiENp3nb8LJQHWJPhmXveTDka34='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Tehnična risba PRO – fotografija do končnega lista</title>
 <!-- >>> GENERATED: seo-jsonld — uredi scripts/generate-seo.js, ne to kopijo -->
 <script type="application/ld+json">[
@@ -20,8 +20,8 @@
     "applicationSubCategory": "Technical drawing / CAD",
     "operatingSystem": "Web (PWA) — Windows, macOS, Linux, Android, iOS",
     "applicationSuite": "WoodCore WPC (Roksal)",
-    "softwareVersion": "2026.11.28",
-    "datePublished": "2026-11-25",
+    "softwareVersion": "2026.11.29",
+    "datePublished": "2026-11-26",
     "offers": {
       "@type": "Offer",
       "price": "0",
@@ -149,17 +149,22 @@
   }
 ]</script>
 <script>var DW_RELEASE={
-  "version": "2026.11.28",
-  "date": "2026-11-25",
+  "version": "2026.11.29",
+  "date": "2026-11-26",
   "notes": [
-    "Dokumentacijski list (HTML) — meni *Datoteka → Izvozi dokumentacijski list (HTML)* sestavi samostojen tehnični dokument naročila po vzoru referenčnega lista »Ograja s koriti za rože 5000×1200« (ročno sestavljen dokument iz drugega klepeta): glava z žigom (naslov, sistem/profil, ključne mere, RISBA ŠT., DATUM, LIST 1/1), vgrajena A3 risba (vsi pogledi, prerezi, detajli), vhodni podatki z izračuni (št. lamel, pokrivna višina, omejitev nosilcev, tovariške dolžine, korita), tehnične opombe (istovirne listu, vključno s koritno konstrukcijsko opombo), BOM (surove deske z odpadom + razčlenjena korita), naslovna polja (naročnik/izdelal/preveril/list) in noga (vir Roksal).",
-    "Varnost dokumenta: brez skript, zunanjih povezav in e-poštnih povezav; vnešeni podatki so escape-ani; izpis je determinističen.",
-    "BOM in opombe lista imajo zdaj enega vira (bomRows(), composeNotes()), ki ga uporabljata tako SVG list kot dokumentacijski list; parseSegs() izvzeti segmentni parser.",
-    "Nova suita doc-sheet (23): vsebina dokumenta, izračuni, BOM, varnost (brez href/src/mailto, escape), determinizem. Skupaj 73 testnih surov (prej 72), 0 FAIL."
+    "Odvečni znaki > v obrazcih — iz 75 vnosnih polj in spustnih seznamov odstranjeno podvojeno zaključno oglato oklepaj; pod vsakim poljem se je izpisal tuj >, v \u003cselect> pa je nastalo neveljavno tekstovno vozlišče.",
+    "Podvojeni ID-ji — iz skritega bloka hooks odstranjena podvojena skupina gumbov (10 ID-jev: themeBtn, langBtn, helpBtn, zoomIn, zoomOut, zoomFit, panBtn, fsBtn, isoBtn, showExample). Stran ima zdaj 287 enoličnih ID-jev in nobenega podvojenega.",
+    "Manjkajoči spremenljivki --p3 in --dim sta bili uporabljeni, a nikoli definirani — pravila z njima (slike katalogа, [data-s=\"s10\"]) so bila mrtva.",
+    "Profesionalna lupina — poenoteni naslovi sklopov z oštevilčenimi značkami, tipografija obrazcev, fokusni obroči, čipi korakov, spustni seznami z lastno puščico, risalna mreža na platnu, čip števca vidnih polj.",
+    "Svetla tema je zdaj celovita — prej so ostale temne površine (main, .sysbox, .exp-sec, .exp-row, .exp-sl, .warnbox, .kbd, aktivni čipi, poudarki).",
+    "Prazno stanje je list A3 s pravim razmerjem 420 : 297, s sredinskim klicem k dejanju in berljivim kontrastom.",
+    "Mobilna vrstica — ukrep »Generiraj risbo« je v prvi vrstici ob imenu, meniji se prelomijo pod njim; prej je bila vrstica visoka tri vrstice z gumbom samim v tretji.",
+    "theme-color usklajen z barvo menijske vrstice (#141c24 → #181816).",
+    "Vse surov zelene (0 FAIL) in samoprevera 126/126; pwa surov zdaj preverja theme-color proti spremenljivki --bar, ne proti zapisani vrednosti."
   ]
 };</script>
 <!-- <<< END GENERATED: seo-jsonld -->
-<meta name="theme-color" content="#141c24">
+<meta name="theme-color" content="#181816">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-512.png" sizes="512x512" type="image/png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -495,6 +500,98 @@ body.viewmode .viewbar{display:flex}
 [data-s="s73"]{width:100%!important;padding:7px 9px!important;border-radius:8px!important;border:1px solid var(--line)!important;background:var(--bg)!important;color:var(--tx)!important;}
 [data-s="s74"]{width:auto!important;}
 /*__UTILITY_CSS_END__*/
+/* ============================================================
+   Profesionalna lupina 2026.12 — sistem, svetla tema, stanja.
+   Videz samo: nič ne spreminja ID-jev, razporeda ali logike.
+   ============================================================ */
+/* 1 — manjkajoče sistemske spremenljivke (--p3 in --dim sta bila
+   uporabljena, a nikoli definirana: pravila z njima so bila mrtva) */
+:root{--p3:#2a2a25;--dim:#8d8a80;--ring:0 0 0 3px #d9775747;--grid:rgba(255,255,255,.05);--sheetc:0 18px 48px #000000a6}
+[data-theme="light"]{--p3:#f7f6f1;--dim:#85827a;--ring:0 0 0 3px #c05a3638;--grid:rgba(28,27,24,.06);--sheetc:0 2px 4px #0000000f,0 18px 44px #00000029}
+
+/* 2 — ogrodje: menijska vrstica, gumbi, spustni seznami */
+.menubar{gap:2px;padding:0 12px;background:var(--bar);border-bottom:1px solid var(--line);box-shadow:0 1px 0 #00000059}
+[data-theme="light"] .menubar{box-shadow:0 1px 0 #0000000f}
+.brand{display:inline-flex;align-items:center;gap:9px;font-size:13px;font-weight:600;letter-spacing:.1px}
+.brand::before{content:"";width:20px;height:20px;flex:0 0 auto;border-radius:6px;background:var(--ac) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M4 3h11l5 5v13H4z'/><path d='M15 3v5h5'/><path d='M8 13h8M8 17h5'/></svg>") center/13px no-repeat;box-shadow:inset 0 0 0 1px #ffffff26}
+.brand small{color:var(--dim);font-weight:400;margin-left:0}
+.menu>button{font-size:13px;padding:5px 10px;border-radius:6px;transition:background .12s,color .12s}
+.menu>button:hover,.menu.open>button{background:var(--p2);border-color:transparent}
+.primarybar{border-radius:6px;padding:6px 13px;font-size:13px;box-shadow:0 1px 2px #00000040,inset 0 1px 0 #ffffff26;transition:filter .12s}
+.primarybar:hover{filter:brightness(1.08)}
+.menu .drop{background:var(--panel);border-radius:10px;box-shadow:0 18px 44px #000000a6,0 0 0 1px #00000059;padding:7px}
+.drop .mi{border-radius:6px;padding:7px 9px;font-size:12.5px}
+.drop .mi .k{font-size:10.5px}
+.drop .label{font-size:9.5px;letter-spacing:.8px;color:var(--dim)}
+.kbd{background:var(--p2);border-radius:5px}
+
+/* 3 — stranska plošča: naslovi sklopov, polja, stanja */
+aside{padding:16px 16px 20px}
+aside section{padding-bottom:14px;margin-bottom:16px}
+aside h2{display:flex;align-items:center;gap:9px;font-size:11.5px;letter-spacing:.85px;color:var(--tx);font-weight:600;margin-bottom:11px}
+aside h2 i{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:5px;background:var(--p2);border:1px solid var(--line);color:var(--ac);font-size:10.5px;font-weight:600;margin:0}
+aside section h2:hover{color:var(--ac)}
+section h2::after{color:var(--dim);font-size:14px;line-height:1;float:right;margin-left:auto}
+label{font-size:11px;letter-spacing:.2px;color:var(--dim);margin-bottom:4px}
+input,select,textarea{background:var(--p2);border-color:var(--line);border-radius:7px;padding:8px 9px;font-size:13px;transition:border-color .12s,box-shadow .12s,background .12s}
+input:hover,select:hover,textarea:hover{border-color:var(--dim)}
+input:focus,select:focus,textarea:focus{border-color:var(--ac);box-shadow:var(--ring)}
+::placeholder{color:var(--dim)}
+select{appearance:none;-webkit-appearance:none;padding-right:26px;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M1 1l4 4 4-4' fill='none' stroke='%23a6a396' stroke-width='1.5' stroke-linecap='round'/></svg>");background-repeat:no-repeat;background-position:right 9px center}
+[data-theme="light"] select{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M1 1l4 4 4-4' fill='none' stroke='%236f6d66' stroke-width='1.5' stroke-linecap='round'/></svg>")}
+.btn{border-radius:7px;padding:7px 11px;font-size:12.5px;transition:border-color .12s,background .12s,color .12s}
+.btn:hover{border-color:var(--dim)}
+.btn.on,.btn:active{border-color:var(--ac)}
+.hint{color:var(--dim);line-height:1.5}
+.status{line-height:1.45}
+.sysbox{background:var(--p3);border-radius:10px;padding:11px}
+.sysbox .st{font-size:9.5px;letter-spacing:.85px;color:var(--dim);margin-bottom:9px}
+.steps span{font-size:10.5px;letter-spacing:.2px;padding:3px 9px}
+
+/* 4 — platno in list: papir kot nosilec, mreža kot risalna podlaga */
+main{background:var(--bg);background-image:radial-gradient(var(--grid) 1px,transparent 1px);background-size:22px 22px;background-position:-1px -1px;padding:18px}
+.sheet{border:1px solid var(--line);border-radius:3px;box-shadow:var(--sheetc)}
+
+/* 5 — prazno stanje: list A3 s pravim razmerjem in jasnim klicem */
+main .sheet:has(>#prev.empty){width:min(100%,860px);min-width:0;aspect-ratio:420/297;max-height:calc(100dvh - 150px);display:flex;background:#fff;margin:auto}
+#prev.empty{--ink:#1c1b18;--paper-mut:#6f6d66;--paper-line:#d6d3c9;margin:auto;width:min(100%,540px);height:auto;padding:28px 24px;border:0;background:none;color:var(--paper-mut);font-size:12.5px;line-height:1.65;text-align:center}
+#prev.empty b{display:block;font-size:15px;font-weight:600;letter-spacing:.2px;color:var(--ink);margin-bottom:10px}
+#prev.empty .btn{background:#fff;border-color:var(--paper-line);color:var(--ink);font-size:12.5px;padding:8px 13px}
+#prev.empty .btn:hover{border-color:#c05a36;color:#c05a36}
+#prev.empty .btn:first-child{background:#c05a36;border-color:#c05a36;color:#fff}
+#prev.empty .btn:first-child:hover{background:#ad4f2f;border-color:#ad4f2f;color:#fff}
+
+/* 6 — svetla tema: površine, ki so ostale temne */
+[data-theme="light"] main{background:var(--bg)}
+[data-theme="light"] .sysbox{background:#f7f6f1}
+[data-theme="light"] .warnbox{background:#fdf7e8;border-color:#dcb35e;color:#79580f}
+[data-theme="light"] .steps span.cur{background:#f6e4da}
+[data-theme="light"] .exp-sec{background:#f7f6f1}
+[data-theme="light"] .exp-sec-h:hover{background:#efeee8}
+[data-theme="light"] .exp-row{border-top-color:#e6e4dc}
+[data-theme="light"] .exp-sl{background:#cfcdc4}
+[data-theme="light"] .exp-chip.active{background:#f6e4da}
+[data-theme="light"] .photo{background:#eceae4}
+[data-theme="light"] #asideScrim{background:#00000026}
+
+/* 6b — števec vidnih polj kot čip (prej golo besedilo) */
+#fieldCount{font-variant-numeric:tabular-nums;padding:2px 8px;border:1px solid var(--line);border-radius:999px;color:var(--dim)!important;line-height:1.6}
+
+/* 6c — mobilna vrstica: ukrep v prvi vrstici, meniji pod njim */
+@media(max-width:760px){
+.menubar{flex-wrap:wrap;gap:6px 2px;padding:8px 10px}
+.menubar>.brand{order:0;flex:1 1 auto;min-width:0}
+.menubar>.primarybar{order:1;margin-left:auto;position:static;flex:0 0 auto;box-shadow:0 1px 2px #00000059}
+.menubar>.menu,.menubar>.spacer,.menubar>#fieldCount{order:2}
+.menubar>.spacer{display:none}
+.menubar::after{content:"";order:1;flex:0 0 100%;height:0}
+}
+/* 7 — stanja: fokus, izbira, gibanje */
+:where(button,a,summary,[role="button"],[tabindex]):focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+input:focus-visible,select:focus-visible,textarea:focus-visible{outline:none}
+::selection{background:var(--ac);color:#1a120e}
+*{scrollbar-width:thin;scrollbar-color:var(--line) transparent}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
 </style>
 </head>
 <body>
@@ -672,8 +769,8 @@ body.viewmode .viewbar{display:flex}
 <div class="btns"><button class="btn on" id="mLinear">2 točki</button><button class="btn" id="mPlane">4 točke (perspektiva)</button></div>
 <div class="btns" data-s="s46"><button class="btn" id="pickCal">Izberi referenčne točke</button><button class="btn" id="clearCal">Počisti</button></div>
 <div class="row" data-s="s46">
-<div><label for="refA">Resnična dolžina / širina (mm)</label><input type="number" id="refA" step="0.1" placeholder="npr. 1000">></div>
-<div id="refBWrap" data-s="s29"><label for="refB">Resnična višina (mm)</label><input type="number" id="refB" step="0.1" placeholder="npr. 1200">></div>
+<div><label for="refA">Resnična dolžina / širina (mm)</label><input type="number" id="refA" step="0.1" placeholder="npr. 1000"></div>
+<div id="refBWrap" data-s="s29"><label for="refB">Resnična višina (mm)</label><input type="number" id="refB" step="0.1" placeholder="npr. 1200"></div>
 </div>
 <button class="btn" id="applyCal" data-s="s48">Uporabi umeritev</button>
 <div class="status" id="calStatus" role="status" aria-live="polite">Ni umerjeno.</div>
@@ -684,8 +781,8 @@ body.viewmode .viewbar{display:flex}
 <h2 data-i18n="h_detect"><i>3</i>Samodejno zaznavanje lamel</h2>
 <div class="btns"><button class="btn" id="detect">Zaznaj lamele s slike</button></div>
 <div class="row" data-s="s46">
-<div><label for="sens">Prag robov (višji = manj zaznav)</label><input class="range" type="range" id="sens" min="1" max="30" value="12">></div>
-<div><label for="minsep">Najmanjši razmik (px)</label><input type="number" id="minsep" value="8" min="2">></div>
+<div><label for="sens">Prag robov (višji = manj zaznav)</label><input class="range" type="range" id="sens" min="1" max="30" value="12"></div>
+<div><label for="minsep">Najmanjši razmik (px)</label><input type="number" id="minsep" value="8" min="2"></div>
 </div>
 <div class="status" id="detStatus"></div>
 <p class="hint">Zaznava vodoravne robove v sredinskem pasu slike. Rezultat je orientacijski — preverite ročno.</p>
@@ -696,51 +793,51 @@ body.viewmode .viewbar{display:flex}
 <div class="sysbox">
 <div class="st">WoodCore sistem (Roksal)</div>
 <div class="row">
-<div><label for="sysUse">Uporaba</label><select id="sysUse">><option value="precna">Prečna ograja</option><option value="pokoncna">Pokončna ograja</option><option value="fasada">Fasada</option><option value="terasa">Terasa</option><option value="pregrada">Pregradna stena</option><option value="napusc">Napušč</option><option value="stopniscna">Stopniščna ograja</option></select></div>
-<div><label for="sysProfile">Profil deske</label><select id="sysProfile">><option value="romb67">ROMB DESKA-67</option><option value="polna128">POLNA DESKA-128</option><option value="deska150">DESKA-150</option><option value="polna57">POLNA DESKA-57/32</option><option value="polna100">POLNA DESKA-100</option><option value="kubo80">KUBO-80/42</option></select></div>
-<div><label for="sysColor">Barva</label><select id="sysColor">><option>Amazon wood</option><option>Ash wood</option><option>Golden teak</option><option>Burma teak</option><option>Oak wood</option><option>White</option><option>Rustic oak</option><option>Rustic walnut</option></select></div>
-<div><label for="sysSurface">Površina</label><select id="sysSurface">><option>Klasik</option><option>Rustik</option></select></div>
+<div><label for="sysUse">Uporaba</label><select id="sysUse"><option value="precna">Prečna ograja</option><option value="pokoncna">Pokončna ograja</option><option value="fasada">Fasada</option><option value="terasa">Terasa</option><option value="pregrada">Pregradna stena</option><option value="napusc">Napušč</option><option value="stopniscna">Stopniščna ograja</option></select></div>
+<div><label for="sysProfile">Profil deske</label><select id="sysProfile"><option value="romb67">ROMB DESKA-67</option><option value="polna128">POLNA DESKA-128</option><option value="deska150">DESKA-150</option><option value="polna57">POLNA DESKA-57/32</option><option value="polna100">POLNA DESKA-100</option><option value="kubo80">KUBO-80/42</option></select></div>
+<div><label for="sysColor">Barva</label><select id="sysColor"><option>Amazon wood</option><option>Ash wood</option><option>Golden teak</option><option>Burma teak</option><option>Oak wood</option><option>White</option><option>Rustic oak</option><option>Rustic walnut</option></select></div>
+<div><label for="sysSurface">Površina</label><select id="sysSurface"><option>Klasik</option><option>Rustik</option></select></div>
 </div>
 <div class="status" id="sysStatus"></div>
 <p class="hint" id="sysHint">Izberite profil — program nastavi širino, debelino, število nosilcev in opombe. Hitre prednastavitve: meni <b>Orodja</b>.</p>
 </div>
 <div class="row3">
-<div><label for="L">Dolžina L (mm)</label><input type="number" id="L" value="3800">></div>
-<div><label for="H">Višina H (mm)</label><input type="number" id="H" value="1200">></div>
-<div><label for="D">Globina D (mm)</label><input type="number" id="D" value="1200">></div>
-<div><label for="n">Št. lamel</label><input type="number" id="n" value="16" min="1">></div>
-<div><label for="sw">Širina lamele (mm)</label><input type="number" id="sw" value="80">></div>
-<div><label for="st">Debelina lamele (mm)</label><input type="number" id="st" value="20">></div>
-<div><label for="gap">Reža (mm)</label><input type="number" id="gap" value="10">></div>
+<div><label for="L">Dolžina L (mm)</label><input type="number" id="L" value="3800"></div>
+<div><label for="H">Višina H (mm)</label><input type="number" id="H" value="1200"></div>
+<div><label for="D">Globina D (mm)</label><input type="number" id="D" value="1200"></div>
+<div><label for="n">Št. lamel</label><input type="number" id="n" value="16" min="1"></div>
+<div><label for="sw">Širina lamele (mm)</label><input type="number" id="sw" value="80"></div>
+<div><label for="st">Debelina lamele (mm)</label><input type="number" id="st" value="20"></div>
+<div><label for="gap">Reža (mm)</label><input type="number" id="gap" value="10"></div>
 <div><label for="w2">Povratek W2 (mm, 0 = brez)</label><input type="number" id="w2" value="0"></div>
 <div><label for="slabT">Balkonska plošča — debelina (mm, 0 = brez)</label><input type="number" id="slabT" value="0"></div>
 <div><label for="koritoH">Korito za rože — višina (mm)</label><input type="number" id="koritoH" value="310"></div>
 <div><label for="koritoD">Korito za rože — globina (mm)</label><input type="number" id="koritoD" value="220"></div>
 <div data-s="s38"><label for="koritoList">Korita za rože (vrstica: širina;odmik od levega roba — prazno = brez)</label><textarea id="koritoList" rows="2" placeholder="1100;300&#10;1400;1900" data-s="s69"></textarea></div>
 <div data-s="s38"><label for="segList">Segmenti za sprednji pogled (vrstica: naziv;širina;višina)</label><textarea id="segList" rows="3" placeholder="1. NADSTROPJE;6200;1030&#10;PRITLIČJE;7800;1050" data-s="s69"></textarea></div>
-<div><label for="wall">Stena profila (mm)</label><input type="number" id="wall" value="2">></div>
-<div><label for="prof">Profil lamele</label><select id="prof">><option value="rhombus">Romb</option><option value="tube">Pravokotna cev</option><option value="solid">Polna palica</option></select></div>
-<div><label for="topP">Zgornji profil</label><input type="text" id="topP" value="80x40x3">></div>
-<div><label for="botP">Spodnji profil</label><input type="text" id="botP" value="120x80x3">></div>
-<div><label for="np">Nosilci – št.</label><input type="number" id="np" value="4" min="1">></div>
-<div><label for="postP">Nosilec</label><input type="text" id="postP" value="60x40x3">></div>
-<div><label for="bolt">Vijaki</label><input type="text" id="bolt" value="M10 / M8">></div>
-<div><label for="nbolt">Vijakov na nosilec</label><input type="number" id="nbolt" value="4" min="0">></div>
-<div><label for="zoneTop">Zgornje polje (mm)</label><input type="number" id="zoneTop" value="120">></div>
-<div><label for="zoneMid">Srednje polje (mm)</label><input type="number" id="zoneMid" value="800">></div>
-<div><label for="zoneBot">Spodnje polje (mm)</label><input type="number" id="zoneBot" value="120">></div>
-<div><label for="zoneBase">Podnožje (mm)</label><input type="number" id="zoneBase" value="60">></div>
-<div><label for="innerD">Notranja globina (mm)</label><input type="number" id="innerD" value="1160">></div>
+<div><label for="wall">Stena profila (mm)</label><input type="number" id="wall" value="2"></div>
+<div><label for="prof">Profil lamele</label><select id="prof"><option value="rhombus">Romb</option><option value="tube">Pravokotna cev</option><option value="solid">Polna palica</option></select></div>
+<div><label for="topP">Zgornji profil</label><input type="text" id="topP" value="80x40x3"></div>
+<div><label for="botP">Spodnji profil</label><input type="text" id="botP" value="120x80x3"></div>
+<div><label for="np">Nosilci – št.</label><input type="number" id="np" value="4" min="1"></div>
+<div><label for="postP">Nosilec</label><input type="text" id="postP" value="60x40x3"></div>
+<div><label for="bolt">Vijaki</label><input type="text" id="bolt" value="M10 / M8"></div>
+<div><label for="nbolt">Vijakov na nosilec</label><input type="number" id="nbolt" value="4" min="0"></div>
+<div><label for="zoneTop">Zgornje polje (mm)</label><input type="number" id="zoneTop" value="120"></div>
+<div><label for="zoneMid">Srednje polje (mm)</label><input type="number" id="zoneMid" value="800"></div>
+<div><label for="zoneBot">Spodnje polje (mm)</label><input type="number" id="zoneBot" value="120"></div>
+<div><label for="zoneBase">Podnožje (mm)</label><input type="number" id="zoneBase" value="60"></div>
+<div><label for="innerD">Notranja globina (mm)</label><input type="number" id="innerD" value="1160"></div>
 </div>
 <div id="stairBox" data-s="s31">
 <div class="st">Stopniščna ograja</div>
 <div class="row3">
-<div><label for="stN">Št. stopnic</label><input type="number" id="stN" value="12" min="1">></div>
-<div><label for="stRise">Višina stopnice (mm)</label><input type="number" id="stRise" value="170">></div>
-<div><label for="stGoing">Globina stopnice (mm)</label><input type="number" id="stGoing" value="280">></div>
-<div><label for="stW">Širina stopnišča (mm)</label><input type="number" id="stW" value="1000">></div>
-<div><label for="stPosts">Št. nosilcev</label><input type="number" id="stPosts" value="7" min="2">></div>
-<div><label for="stH">Višina ograje nad stopnico (mm)</label><input type="number" id="stH" value="1000">></div>
+<div><label for="stN">Št. stopnic</label><input type="number" id="stN" value="12" min="1"></div>
+<div><label for="stRise">Višina stopnice (mm)</label><input type="number" id="stRise" value="170"></div>
+<div><label for="stGoing">Globina stopnice (mm)</label><input type="number" id="stGoing" value="280"></div>
+<div><label for="stW">Širina stopnišča (mm)</label><input type="number" id="stW" value="1000"></div>
+<div><label for="stPosts">Št. nosilcev</label><input type="number" id="stPosts" value="7" min="2"></div>
+<div><label for="stH">Višina ograje nad stopnico (mm)</label><input type="number" id="stH" value="1000"></div>
 </div>
 </div>
 <label id="matDensityLabel" data-s="s46">Material in gostota</label>
@@ -749,9 +846,9 @@ body.viewmode .viewbar{display:flex}
 <div><input type="number" id="rho" value="1300" step="10" aria-label="Gostota materiala (kg/m³)"></div>
 </div>
 <div class="row3" data-s="s46">
-<div><label for="emb">Globina sidra (mm)</label><input type="number" id="emb" value="90">></div>
-<div><label for="subType">Podlaga — vrsta (Roksal)</label><select id="subType">><option value="beton">Beton</option><option value="beton_hidro">Beton s hidroizolacijo (SIKO)</option><option value="kovina">Obstoječa kovinska konstrukcija</option><option value="plocice">Ploščice</option><option value="tlakovci">Tlakovci</option><option value="pesek">Pesek, prodec (ne priporočamo)</option><option value="prane">Prane plošče</option><option value="odlocam">Se še odločam</option></select></div>
-<div><label for="sub">Podlaga — opis</label><input type="text" id="sub" value="beton — preveriti na objektu">></div>
+<div><label for="emb">Globina sidra (mm)</label><input type="number" id="emb" value="90"></div>
+<div><label for="subType">Podlaga — vrsta (Roksal)</label><select id="subType"><option value="beton">Beton</option><option value="beton_hidro">Beton s hidroizolacijo (SIKO)</option><option value="kovina">Obstoječa kovinska konstrukcija</option><option value="plocice">Ploščice</option><option value="tlakovci">Tlakovci</option><option value="pesek">Pesek, prodec (ne priporočamo)</option><option value="prane">Prane plošče</option><option value="odlocam">Se še odločam</option></select></div>
+<div><label for="sub">Podlaga — opis</label><input type="text" id="sub" value="beton — preveriti na objektu"></div>
 </div>
 <div class="warnbox" id="checks"></div>
 </section>
@@ -759,26 +856,26 @@ body.viewmode .viewbar{display:flex}
 <section data-panel="sheet">
 <h2 data-i18n="h_sheet"><i>5</i>List in opombe</h2>
 <div class="row">
-<div><label for="paper">Format</label><select id="paper">><option value="A3">A3 420×297</option><option value="A4">A4 297×210</option><option value="A2">A2 594×420</option></select></div>
+<div><label for="paper">Format</label><select id="paper"><option value="A3">A3 420×297</option><option value="A4">A4 297×210</option><option value="A2">A2 594×420</option></select></div>
 <div><label for="sheetStyle">Slog lista</label><select id="sheetStyle"><option value="klasicen">Klasičen</option><option value="iso">ISO 7200</option><option value="ansi">ANSI</option></select></div>
-<div><label for="scale">Merilo</label><input type="text" id="scale" value="1:20">></div>
-<div><label for="projType">Projekcija</label><select id="projType">><option value="1">Prva (EU)</option><option value="3">Tretja (US)</option></select></div>
-<div><label for="rev">Revizija</label><input type="text" id="rev" value="A">></div>
-<div><label for="proj">Projekt / naziv</label><input type="text" id="proj" value="BALKONSKA OGRADA">></div>
-<div><label for="drw">Številka risbe</label><input type="text" id="drw" value="BO-002">></div>
-<div><label for="stranka">Stranka</label><input type="text" id="stranka" value="">></div>
-<div><label for="objekt">Objekt</label><input type="text" id="objekt" value="">></div>
-<div><label for="dobavitelj">Dobavitelj</label><input type="text" id="dobavitelj" value="WoodCore">></div>
-<div><label for="mat">Material (opis)</label><input type="text" id="mat" value="Aluminijeva zlitina">></div>
-<div><label for="tol">Toleranca</label><input type="text" id="tol" value="± 1 mm">></div>
-<div><label for="fin">Površina</label><input type="text" id="fin" value="Prašno barvanje">></div>
-<div><label for="aut">Avtor</label><input type="text" id="aut" value="">></div>
-<div><label for="date">Datum</label><input type="text" id="date" value="">></div>
-<div><label for="chk">Tehnični vodja</label><input type="text" id="chk" value="">></div>
-<div><label for="ral">Barva RAL</label><input type="text" id="ral" value="RAL 7016 / 9005">></div>
-<div><label for="bracket">Nosilec – konzola</label><input type="text" id="bracket" value="120x80x5">></div>
-<div><label for="anchor">Sidro</label><input type="text" id="anchor" value="M10">></div>
-<div><label for="weld">Var</label><input type="text" id="weld" value="Filni var 3 mm">></div>
+<div><label for="scale">Merilo</label><input type="text" id="scale" value="1:20"></div>
+<div><label for="projType">Projekcija</label><select id="projType"><option value="1">Prva (EU)</option><option value="3">Tretja (US)</option></select></div>
+<div><label for="rev">Revizija</label><input type="text" id="rev" value="A"></div>
+<div><label for="proj">Projekt / naziv</label><input type="text" id="proj" value="BALKONSKA OGRADA"></div>
+<div><label for="drw">Številka risbe</label><input type="text" id="drw" value="BO-002"></div>
+<div><label for="stranka">Stranka</label><input type="text" id="stranka" value=""></div>
+<div><label for="objekt">Objekt</label><input type="text" id="objekt" value=""></div>
+<div><label for="dobavitelj">Dobavitelj</label><input type="text" id="dobavitelj" value="WoodCore"></div>
+<div><label for="mat">Material (opis)</label><input type="text" id="mat" value="Aluminijeva zlitina"></div>
+<div><label for="tol">Toleranca</label><input type="text" id="tol" value="± 1 mm"></div>
+<div><label for="fin">Površina</label><input type="text" id="fin" value="Prašno barvanje"></div>
+<div><label for="aut">Avtor</label><input type="text" id="aut" value=""></div>
+<div><label for="date">Datum</label><input type="text" id="date" value=""></div>
+<div><label for="chk">Tehnični vodja</label><input type="text" id="chk" value=""></div>
+<div><label for="ral">Barva RAL</label><input type="text" id="ral" value="RAL 7016 / 9005"></div>
+<div><label for="bracket">Nosilec – konzola</label><input type="text" id="bracket" value="120x80x5"></div>
+<div><label for="anchor">Sidro</label><input type="text" id="anchor" value="M10"></div>
+<div><label for="weld">Var</label><input type="text" id="weld" value="Filni var 3 mm"></div>
 </div>
 <label for="notes" data-s="s46">Opombe (vrstica = opomba)</label>
 <textarea id="notes">Vse mere so v milimetrih.
@@ -790,31 +887,31 @@ Konstrukcija odporna na vremenske vplive.</textarea>
 <h2 data-i18n="h_plan"><i>6</i>Montaža in količine</h2>
 <div class="btns"><button class="btn" id="makePlan">Pripravi montažni načrt</button><button class="btn" id="buildCut">Rezalni načrt (kerf)</button><button class="btn" id="buildQuote">Predračun</button><button class="btn" id="buildChecklist">Montažni checklist</button></div>
 <div class="row3" data-s="s46">
-<div><label for="stockLen">Tovariške dolžine desk (mm, loči z ;)</label><input id="stockLen" value="5800; 4000; 2200">></div>
-<div><label for="kerf">Širina rezila — kerf (mm)</label><input id="kerf" type="number" value="3" min="0" step="0.5">></div>
-<div><label for="priceBoard">Cena deska (EUR/m)</label><input id="priceBoard" type="number" value="24.5" min="0" step="0.1">></div>
-<div><label for="pricePost">Cena nosilec (EUR/kos)</label><input id="pricePost" type="number" value="12" min="0" step="0.1">></div>
-<div><label for="priceScrew">Cena vijak (EUR/kos)</label><input id="priceScrew" type="number" value="0.9" min="0" step="0.1">></div>
-<div><label for="priceWork">Cena delo (EUR/ura)</label><input id="priceWork" type="number" value="35" min="0" step="0.1">></div>
-<div><label for="workHours">Ocena dela (ure)</label><input id="workHours" type="number" value="12" min="0" step="0.5">></div>
-<div><label for="installTemp">Temperatura ob montaži (°C)</label><input id="installTemp" type="number" value="20" step="1">></div>
-<div><label for="slopeMM">Padec podlage (mm/m)</label><input id="slopeMM" type="number" value="10" min="0" step="1">></div>
-<div><label for="mountType">Način pritrditve</label><select id="mountType">><option value="na ploščo">Na ploščo</option><option value="bočno na ploščo">Bočno na ploščo</option><option value="v tla">V tla / temelj</option><option value="kovinska konstrukcija">Obstoječa kovinska konstrukcija</option></select></div>
-<div><label for="weldedParts">Varjeni deli na obstoječih stebrih</label><select id="weldedParts">><option value="ne">Ni jih</option><option value="da">Da — odstraniti pred montažo</option><option value="neznano">Ni preverjeno</option></select></div>
-<div><label for="installer">Izvajalec montaže</label><input id="installer" type="text" value="">></div>
-<div><label for="handoverDate">Datum prevzema / zaključka</label><input id="handoverDate" type="text" value="">></div>
+<div><label for="stockLen">Tovariške dolžine desk (mm, loči z ;)</label><input id="stockLen" value="5800; 4000; 2200"></div>
+<div><label for="kerf">Širina rezila — kerf (mm)</label><input id="kerf" type="number" value="3" min="0" step="0.5"></div>
+<div><label for="priceBoard">Cena deska (EUR/m)</label><input id="priceBoard" type="number" value="24.5" min="0" step="0.1"></div>
+<div><label for="pricePost">Cena nosilec (EUR/kos)</label><input id="pricePost" type="number" value="12" min="0" step="0.1"></div>
+<div><label for="priceScrew">Cena vijak (EUR/kos)</label><input id="priceScrew" type="number" value="0.9" min="0" step="0.1"></div>
+<div><label for="priceWork">Cena delo (EUR/ura)</label><input id="priceWork" type="number" value="35" min="0" step="0.1"></div>
+<div><label for="workHours">Ocena dela (ure)</label><input id="workHours" type="number" value="12" min="0" step="0.5"></div>
+<div><label for="installTemp">Temperatura ob montaži (°C)</label><input id="installTemp" type="number" value="20" step="1"></div>
+<div><label for="slopeMM">Padec podlage (mm/m)</label><input id="slopeMM" type="number" value="10" min="0" step="1"></div>
+<div><label for="mountType">Način pritrditve</label><select id="mountType"><option value="na ploščo">Na ploščo</option><option value="bočno na ploščo">Bočno na ploščo</option><option value="v tla">V tla / temelj</option><option value="kovinska konstrukcija">Obstoječa kovinska konstrukcija</option></select></div>
+<div><label for="weldedParts">Varjeni deli na obstoječih stebrih</label><select id="weldedParts"><option value="ne">Ni jih</option><option value="da">Da — odstraniti pred montažo</option><option value="neznano">Ni preverjeno</option></select></div>
+<div><label for="installer">Izvajalec montaže</label><input id="installer" type="text" value=""></div>
+<div><label for="handoverDate">Datum prevzema / zaključka</label><input id="handoverDate" type="text" value=""></div>
 </div>
 <div class="sysbox" data-s="s49">
 <div class="st">Povpraševanje Roksal — kontakt stranke</div>
 <div class="row3">
-<div><label for="strankaTip">Naslovljeno na</label><select id="strankaTip">><option>Fizična oseba</option><option>Podjetje</option></select></div>
-<div><label for="strankaDav">Davčna številka (podjetje)</label><input id="strankaDav" type="text" value="">></div>
-<div><label for="dobavaMode">Način dobave/montaže</label><select id="dobavaMode">><option>Osebni prevzem</option><option>Dostava</option><option>Dostava in montaža</option></select></div>
+<div><label for="strankaTip">Naslovljeno na</label><select id="strankaTip"><option>Fizična oseba</option><option>Podjetje</option></select></div>
+<div><label for="strankaDav">Davčna številka (podjetje)</label><input id="strankaDav" type="text" value=""></div>
+<div><label for="dobavaMode">Način dobave/montaže</label><select id="dobavaMode"><option>Osebni prevzem</option><option>Dostava</option><option>Dostava in montaža</option></select></div>
 </div>
 <div class="row3" data-s="s46">
-<div><label for="strankaEmail">E-pošta</label><input id="strankaEmail" type="text" value="">></div>
-<div><label for="strankaTel">Telefon</label><input id="strankaTel" type="text" value="">></div>
-<div><label for="strankaNaslov">Naslov stranke</label><input id="strankaNaslov" type="text" value="">></div>
+<div><label for="strankaEmail">E-pošta</label><input id="strankaEmail" type="text" value=""></div>
+<div><label for="strankaTel">Telefon</label><input id="strankaTel" type="text" value=""></div>
+<div><label for="strankaNaslov">Naslov stranke</label><input id="strankaNaslov" type="text" value=""></div>
 </div>
 <p class="hint" data-s="s45">Izvoz: meni <b>Datoteka → Izvozi povpraševanje Roksal (TXT)</b> — pošljite na <b>info@roksal.com</b> ali oddajte na roksal.com/wpc-povprasevanje (fotografije/skice ≤ 25 MB).</p>
 </div>
@@ -1317,17 +1414,6 @@ Konstrukcija odporna na vremenske vplive.</textarea>
   <button id="pdmArchiveHook" type="button"></button>
   <button id="wnBtn" type="button"></button>
   <button id="learnBtn" type="button"></button>
-
-  <button id="themeBtn" type="button"></button>
-  <button id="langBtn" type="button"></button>
-  <button id="helpBtn" type="button"></button>
-  <button id="zoomIn" type="button"></button>
-  <button id="zoomOut" type="button"></button>
-  <button id="zoomFit" type="button"></button>
-  <button id="panBtn" type="button"></button>
-  <button id="fsBtn" type="button"></button>
-  <button id="isoBtn" type="button"></button>
-  <button id="showExample" type="button"></button>
 
   <button id="modeGuided" type="button"></button>
   <button id="modeExpert" type="button"></button>
