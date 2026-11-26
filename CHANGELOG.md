@@ -2,6 +2,14 @@
 
 Vse pomembnejše spremembe projekta **Draftwright — Tehnična risba PRO** so dokumentirane v tej datoteki. Oblika sledi [Keep a Changelog](https://keepachangelog.com/sl/1.1.0/); datumski sufiksi v oznakah (npr. `[2026.11.15]`) so zaporedne podrazličice mesečne različice `APP_VERSION` (trenutno `2026.11`).
 
+## [2026.11.37] — 2026-11-26
+
+### Popravljeno
+- **Povečava fotografije** — SVG risba `#ov` je prekrivala sliko in požirala klike, zato se povečava ni odprla z miško. Risba je zdaj `pointer-events:none`, slika pa je fokusabilna (`role=button`, `tabindex=0`, ime) in se odpre s klikom ali Enter/preslednico; Escape zapre pogled in vrne fokus na sliko.
+
+### Preizkušeno
+- `tests/a11y.test.js` (**47 preverjanj**) preverja fokusabilno sliko, odpiranje z Enter, Escape in vrnitev fokusa; v brskalniku klik na sliko odpre povečavo, Escape jo zapre.
+
 ## [2026.11.36] — 2026-11-26
 
 ### Popravljeno

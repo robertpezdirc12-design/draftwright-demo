@@ -84,14 +84,25 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   tmpRes.remove(); w.closeResult(); await sleep(30);
 
   const photo = d.getElementById("img");
+  check("povečava: slika je fokusabilna in ima ime",
+    photo.getAttribute("role") === "button" && photo.tabIndex === 0 && accName(photo) === "Povečaj fotografijo");
   photo.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E";
+  d.getElementById("photoBox").classList.add("on");
+  photo.focus();
   photo.click();
   await sleep(35);
   const zoomOv = d.getElementById("photoZoomOverlay"), zoomDlg = zoomOv.querySelector('[role="dialog"]');
   check("povečava: modalni dialog z imenom in fokusom", !!zoomDlg && zoomDlg.getAttribute("aria-modal") === "true" && accName(zoomDlg) === "Povečana fotografija" && zoomOv.contains(d.activeElement));
   d.dispatchEvent(new w.KeyboardEvent("keydown", { key: "Escape", bubbles: true, cancelable: true }));
   await sleep(30);
-  check("povečava: Escape zapre dialog", !zoomOv.classList.contains("on"));
+  check("povečava: Escape zapre dialog in vrne fokus na sliko", !zoomOv.classList.contains("on") && d.activeElement === photo,
+    "odprt=" + zoomOv.classList.contains("on") + ", fokus=" + (d.activeElement && (d.activeElement.id || d.activeElement.tagName)));
+  photo.focus();
+  photo.dispatchEvent(new w.KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true }));
+  await sleep(35);
+  check("povečava: Enter na sliki odpre dialog", zoomOv.classList.contains("on") && zoomOv.contains(d.activeElement));
+  d.dispatchEvent(new w.KeyboardEvent("keydown", { key: "Escape", bubbles: true, cancelable: true }));
+  await sleep(30);
 
   /* 1c) izbira vidnih sklopov je gumb z stanjem in skupino potrditvenih polj. */
   const fieldBtn = d.getElementById("fieldBtn"), fieldMenu = d.getElementById("fieldMenu");
