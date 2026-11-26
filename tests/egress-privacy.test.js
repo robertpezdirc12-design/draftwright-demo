@@ -42,10 +42,12 @@ const dom = new JSDOM(html, {
   },
 });
 
-/* ============ 1) edini egress je lokalni vendor-tresni (same-origin, predpomnjen) ============ */
-const fetchSites = [...html.matchAll(/fetch\s*\(\s*([^)]*)/g)].map((m) => m[1]);
-check("aplikacija ima RAVNO 1 fetch() klic", fetchSites.length === 1, "najdeno: " + fetchSites.length);
-check("ta fetch je lokalni vendor font (relative, same-origin)", fetchSites.length === 1 && /"vendor\/LiberationSans-Regular\.ttf"|'vendor\/LiberationSans-Regular\.ttf'/.test(fetchSites[0]), fetchSites[0]);
+/* ============ 1) egress: lokalni font + uporabniško sprožen AI test (isti izvor) ============ */
+const fetchSites = [...html.matchAll(/fetch\s*\(\s*([^)]*)/g)].map((m) => m[1].trim());
+check("aplikacija ima RAVNO 2 fetch() klica", fetchSites.length === 2, "najdeno: " + fetchSites.length);
+check("eden je lokalni vendor font (relative, same-origin)", fetchSites.some((s) => /^["']vendor\/LiberationSans-Regular\.ttf["']/.test(s)), fetchSites.join(" | "));
+check("drugi je AI test na s.endpoint (POST), sprožen šele z gumbom", fetchSites.some((s) => /^s\.endpoint\b/.test(s)) && /\$\("aiTest"\)\.onclick/.test(html) && /method\s*:\s*["']POST["']/.test(html), fetchSites.join(" | "));
+check("AI test zavrne zunanji izvor (fetch le na isti izvor)", /u\.origin\s*!==\s*location\.origin/.test(html));
 
 /* ============ 2) nobenih drugih egress / senzorjev ============ */
 const banned = /XMLHttpRequest|new WebSocket|navigator\.sendBeacon|EventSource|navigator\.getUserMedia|navigator\.geolocation|navigator\.mediaDevices|navigator\.getBattery|navigator\.bluetooth|navigator\.usb\b|navigator\.serial|navigator\.deviceMemory|navigator\.share\b/;

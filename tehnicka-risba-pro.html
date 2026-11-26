@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- CSP: strict script allowlist by hash. No unsafe-inline / unsafe-eval. frame-ancestors is set in vercel.json (unsupported in meta). -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-7cbv7qRDRMQ2wsgIEsrGssQR0eQpkYj4E0829BchsA0=' 'sha256-8CLnmCncH9n5K+pm7zwcCLBycyOYCz6PYW+kgDUoFs8=' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-Ljr+9b8HJmymNJ6CzE0+lzO+f7gejTBK6lMVtLFQs0A='; style-src 'self' 'sha256-bNZr2w6GkE7VRnkzIsqv35pTAUP2HCfAweYQV3l/8G4='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-lOElI2z5z/oWAUVgP9bUNOxxUH6fMLzQlw7H8JUOXmY=' 'sha256-pQ571wbVKAOnylmrdXpsU8frnKXWJLIXEun5UKEHc3k=' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-BWFXVPw/SdQeu3EgKSj4YBBO3DCcfLMw+8hY4uvAfHI='; style-src 'self' 'sha256-UAmxzAJlTrP92DeOwaBmKE+jTmy/iQ2ni64MG8BxJMQ='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Tehnična risba PRO – fotografija do končnega lista</title>
 <!-- >>> GENERATED: seo-jsonld — uredi scripts/generate-seo.js, ne to kopijo -->
 <script type="application/ld+json">[
@@ -20,7 +20,7 @@
     "applicationSubCategory": "Technical drawing / CAD",
     "operatingSystem": "Web (PWA) — Windows, macOS, Linux, Android, iOS",
     "applicationSuite": "WoodCore WPC (Roksal)",
-    "softwareVersion": "2026.11.30",
+    "softwareVersion": "2026.11.31",
     "datePublished": "2026-11-26",
     "offers": {
       "@type": "Offer",
@@ -149,14 +149,14 @@
   }
 ]</script>
 <script>var DW_RELEASE={
-  "version": "2026.11.30",
+  "version": "2026.11.31",
   "date": "2026-11-26",
   "notes": [
-    "Svetla tema je zdaj res svetla — spustni meniji, .kbd, izbrani segmenti in čipi so v svetli temi dobili svoje različice; zavesa dialogov je mehkejša (0,35 namesto 0,73 črnine), zato ozadje za oknom ni več videti kot temna tema.",
-    "Kontrast besedila — svetla tema je imela presvetle sekundarne odtenke (--mut 4,3 : 1, --dim 3,8 : 1 na belem) in temen napis na terakoti (4,2 : 1); primarne tipke imajo zdaj bel napis, vsi pari besedilo/ozadje pa so ≥ 4,5 : 1.",
-    "manifest.webmanifest je imel #141c24, aplikacija pa #181816 — nameščena aplikacija je ob zagonu utripnila v drugo barvo. Zdaj se ujemata, test vrednost bere iz --bar.",
-    "Dvanajst dialogov (izvoz, projekti, primeri risb, 3D pogled, pomoč, potrditev, povečava fotografije, rezultat, konfiguracije, zgodovina posnetkov, zapiski izdaj, vadnice) pregledanih v obeh temah; izmerjeni kontrasti, ne le videz.",
-    "Nova suita tests/theme-contrast.test.js (51 preverjanj): kontrast barvnih žetonov v obeh temah, napis na primarnih tipkah, svetle različice trdo kodiranih površin in razlika med zavesama."
+    "Preskoči na vsebino — pred menijem je bilo 40 tab-postajališč, preden je fokus prišel do lista. Prvi Tab zdaj pokaže povezavo, ki fokus prestavi na predogled (WCAG 2.4.1).",
+    "Sklopi stranske plošče so tipkovnični — naslovi sklopov so role=\"button\", fokusabilni, z aria-expanded; Enter in preslednica odpirata/zapirata enako kot klik. Stanje vzdržuje observer, ker sklope preklapljajo tudi ukazi v meniju Plošča.",
+    "Meniji javljajo stanje — aria-haspopup=\"true\" in aria-expanded na vseh šestih gumbih; ↓ odpre meni in premakne fokus na prvo postavko, Esc ga zapre in vrne fokus na gumb.",
+    "Fokus v dialogih — odprtje premakne fokus v dialog, zaprtje ga vrne na sprožilec; prej je to počel samo izvozni dialog, zdaj še preostalih deset. Stranska plošča ima vodilno oznako, main pa id/tabindex=\"-1\" za ciljanje.",
+    "Nova suita tests/a11y.test.js (28 preverjanj): imena dialogov, gumbov in polj, tipkovnica po sklopih (klik/Enter/preslednica + aria-expanded), stanje menijev (klik, Esc, ↓), premik in vrnitev fokusa, preskočna povezava kot prva postaja v DOM-u."
   ]
 };</script>
 <!-- <<< END GENERATED: seo-jsonld -->
@@ -594,9 +594,17 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:none}
 ::selection{background:var(--ac);color:#1a120e}
 *{scrollbar-width:thin;scrollbar-color:var(--line) transparent}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+/* Preskoči na vsebino (WCAG 2.4.1): pred menijem je 40 tab-postajališč. */
+.skiplink{position:fixed;left:10px;top:-72px;z-index:9999;padding:9px 16px;border-radius:9px;
+  background:var(--ac);color:#1a120e;font-size:13px;font-weight:600;text-decoration:none;
+  box-shadow:0 8px 24px #00000038;transition:top .18s ease}
+.skiplink:focus{top:10px;outline:2px solid var(--tx);outline-offset:2px}
+[data-theme="light"] .skiplink{color:#fff}
+[data-theme="light"] .skiplink:focus{outline-color:#1c1b18}
 </style>
 </head>
 <body>
+<a class="skiplink" href="#main">Preskoči na predogled lista</a>
 <div class="menubar" id="menubar">
   <div class="brand">Tehnična risba PRO <small>slika → risba → izvoz</small></div>
   <div class="menu panelmenu" data-menu>
@@ -729,6 +737,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:none}
       <button class="mi" data-call="langBtn">Jezik SL/EN</button>
       <button class="mi" data-call="wnBtn">Zapiski izdaj…</button>
       <button class="mi" data-call="learnBtn">Vadnice in certifikacija…</button>
+      <button class="mi" data-call="openAiSettings">Poveži AI model…</button>
       <div class="sep"></div>
       <div class="label">Bližnjice</div>
       <div data-s="s62">
@@ -753,7 +762,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:none}
 </div>
 
 <div class="grid">
-<aside>
+<aside id="aside" aria-label="Nastavitve risbe">
 <div class="steps" id="steps"><span data-i18n="st1" data-step="1">1 Slika</span><span data-i18n="st2" data-step="2">2 Umeritev</span><span data-i18n="st3" data-step="3">3 Mere</span><span data-i18n="st4" data-step="4">4 Risba</span></div>
 
 <section data-panel="photo">
@@ -985,7 +994,7 @@ Konstrukcija odporna na vremenske vplive.</textarea>
 
 <div id="globalStatus" aria-live="polite">Pripravljeno.</div>
 </aside>
-<main>
+<main id="main" tabindex="-1">
 <div class="sheet"><div id="prev" class="empty"><b>Pripravljen</b>Prilepite sliko (Ctrl+V, povleci datoteko ali gumb »Izberi datoteko« v plošči Slika), izmerite ali vpišite mere in pritisnite Generiraj.<br><span data-s="s27"><button class="btn" id="emptyExample">Prikaži primer risbe</button><button class="btn" data-call="openHelp">Kako začeti?</button></span></div></div>
 <div id="errTray" aria-live="polite"></div>
 <div id="propPanel" class="prop-panel" role="dialog" aria-label="Lastnosti dimenzije"></div>
@@ -1248,6 +1257,46 @@ Konstrukcija odporna na vremenske vplive.</textarea>
     </div>
   </div>
 </div>
+<div class="exp-overlay" id="aiOverlay">
+  <div class="exp-dialog" role="dialog" aria-modal="true" aria-label="AI nastavitve">
+    <div class="exp-head">
+      <div><h1>Poveži AI model</h1><p class="exp-sub">Vnesite endpoint, ključ in model. Podatki se shranijo samo lokalno v tem brskalniku (localStorage). Brez veljavnega ključa AI ostane izklopljen.</p></div>
+      <button class="exp-x" id="aiClose" type="button" aria-label="Zapri" title="Zapri (Esc)">×</button>
+    </div>
+    <div class="exp-body">
+      <div class="exp-label">Povezava</div>
+      <div class="exp-field">
+        <label for="aiEndpoint">API endpoint (OpenAI-združljiv /chat/completions)</label>
+        <input type="text" id="aiEndpoint" placeholder="/api/chat/completions" autocomplete="off">
+      </div>
+      <div class="exp-field">
+        <label for="aiKey">API ključ</label>
+        <input type="password" id="aiKey" placeholder="Vnesite ključ…" autocomplete="off">
+      </div>
+      <div class="exp-field">
+        <label for="aiModel">Model</label>
+        <input type="text" id="aiModel" list="aiModelList" placeholder="npr. gpt-4o-mini" autocomplete="off">
+        <datalist id="aiModelList">
+          <option value="gpt-4o-mini"></option>
+          <option value="gpt-4.1-mini"></option>
+          <option value="gpt-4.1-nano"></option>
+          <option value="deepseek-chat"></option>
+          <option value="deepseek-reasoner"></option>
+          <option value="gemini-2.0-flash"></option>
+        </datalist>
+      </div>
+      <p class="hint" data-s="s46">Nasvet: zaradi varnostne politike (<code>connect-src 'self'</code>) so dovoljeni le endpointi na istem izvoru — npr. lasten proxy, ki podpira <code>POST /chat/completions</code>. Brez ključa AI ostane izklopljen.</p>
+    </div>
+    <div class="exp-foot">
+      <div class="exp-note" id="aiNote"></div>
+      <div class="exp-actions">
+        <button class="exp-cancel" id="aiClear" type="button">Počisti</button>
+        <button class="exp-cancel" id="aiTest" type="button">Preskusi</button>
+        <button class="exp-go" id="aiSave" type="button">Shrani</button>
+      </div>
+    </div>
+  </div>
+</div>
 <div class="exp-overlay" id="helpOverlay">
   <div class="exp-dialog" role="dialog" aria-modal="true" aria-label="Pomoč — kako začeti">
     <div class="exp-head">
@@ -1434,6 +1483,7 @@ Konstrukcija odporna na vremenske vplive.</textarea>
   <button id="prjLinkBtn" type="button"></button>
   <button id="tmplDialogBtn" type="button"></button>
   <button id="openHelp" type="button"></button>
+  <button id="openAiSettings" type="button"></button>
   <button id="genQuick" type="button"></button>
   <button id="dlSvgQuick" type="button"></button>
   <button id="prtQuick" type="button"></button>
@@ -4792,9 +4842,30 @@ function setMode(expert){
 }
 $("modeGuided").onclick=function(){setMode(false)};
 $("modeExpert").onclick=function(){setMode(true)};
-[].forEach.call(document.querySelectorAll("aside section h2"),function(h){
-  h.onclick=function(){h.parentNode.classList.toggle("collapsed")};
+/* Sklopi stranske plošče: klik je bil edini način odpiranja/zapiranja. Zdaj so h2
+   fokusabilni (Enter/Space), z aria-expanded, ki ga vzdržuje observer — sklope
+   odpirajo tudi ukazi v meniju Plošča (openPanel) in applyFieldVisibility.
+   WCAG 2.1.1 (tipkovnica) + 4.1.2 (stanje). */
+var SEC_H2=[].slice.call(document.querySelectorAll("aside section h2"));
+function syncSecAria(){
+  SEC_H2.forEach(function(h){
+    var sec=h.parentNode; if(!sec)return;
+    h.setAttribute("aria-expanded",sec.classList.contains("collapsed")?"false":"true");
+  });
+}
+SEC_H2.forEach(function(h){
+  h.setAttribute("role","button");
+  h.setAttribute("tabindex","0");
+  h.onclick=function(){h.parentNode.classList.toggle("collapsed");syncSecAria()};
+  h.addEventListener("keydown",function(e){
+    if(e.key==="Enter"||e.key===" "||e.key==="Spacebar"){e.preventDefault();h.onclick();}
+  });
 });
+syncSecAria();
+if(window.MutationObserver){
+  var secObs=new MutationObserver(syncSecAria);
+  [].forEach.call(document.querySelectorAll("aside section"),function(s){secObs.observe(s,{attributes:true,attributeFilter:["class"]})});
+}
 var PRESETS={
   romb:{use:"precna",profile:"romb67",color:"Amazon wood",gap:27,n:11,L:4000,H:1200,D:1200},
   polna:{use:"pokoncna",profile:"polna57",color:"White",gap:20,n:40,L:4000,H:1200,D:1200},
@@ -5889,6 +5960,56 @@ $("helpGen").onclick=function(){var g=$("gen");if(g)g.click()};
 });
 window.openHelp=openHelp;window.closeHelp=closeHelp;
 
+/* ---------- AI nastavitve (lokalno, OpenAI-združljiv endpoint) ---------- */
+var AI_KEY="draftwright-ai-settings";
+function aiGet(){
+  try{var o=JSON.parse(localStorage.getItem(AI_KEY)||"{}");return {endpoint:o.endpoint||"",key:o.key||"",model:o.model||""}}catch(e){return {endpoint:"",key:"",model:""}}
+}
+function aiSet(o){try{localStorage.setItem(AI_KEY,JSON.stringify({endpoint:o.endpoint||"",key:o.key||"",model:o.model||""}))}catch(e){}}
+function openAiSettings(){
+  if($("expOverlay").classList.contains("on"))return;
+  var s=aiGet();
+  $("aiEndpoint").value=s.endpoint;
+  $("aiKey").value=s.key;
+  $("aiModel").value=s.model;
+  $("aiNote").textContent=s.key?"Ključ je shranjen lokalno.":"Ključ ni nastavljen — AI funkcije so izklopljene.";
+  $("aiNote").className="exp-note";
+  $("aiOverlay").classList.add("on");
+}
+function closeAiSettings(){$("aiOverlay").classList.remove("on")}
+$("aiSettingsBtn") && ($("aiSettingsBtn").onclick=openAiSettings); /* hook if present */
+var _aiHook=$("openAiSettings"); if(_aiHook) _aiHook.onclick=openAiSettings;
+$("aiClose").onclick=closeAiSettings;
+$("aiOverlay").addEventListener("click",function(e){if(e.target===this)closeAiSettings()});
+document.addEventListener("keydown",function(e){if($("aiOverlay").classList.contains("on")&&e.key==="Escape")closeAiSettings()});
+$("aiSave").onclick=function(){
+  var s={endpoint:$("aiEndpoint").value.trim(),key:$("aiKey").value.trim(),model:$("aiModel").value.trim()};
+  aiSet(s);
+  $("aiNote").textContent=s.key?"Shranjeno lokalno. AI klici bodo šli na nastavljeni endpoint.":"Shranjeno. Brez ključa AI ostane izklopljen.";
+  $("aiNote").className="exp-note";
+  toast(s.key?"AI nastavitve shranjene":"AI ključ odstranjen","ok");
+};
+$("aiClear").onclick=function(){
+  $("aiEndpoint").value="";$("aiKey").value="";$("aiModel").value="";
+  aiSet({endpoint:"",key:"",model:""});
+  $("aiNote").textContent="Počiščeno. AI funkcije so izklopljene.";
+  $("aiNote").className="exp-note";
+  toast("AI nastavitve počiščene","ok");
+};
+$("aiTest").onclick=async function(){
+  var s={endpoint:$("aiEndpoint").value.trim(),key:$("aiKey").value.trim(),model:$("aiModel").value.trim()};
+  if(!s.endpoint||!s.key){$("aiNote").textContent="Vnesite endpoint in API ključ za preizkus.";$("aiNote").className="exp-note err";return}
+  var u;try{u=new URL(s.endpoint,location.href)}catch(_e){$("aiNote").textContent="Neveljaven endpoint.";$("aiNote").className="exp-note err";return}
+  if(u.origin!==location.origin){$("aiNote").textContent="Zunanji endpoint ni dovoljen — aplikacija ne pošilja podatkov na tuje strežnike. Uporabite endpoint na istem izvoru (npr. lasten proxy).";$("aiNote").className="exp-note err";return}
+  $("aiNote").textContent="Preizkušam povezavo…";$("aiNote").className="exp-note";
+  try{
+    var r=await fetch(s.endpoint,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+s.key},body:JSON.stringify({model:s.model||"gpt-4o-mini",messages:[{role:"user",content:"Reply with OK"}],max_tokens:5})});
+    if(r.ok){$("aiNote").textContent="Povezava deluje (HTTP "+r.status+").";$("aiNote").className="exp-note";toast("AI povezava deluje","ok")}
+    else{var t="";try{t=(await r.text()).slice(0,160)}catch(_e){}$("aiNote").textContent="Napaka HTTP "+r.status+(t?": "+t:"");$("aiNote").className="exp-note err";toast("AI preizkus ni uspel","err")}
+  }catch(e){$("aiNote").textContent="Povezava ni uspela: "+(e&&e.message?e.message:"napaka")+". Preverite endpoint, ključ in CORS.";$("aiNote").className="exp-note err";toast("AI povezava ni uspela","err")}
+};
+window.openAiSettings=openAiSettings;window.closeAiSettings=closeAiSettings;window.getAiSettings=aiGet;
+
 /* ---------- Odobritev stranke (view mode / QR) ---------- */
 var APPROV_KEY="draftwright-approvals";
 function approvalsAll(){try{return JSON.parse(localStorage.getItem(APPROV_KEY)||"[]")}catch(e){return[]}}
@@ -5953,15 +6074,53 @@ mn.addEventListener("drop",function(e){e.preventDefault();if(e.dataTransfer.file
 /* ---------- toolbar menus ---------- */
 (function(){
   var menus=[].slice.call(document.querySelectorAll('[data-menu]'));
-  function closeMenus(ex){menus.forEach(function(m){if(m!==ex)m.classList.remove('open')});}
+  function menuBtn(m){return m.querySelector(':scope > button');}
+  function setMenuOpen(m,open){
+    m.classList.toggle('open',!!open);
+    var b=menuBtn(m); if(b)b.setAttribute('aria-expanded',open?'true':'false');
+  }
+  function closeMenus(ex,refocus){
+    menus.forEach(function(m){
+      if(m===ex)return;
+      var was=m.classList.contains('open');
+      setMenuOpen(m,false);
+      if(was&&refocus){var b=menuBtn(m);if(b){try{b.focus()}catch(_e){}}}
+    });
+  }
   menus.forEach(function(m){
-    var btn=m.querySelector(':scope > button');
-    if(btn)btn.addEventListener('click',function(e){e.stopPropagation();var open=m.classList.contains('open');closeMenus();if(!open)m.classList.add('open');});
+    var btn=menuBtn(m);
+    if(btn){
+      /* WCAG 4.1.2: gumb pove, da odpira meni, in ali je odprt. */
+      btn.setAttribute('aria-haspopup','true');
+      btn.setAttribute('aria-expanded','false');
+      btn.addEventListener('click',function(e){
+        e.stopPropagation();
+        var open=m.classList.contains('open');
+        closeMenus();
+        setMenuOpen(m,!open);
+      });
+      /* WCAG 2.1.1: ↓ odpre meni in premakne fokus na prvo postavko. */
+      btn.addEventListener('keydown',function(e){
+        if(e.key!=='ArrowDown')return;
+        e.preventDefault();
+        closeMenus();
+        setMenuOpen(m,true);
+        var first=m.querySelector('.drop .mi, .drop button, .drop a');
+        if(first){try{first.focus()}catch(_e){}}
+      });
+      m.addEventListener('keydown',function(e){
+        if(e.key!=='Escape')return;
+        if(!m.classList.contains('open'))return;
+        e.stopPropagation();
+        setMenuOpen(m,false);
+        try{btn.focus()}catch(_e){}
+      });
+    }
     var drop=m.querySelector('.drop');
     if(drop)drop.addEventListener('click',function(e){e.stopPropagation();});
   });
   document.addEventListener('click',function(){closeMenus();});
-  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeMenus();});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeMenus(null,true);});
 
   function call(id){
     var el=$(id); if(!el) return;
@@ -6125,8 +6284,37 @@ if(typeof updateModeTicks==="function") updateModeTicks();
       }
     });
   }
+  /* ---------- Fokus ob odprtju/zaprtju modala (WCAG 2.4.3 Focus Order) ----------
+     Odprtje premakne fokus v dialog (prvi fokusabilni element), zaprtje ga vrne
+     na element, ki ga je odprl. Izvozni dialog (expOverlay) ima to že svoje —
+     dvojna obnova ni problem, ker je cilj isti element; tu pokrijemo ostalih 11. */
+  var lastDlgFocus=null,openDlg=null;
+  function overlayOf(d){var ov=d.closest&&d.closest('[class*="overlay"]');return ov||d.parentElement;}
+  function syncDialogFocus(){
+    var dlgs=Array.prototype.slice.call(document.querySelectorAll('[role="dialog"][aria-modal="true"]'));
+    var now=null;
+    dlgs.forEach(function(d){var ov=overlayOf(d);if(ov&&ov.classList&&ov.classList.contains('on'))now=d;});
+    if(now&&now!==openDlg){
+      var ae=document.activeElement;
+      lastDlgFocus=(ae&&ae!==document.body&&!now.contains(ae))?ae:null;
+      openDlg=now;
+      var items=collectFocusable(now);
+      if(!items.length&&!now.hasAttribute('tabindex'))now.setAttribute('tabindex','-1');
+      try{(items[0]||now).focus();}catch(_e){}
+    }else if(!now&&openDlg){
+      openDlg=null;
+      if(lastDlgFocus&&lastDlgFocus.isConnected){try{lastDlgFocus.focus();}catch(_e){}}
+      lastDlgFocus=null;
+    }
+  }
+  if(window.MutationObserver){
+    var dlgObs=new MutationObserver(syncDialogFocus);
+    [].slice.call(document.querySelectorAll('[role="dialog"][aria-modal="true"]')).forEach(function(d){
+      var ov=overlayOf(d); if(ov&&ov.classList)dlgObs.observe(ov,{attributes:true,attributeFilter:['class']});
+    });
+  }
   /* Izvoz za regresijske teste (tests/focus-trap.test.js). */
-  window.fwFocusTrap={collectFocusable:collectFocusable,topOpenDialog:topOpenDialog};
+  window.fwFocusTrap={collectFocusable:collectFocusable,topOpenDialog:topOpenDialog,syncDialogFocus:syncDialogFocus};
   /* Poslušalca registriramo TAKOJ (kot ostali keydown poslušalci v aplikaciji) —
      brez readyState/DOMContentLoaded odvisnosti, da je obnašanje deterministično
      tudi pod jsdom. Ta skript teče konec <body>, zato je DOM že na voljo. */
