@@ -737,6 +737,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:none}
       <button class="mi" data-call="langBtn">Jezik SL/EN</button>
       <button class="mi" data-call="wnBtn">Zapiski izdaj…</button>
       <button class="mi" data-call="learnBtn">Vadnice in certifikacija…</button>
+      <button class="mi" data-call="openAiSettings">Poveži AI model…</button>
       <div class="sep"></div>
       <div class="label">Bližnjice</div>
       <div data-s="s62">
@@ -1256,6 +1257,46 @@ Konstrukcija odporna na vremenske vplive.</textarea>
     </div>
   </div>
 </div>
+<div class="exp-overlay" id="aiOverlay">
+  <div class="exp-dialog" role="dialog" aria-modal="true" aria-label="AI nastavitve">
+    <div class="exp-head">
+      <div><h1>Poveži AI model</h1><p class="exp-sub">Vnesite endpoint, ključ in model. Podatki se shranijo samo lokalno v tem brskalniku (localStorage). Brez veljavnega ključa AI ostane izklopljen.</p></div>
+      <button class="exp-x" id="aiClose" type="button" aria-label="Zapri" title="Zapri (Esc)">×</button>
+    </div>
+    <div class="exp-body">
+      <div class="exp-label">Povezava</div>
+      <div class="exp-field">
+        <label for="aiEndpoint">API endpoint (OpenAI-združljiv /chat/completions)</label>
+        <input type="text" id="aiEndpoint" placeholder="https://api.example.com/v1/chat/completions" autocomplete="off">
+      </div>
+      <div class="exp-field">
+        <label for="aiKey">API ključ</label>
+        <input type="password" id="aiKey" placeholder="Vnesite ključ…" autocomplete="off">
+      </div>
+      <div class="exp-field">
+        <label for="aiModel">Model</label>
+        <input type="text" id="aiModel" list="aiModelList" placeholder="npr. gpt-4o-mini" autocomplete="off">
+        <datalist id="aiModelList">
+          <option value="gpt-4o-mini"></option>
+          <option value="gpt-4.1-mini"></option>
+          <option value="gpt-4.1-nano"></option>
+          <option value="deepseek-chat"></option>
+          <option value="deepseek-reasoner"></option>
+          <option value="gemini-2.0-flash"></option>
+        </datalist>
+      </div>
+      <p class="hint" style="margin-top:8px">Nasvet: za DeepAI ali drug ponudnik uporabite endpoint, ki podpira format <code>POST /chat/completions</code>. Če ključ ali endpoint ne delujeta, pustite prazno — program deluje normalno brez AI.</p>
+    </div>
+    <div class="exp-foot">
+      <div class="exp-note" id="aiNote"></div>
+      <div class="exp-actions">
+        <button class="exp-cancel" id="aiClear" type="button">Počisti</button>
+        <button class="exp-cancel" id="aiTest" type="button">Preskusi</button>
+        <button class="exp-go" id="aiSave" type="button">Shrani</button>
+      </div>
+    </div>
+  </div>
+</div>
 <div class="exp-overlay" id="helpOverlay">
   <div class="exp-dialog" role="dialog" aria-modal="true" aria-label="Pomoč — kako začeti">
     <div class="exp-head">
@@ -1442,6 +1483,7 @@ Konstrukcija odporna na vremenske vplive.</textarea>
   <button id="prjLinkBtn" type="button"></button>
   <button id="tmplDialogBtn" type="button"></button>
   <button id="openHelp" type="button"></button>
+  <button id="openAiSettings" type="button"></button>
   <button id="genQuick" type="button"></button>
   <button id="dlSvgQuick" type="button"></button>
   <button id="prtQuick" type="button"></button>
@@ -5917,6 +5959,54 @@ $("helpGen").onclick=function(){var g=$("gen");if(g)g.click()};
   b.addEventListener("click",function(){b.parentNode.classList.toggle("open")});
 });
 window.openHelp=openHelp;window.closeHelp=closeHelp;
+
+/* ---------- AI nastavitve (lokalno, OpenAI-združljiv endpoint) ---------- */
+var AI_KEY="draftwright-ai-settings";
+function aiGet(){
+  try{var o=JSON.parse(localStorage.getItem(AI_KEY)||"{}");return {endpoint:o.endpoint||"",key:o.key||"",model:o.model||""}}catch(e){return {endpoint:"",key:"",model:""}}
+}
+function aiSet(o){try{localStorage.setItem(AI_KEY,JSON.stringify({endpoint:o.endpoint||"",key:o.key||"",model:o.model||""}))}catch(e){}}
+function openAiSettings(){
+  if($("expOverlay").classList.contains("on"))return;
+  var s=aiGet();
+  $("aiEndpoint").value=s.endpoint;
+  $("aiKey").value=s.key;
+  $("aiModel").value=s.model;
+  $("aiNote").textContent=s.key?"Ključ je shranjen lokalno.":"Ključ ni nastavljen — AI funkcije so izklopljene.";
+  $("aiNote").className="exp-note";
+  $("aiOverlay").classList.add("on");
+}
+function closeAiSettings(){$("aiOverlay").classList.remove("on")}
+$("aiSettingsBtn") && ($("aiSettingsBtn").onclick=openAiSettings); /* hook if present */
+var _aiHook=$("openAiSettings"); if(_aiHook) _aiHook.onclick=openAiSettings;
+$("aiClose").onclick=closeAiSettings;
+$("aiOverlay").addEventListener("click",function(e){if(e.target===this)closeAiSettings()});
+document.addEventListener("keydown",function(e){if($("aiOverlay").classList.contains("on")&&e.key==="Escape")closeAiSettings()});
+$("aiSave").onclick=function(){
+  var s={endpoint:$("aiEndpoint").value.trim(),key:$("aiKey").value.trim(),model:$("aiModel").value.trim()};
+  aiSet(s);
+  $("aiNote").textContent=s.key?"Shranjeno lokalno. AI klici bodo šli na nastavljeni endpoint.":"Shranjeno. Brez ključa AI ostane izklopljen.";
+  $("aiNote").className="exp-note";
+  toast(s.key?"AI nastavitve shranjene":"AI ključ odstranjen","ok");
+};
+$("aiClear").onclick=function(){
+  $("aiEndpoint").value="";$("aiKey").value="";$("aiModel").value="";
+  aiSet({endpoint:"",key:"",model:""});
+  $("aiNote").textContent="Počiščeno. AI funkcije so izklopljene.";
+  $("aiNote").className="exp-note";
+  toast("AI nastavitve počiščene","ok");
+};
+$("aiTest").onclick=async function(){
+  var s={endpoint:$("aiEndpoint").value.trim(),key:$("aiKey").value.trim(),model:$("aiModel").value.trim()};
+  if(!s.endpoint||!s.key){$("aiNote").textContent="Vnesite endpoint in API ključ za preizkus.";$("aiNote").className="exp-note err";return}
+  $("aiNote").textContent="Preizkušam povezavo…";$("aiNote").className="exp-note";
+  try{
+    var r=await fetch(s.endpoint,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+s.key},body:JSON.stringify({model:s.model||"gpt-4o-mini",messages:[{role:"user",content:"Reply with OK"}],max_tokens:5})});
+    if(r.ok){$("aiNote").textContent="Povezava deluje (HTTP "+r.status+").";$("aiNote").className="exp-note";toast("AI povezava deluje","ok")}
+    else{var t="";try{t=(await r.text()).slice(0,160)}catch(_e){}$("aiNote").textContent="Napaka HTTP "+r.status+(t?": "+t:"");$("aiNote").className="exp-note err";toast("AI preizkus ni uspel","err")}
+  }catch(e){$("aiNote").textContent="Povezava ni uspela: "+(e&&e.message?e.message:"napaka")+". Preverite endpoint, ključ in CORS.";$("aiNote").className="exp-note err";toast("AI povezava ni uspela","err")}
+};
+window.openAiSettings=openAiSettings;window.closeAiSettings=closeAiSettings;window.getAiSettings=aiGet;
 
 /* ---------- Odobritev stranke (view mode / QR) ---------- */
 var APPROV_KEY="draftwright-approvals";
