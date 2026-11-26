@@ -48,6 +48,18 @@ check("P3.4: naslednji → korak 2/3", $("learnPanel").textContent.includes("Kor
 click('[data-tut="t1"][data-act="run"]');
 check("P3.4: »Izvedi korak« ne povzroči napake", errors.length === 0);
 
+/* Zavihki: prava roles/stanje + puščice + ponovno odprtje */
+const tuts = $("learnTabTuts"), quiz = $("learnTabQuiz");
+check("P3.4: zavihki so role=tab z aria-selected", tuts.getAttribute("role") === "tab" && quiz.getAttribute("role") === "tab" && tuts.getAttribute("aria-selected") === "true" && $("learnPanel").getAttribute("role") === "tabpanel");
+quiz.focus(); click('[data-tab="quiz"]');
+check("P3.4: klik na kviz izbere zavihek", quiz.getAttribute("aria-selected") === "true" && tuts.getAttribute("aria-selected") === "false" && $("learnPanel").getAttribute("aria-labelledby") === "learnTabQuiz");
+quiz.dispatchEvent(new window.KeyboardEvent("keydown", { key: "ArrowLeft", bubbles: true, cancelable: true }));
+check("P3.4: puščica levo vrne na vadnice", tuts.getAttribute("aria-selected") === "true" && $("learnPanel").getAttribute("aria-labelledby") === "learnTabTuts");
+quiz.focus(); click('[data-tab="quiz"]');
+$("learnClose").click();
+window.startTutorial("t1");
+check("P3.4: ponovno odprtje izbere vadnice", tuts.getAttribute("aria-selected") === "true" && quiz.getAttribute("aria-selected") === "false");
+
 check("P3.4: pred kvizom ni značke", window.certStatus() === false);
 window.quizGrade([0, 0, 0, 0, 0]);
 check("P3.4: napačni odgovori ne prinesejo značke", window.certStatus() === false);

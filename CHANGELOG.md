@@ -2,6 +2,15 @@
 
 Vse pomembnejše spremembe projekta **Draftwright — Tehnična risba PRO** so dokumentirane v tej datoteki. Oblika sledi [Keep a Changelog](https://keepachangelog.com/sl/1.1.0/); datumski sufiksi v oznakah (npr. `[2026.11.15]`) so zaporedne podrazličice mesečne različice `APP_VERSION` (trenutno `2026.11`).
 
+## [2026.11.32] — 2026-11-26
+
+### Popravljeno
+- **Izvoz dostopen bralnikom zaslona** — skupina formatov je `role="group"` z `aria-pressed` (prej napačen `tablist` brez zavihkov), vseh 12 vsebin pa ima dostopno ime.
+- **Vadnice: pravi zavihki** — `role="tablist"` je imel navadne gumbe; zdaj so `role="tab"` z `aria-selected`, povezavo na ploščo in puščicama levo/desno. Ponovno odprtje vedno pokaže Vadnice, tudi če je bil nazadnje izbran kviz.
+
+### Preizkušeno
+- `tests/export-dialog.test.js` (**55 preverjanj**) in `tests/learning.test.js` (**14 preverjanj**) pokrivata stanje in imena; axe na izvoznem in vadniškem dialogu ne najde kršitev.
+
 ## [2026.11.31] — 2026-11-26
 
 ### Dodano

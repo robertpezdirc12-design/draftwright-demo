@@ -82,6 +82,9 @@ async function runExportAndWait() {
   check("privzeti povzetek vsebine", $("expSumVsebina").textContent === "Vključeno 10/12", $("expSumVsebina").textContent);
   check("privzeti footer", /PDF \/ tisk · risba \+ 9 prilog/.test($("expNote").textContent), $("expNote").textContent);
   check("format lista usklajen s poljem", $("expPaper").value === $("paper").value);
+  check("format skupina je group z imenom", $("expSegs").getAttribute("role") === "group" && $("expSegs").getAttribute("aria-label") === "Format risbe");
+  check("format gumbi javljajo aria-pressed", Array.from($("expSegs").querySelectorAll(".exp-seg")).every((b) => ["true", "false"].includes(b.getAttribute("aria-pressed"))) && $("expSegs").querySelector(".exp-seg.active").getAttribute("aria-pressed") === "true");
+  check("vsebine imajo dostopno ime", Array.from(document.querySelectorAll("#expItems [data-exp-item]")).every((cb) => (cb.getAttribute("aria-label") || "").length > 0));
 
   // 2) Esc zapre
   document.dispatchEvent(new window.KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
@@ -122,6 +125,7 @@ async function runExportAndWait() {
   // 7) SVG izvoz z vodnim žigom, metapodatki, A4, datumom v imenu
   document.querySelector('[data-exp-preset="minimalno"]').click();
   document.querySelector('[data-exp-format="SVG"]').click();
+  check("format gumb javlja izbrano stanje", document.querySelector('[data-exp-format="SVG"]').getAttribute("aria-pressed") === "true" && document.querySelector('[data-exp-format="PDF"]').getAttribute("aria-pressed") === "false");
   advCb("wm").checked = true; fire(advCb("wm"), "change");
   $("expWmText").value = "PREVERJANJE";
   advCb("meta").checked = true; fire(advCb("meta"), "change");

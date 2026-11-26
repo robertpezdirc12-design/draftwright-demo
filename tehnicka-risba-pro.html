@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- CSP: strict script allowlist by hash. No unsafe-inline / unsafe-eval. frame-ancestors is set in vercel.json (unsupported in meta). -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-lOElI2z5z/oWAUVgP9bUNOxxUH6fMLzQlw7H8JUOXmY=' 'sha256-6oJRNVvNteogerdgy7iC9P6L4aLo5Np1LTPUgKMhVpA=' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-n0ayYHvByOvk7zd5jO/SvUUW3daM8XhOPk728nstIbw='; style-src 'self' 'sha256-FoagumGQjeRIiyVr4TPgDTtnMCHTTg5+mclC/wzcYXw='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-kL9d8qsZfRxxfgpXl1dyXL+n4uBZpDmZbh5yTKrmnHg=' 'sha256-CxIgqhp02uPYgW2MaUeKiKsILpj+pnZHb/XEL+n3SVA=' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-IzVUwgZiq18c57LXuNPVa/gMg/nweQ0l64R97GIMP9Y='; style-src 'self' 'sha256-FoagumGQjeRIiyVr4TPgDTtnMCHTTg5+mclC/wzcYXw='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Tehnična risba PRO – fotografija do končnega lista</title>
 <!-- >>> GENERATED: seo-jsonld — uredi scripts/generate-seo.js, ne to kopijo -->
 <script type="application/ld+json">[
@@ -20,7 +20,7 @@
     "applicationSubCategory": "Technical drawing / CAD",
     "operatingSystem": "Web (PWA) — Windows, macOS, Linux, Android, iOS",
     "applicationSuite": "WoodCore WPC (Roksal)",
-    "softwareVersion": "2026.11.31",
+    "softwareVersion": "2026.11.32",
     "datePublished": "2026-11-26",
     "offers": {
       "@type": "Offer",
@@ -149,15 +149,12 @@
   }
 ]</script>
 <script>var DW_RELEASE={
-  "version": "2026.11.31",
+  "version": "2026.11.32",
   "date": "2026-11-26",
   "notes": [
-    "Preskoči na vsebino — pred menijem je bilo 40 tab-postajališč, preden je fokus prišel do lista. Prvi Tab zdaj pokaže povezavo, ki fokus prestavi na predogled (WCAG 2.4.1).",
-    "Sklopi stranske plošče so tipkovnični — naslovi sklopov imajo prave gumbe znotraj h2 (brez nedovoljene role=\"button\" na naslovu), fokusabilne, z aria-expanded; Enter in preslednica odpirata/zapirata enako kot klik. Stanje vzdržuje observer, ker sklope preklapljajo tudi ukazi v meniju Plošča.",
-    "Meniji javljajo stanje — aria-haspopup=\"true\" in aria-expanded na vseh šestih gumbih; ↓ odpre meni in premakne fokus na prvo postavko, Esc ga zapre in vrne fokus na gumb.",
-    "Fokus v dialogih — odprtje premakne fokus v dialog, zaprtje ga vrne na sprožilec; prej je to počel samo izvozni dialog, zdaj še preostalih deset. Stranska plošča ima vodilno oznako, main pa id/tabindex=\"-1\" za ciljanje.",
-    "Dostopnost po axe pregledu — stran ima zdaj h1 in header landmark; gumb »Prikaži primer risbe« dosega kontrast 5,0:1 (prej 4,41:1).",
-    "Nova suita tests/a11y.test.js (36 preverjanj): imena dialogov, gumbov in polj, tipkovnica po sklopih (klik/Enter/preslednica + aria-expanded), stanje menijev (klik, Esc, ↓), premik in vrnitev fokusa, preskočna povezava kot prva postaja v DOM-u."
+    "Izvoz dostopen bralnikom zaslona — skupina formatov je role=\"group\" z aria-pressed (prej napačen tablist brez zavihkov), vseh 12 vsebin pa ima dostopno ime.",
+    "Vadnice: pravi zavihki — role=\"tablist\" je imel navadne gumbe; zdaj so role=\"tab\" z aria-selected, povezavo na ploščo in puščicama levo/desno. Ponovno odprtje vedno pokaže Vadnice, tudi če je bil nazadnje izbran kviz.",
+    "tests/export-dialog.test.js (55 preverjanj) in tests/learning.test.js (14 preverjanj) pokrivata stanje in imena; axe na izvoznem in vadniškem dialogu ne najde kršitev."
   ]
 };</script>
 <!-- <<< END GENERATED: seo-jsonld -->
@@ -1027,11 +1024,11 @@ Konstrukcija odporna na vremenske vplive.</textarea>
       </div>
       <div class="exp-fmt">
         <span class="m">Format risbe:</span>
-        <div class="exp-segs" id="expSegs" role="tablist" aria-label="Format risbe">
-          <button class="exp-seg active" data-exp-format="PDF" type="button">PDF / tisk</button>
-          <button class="exp-seg" data-exp-format="SVG" type="button">SVG</button>
-          <button class="exp-seg" data-exp-format="DXF" type="button">DXF</button>
-          <button class="exp-seg" data-exp-format="STEP" type="button">STEP</button>
+        <div class="exp-segs" id="expSegs" role="group" aria-label="Format risbe">
+          <button class="exp-seg active" data-exp-format="PDF" type="button" aria-pressed="true">PDF / tisk</button>
+          <button class="exp-seg" data-exp-format="SVG" type="button" aria-pressed="false">SVG</button>
+          <button class="exp-seg" data-exp-format="DXF" type="button" aria-pressed="false">DXF</button>
+          <button class="exp-seg" data-exp-format="STEP" type="button" aria-pressed="false">STEP</button>
         </div>
         <span class="exp-fmt-off" id="expFmtOff">Format ni aktiven — izvozijo se samo priloge.</span>
       </div>
@@ -1442,11 +1439,11 @@ Konstrukcija odporna na vremenske vplive.</textarea>
       <button class="exp-x" id="learnClose" type="button" aria-label="Zapri" title="Zapri (Esc)">×</button>
     </div>
     <div class="exp-body">
-      <div class="exp-segs" id="learnTabs" role="tablist">
-        <button class="exp-seg active" data-tab="tuts" type="button">Vadnice</button>
-        <button class="exp-seg" data-tab="quiz" type="button">Certifikacijski kviz</button>
+      <div class="exp-segs" id="learnTabs" role="tablist" aria-label="Vsebina vadnic">
+        <button class="exp-seg active" id="learnTabTuts" data-tab="tuts" type="button" role="tab" aria-selected="true" aria-controls="learnPanel">Vadnice</button>
+        <button class="exp-seg" id="learnTabQuiz" data-tab="quiz" type="button" role="tab" aria-selected="false" aria-controls="learnPanel">Certifikacijski kviz</button>
       </div>
-      <div id="learnPanel" data-s="s43"></div>
+      <div id="learnPanel" data-s="s43" role="tabpanel" aria-labelledby="learnTabTuts" tabindex="0"></div>
     </div>
   </div>
 </div>
@@ -4189,7 +4186,7 @@ function exportPdf(sv,paper){
     var c=$("expItems");
     c.innerHTML=EXP_ITEMS.map(function(it){
       return '<div class="exp-row"><div class="exp-it"><span>'+E(it.label)+'</span><span class="i" title="'+E(it.tip)+'">i</span><span class="tag">'+E(it.tag)+'</span></div>'+
-        '<label class="exp-sw"><input type="checkbox" data-exp-item="'+it.id+'"'+(it.on?" checked":"")+'><span class="exp-sl"></span></label></div>';
+        '<label class="exp-sw"><input type="checkbox" data-exp-item="'+it.id+'" aria-label="'+E(it.label)+'"'+(it.on?" checked":"")+'><span class="exp-sl"></span></label></div>';
     }).join("");
     [].forEach.call(c.querySelectorAll("[data-exp-item]"),function(cb){
       cb.addEventListener("change",function(){
@@ -4447,7 +4444,7 @@ function exportPdf(sv,paper){
   [].forEach.call(document.querySelectorAll("#expSegs .exp-seg"),function(b){
     b.addEventListener("click",function(){
       EXP.format=b.getAttribute("data-exp-format");
-      [].forEach.call(document.querySelectorAll("#expSegs .exp-seg"),function(x){x.classList.toggle("active",x===b)});
+      [].forEach.call(document.querySelectorAll("#expSegs .exp-seg"),function(x){var on=x===b;x.classList.toggle("active",on);x.setAttribute("aria-pressed",on?"true":"false")});
       expUpdate();
     });
   });
@@ -5278,9 +5275,9 @@ function quizGrade(answers){
   res.innerHTML='<div data-s="'+(pass?"ok":"bad")+'">'+(pass?"✅ Oznaka »Draftwright Certified Installer« pridobljena ("+Math.round(pct*100)+" %).":"Rezultat "+Math.round(pct*100)+" % — potrebnih vsaj 80 %.")+'</div>';
   return pct;
 }
-function openLearn(){TUT.id=null;TUT.idx=0;renderLearnTuts();$("learnOverlay").classList.add("on")}
+function openLearn(){TUT.id=null;TUT.idx=0;selectLearnTab($("learnTabTuts"));$("learnOverlay").classList.add("on")}
 function closeLearn(){$("learnOverlay").classList.remove("on")}
-window.startTutorial=function(id){TUT.id=id;TUT.idx=0;renderLearnTuts();$("learnOverlay").classList.add("on")};
+window.startTutorial=function(id){TUT.id=id;TUT.idx=0;selectLearnTab($("learnTabTuts"));$("learnOverlay").classList.add("on")};
 window.quizGrade=quizGrade;window.certStatus=certStatus;
 $("learnBtn").onclick=openLearn;
 $("learnClose").onclick=closeLearn;
@@ -5294,10 +5291,28 @@ $("learnPanel").addEventListener("click",function(e){
   else if(act==="run"){var t2=LEARN_TUTS.find(function(x){return x.id===TUT.id});learnAct(t2.steps[TUT.idx].act)}
   renderLearnTuts();
 });
+function selectLearnTab(b){
+  if(!b)return;
+  var tabs=[].slice.call($("learnTabs").querySelectorAll("[data-tab]"));
+  tabs.forEach(function(x){var on=x===b;x.classList.toggle("active",on);x.setAttribute("aria-selected",on?"true":"false")});
+  var panel=$("learnPanel"); if(panel)panel.setAttribute("aria-labelledby", b.id);
+  if(b.getAttribute("data-tab")==="quiz")renderQuiz();else renderLearnTuts();
+}
 $("learnTabs").addEventListener("click",function(e){
   var b=e.target.closest("[data-tab]");if(!b)return;
-  [].slice.call(this.children).forEach(function(x){x.classList.toggle("active",x===b)});
-  if(b.getAttribute("data-tab")==="quiz")renderQuiz();else renderLearnTuts();
+  selectLearnTab(b);
+});
+$("learnTabs").addEventListener("keydown",function(e){
+  var tabs=[].slice.call(this.querySelectorAll("[data-tab]"));
+  var i=tabs.indexOf(document.activeElement);
+  if(i<0)return;
+  var j=null;
+  if(e.key==="ArrowRight")j=(i+1)%tabs.length;
+  else if(e.key==="ArrowLeft")j=(i-1+tabs.length)%tabs.length;
+  else if(e.key==="Home")j=0;
+  else if(e.key==="End")j=tabs.length-1;
+  if(j===null)return;
+  e.preventDefault();tabs[j].focus();selectLearnTab(tabs[j]);
 });
 document.addEventListener("keydown",function(e){
   if(e.key==="Escape"&&$("learnOverlay")&&$("learnOverlay").classList.contains("on"))closeLearn();
