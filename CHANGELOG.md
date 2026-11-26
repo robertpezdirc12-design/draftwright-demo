@@ -2,6 +2,14 @@
 
 Vse pomembnejše spremembe projekta **Draftwright — Tehnična risba PRO** so dokumentirane v tej datoteki. Oblika sledi [Keep a Changelog](https://keepachangelog.com/sl/1.1.0/); datumski sufiksi v oznakah (npr. `[2026.11.15]`) so zaporedne podrazličice mesečne različice `APP_VERSION` (trenutno `2026.11`).
 
+## [2026.11.38] — 2026-11-26
+
+### Popravljeno
+- **Povečava fotografije ne ustavi umeritve** — različica 37 je risbo `#ov` naredila `pointer-events:none`, s čimer je poleg prekrivanja odpravila tudi ročno umeritev in vlečenje zaznanih črt. Klik na fotografijo zdaj povečavo odpre šele, ko nismo v načinu izbire kalibracijskih točk; med vlečenjem črte se povečava ne odpre. Umeritev, vlečenje in tipkovnica ostanejo nespremenjeni, kazalec pa v načinu umeritve pokaže križec.
+
+### Preizkušeno
+- `tests/a11y.test.js` (**51 preverjanj**) preverja klik na fotografijo, Enter, Escape in vrnitev fokusa ter da prvi in drugi kalibracijski klik dodata točki, ne odpreta povečave in na koncu umeritve spet omogočita povečavo.
+
 ## [2026.11.37] — 2026-11-26
 
 ### Popravljeno

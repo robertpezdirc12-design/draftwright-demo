@@ -104,6 +104,24 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   d.dispatchEvent(new w.KeyboardEvent("keydown", { key: "Escape", bubbles: true, cancelable: true }));
   await sleep(30);
 
+  /* 1b2) ročna umeritev uporablja iste klike na risbi; ti ne smejo odpreti povečave. */
+  const calS = w.S, ov = d.getElementById("ov"), pickCal = d.getElementById("pickCal"), photoBox = d.getElementById("photoBox");
+  calS.img = { naturalWidth: 400, naturalHeight: 300 };
+  ov.getBoundingClientRect = () => ({ left: 0, top: 0, width: 400, height: 300, right: 400, bottom: 300 });
+  pickCal.click();
+  check("umeritev: pickCal vklopi .picking in gumb", photoBox.classList.contains("picking") && pickCal.classList.contains("on"));
+  const calClick = () => ov.dispatchEvent(new w.MouseEvent("click", { bubbles: true, cancelable: true, clientX: 20, clientY: 20 }));
+  calClick(); await sleep(10);
+  check("umeritev: prvi klik doda točko in ne odpre povečave",
+    d.getElementById("calStatus").textContent.includes("Točk še 1") && !zoomOv.classList.contains("on"));
+  calClick(); await sleep(10);
+  check("umeritev: druga točka zaključi in ne odpre povečave",
+    !photoBox.classList.contains("picking") && !zoomOv.classList.contains("on") && !!calS.raw && calS.raw.length === 2);
+  calClick(); await sleep(35);
+  check("povečava: klik na fotografijo po umeritvi odpre dialog", zoomOv.classList.contains("on"));
+  d.dispatchEvent(new w.KeyboardEvent("keydown", { key: "Escape", bubbles: true, cancelable: true })); await sleep(20);
+  calS.img = null; calS.raw = null; calS.tmp = [];
+
   /* 1c) izbira vidnih sklopov je gumb z stanjem in skupino potrditvenih polj. */
   const fieldBtn = d.getElementById("fieldBtn"), fieldMenu = d.getElementById("fieldMenu");
   check("izbira polj javlja stanje in nadzoruje skupino", fieldBtn.getAttribute("aria-expanded") === "false" && fieldBtn.getAttribute("aria-controls") === "fieldMenu" && fieldMenu.getAttribute("role") === "group" && accName(fieldMenu) === "Vidni sklopi in polja");

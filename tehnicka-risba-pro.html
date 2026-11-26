@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- CSP: strict script allowlist by hash. No unsafe-inline / unsafe-eval. frame-ancestors is set in vercel.json (unsupported in meta). -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-SS+djc6AOU4lvzplVhcInvFYKHcq1AJL9U1nZLK2fac=' 'sha256-jzPAkXBxFW8Zk52ukNT9xOGY/VQnsJhy4dxYXrXC3BQ=' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-0JMAoy9u6pccZdmr1Qm9keF739kTjFeoqoTWeVUNG7c='; style-src 'self' 'sha256-VdRoT8rX1CikhO1SqdzO/fToFiSY10Vp7dzAcpEeRGo='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-foBiH5t6hY8wjH9x/tFpwbQtJYF8v/MDHLeeL0TLAtA=' 'sha256-3JROKeiHFqg0FqDIINn6rhIjS4YW2IChUsk5JlWFUoU=' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-prmH45pry6ngUf6k6UTmb2eugJ1id1YQ37bbbQgS62U='; style-src 'self' 'sha256-Uyr381KNEHWCz5oL/+jfei5Kq9nsRnnH9NXv59+5/5U='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Tehnična risba PRO – fotografija do končnega lista</title>
 <!-- >>> GENERATED: seo-jsonld — uredi scripts/generate-seo.js, ne to kopijo -->
 <script type="application/ld+json">[
@@ -20,7 +20,7 @@
     "applicationSubCategory": "Technical drawing / CAD",
     "operatingSystem": "Web (PWA) — Windows, macOS, Linux, Android, iOS",
     "applicationSuite": "WoodCore WPC (Roksal)",
-    "softwareVersion": "2026.11.37",
+    "softwareVersion": "2026.11.38",
     "datePublished": "2026-11-26",
     "offers": {
       "@type": "Offer",
@@ -149,11 +149,11 @@
   }
 ]</script>
 <script>var DW_RELEASE={
-  "version": "2026.11.37",
+  "version": "2026.11.38",
   "date": "2026-11-26",
   "notes": [
-    "Povečava fotografije — SVG risba #ov je prekrivala sliko in požirala klike, zato se povečava ni odprla z miško. Risba je zdaj pointer-events:none, slika pa je fokusabilna (role=button, tabindex=0, ime) in se odpre s klikom ali Enter/preslednico; Escape zapre pogled in vrne fokus na sliko.",
-    "tests/a11y.test.js (47 preverjanj) preverja fokusabilno sliko, odpiranje z Enter, Escape in vrnitev fokusa; v brskalniku klik na sliko odpre povečavo, Escape jo zapre."
+    "Povečava fotografije ne ustavi umeritve — različica 37 je risbo #ov naredila pointer-events:none, s čimer je poleg prekrivanja odpravila tudi ročno umeritev in vlečenje zaznanih črt. Klik na fotografijo zdaj povečavo odpre šele, ko nismo v načinu izbire kalibracijskih točk; med vlečenjem črte se povečava ne odpre. Umeritev, vlečenje in tipkovnica ostanejo nespremenjeni, kazalec pa v načinu umeritve pokaže križec.",
+    "tests/a11y.test.js (51 preverjanj) preverja klik na fotografijo, Enter, Escape in vrnitev fokusa ter da prvi in drugi kalibracijski klik dodata točki, ne odpreta povečave in na koncu umeritve spet omogočita povečavo."
   ]
 };</script>
 <!-- <<< END GENERATED: seo-jsonld -->
@@ -230,7 +230,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--ac)}textarea{min-heig
 .hint{font-size:11px;color:var(--mut);margin:6px 0 0}
 .status{font-size:12px;color:var(--ok);min-height:17px;margin-top:6px}.status.warn{color:var(--wa)}.status.bad{color:var(--bad)}
 .photo{position:relative;width:100%;display:none;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#000}
-.photo.on{display:block}.photo img{display:block;width:100%;height:auto;cursor:zoom-in}#ov{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;touch-action:none}
+.photo.on{display:block}.photo img{display:block;width:100%;height:auto;cursor:zoom-in}#ov{position:absolute;inset:0;width:100%;height:100%;cursor:zoom-in;touch-action:none}.photo.picking #ov{cursor:crosshair}
 .sheet{background:#fff;display:inline-block;min-width:100%;box-shadow:0 12px 40px #0009}#prev{width:100%;height:auto;display:block}
 .empty{padding:36px 20px;text-align:center;color:var(--mut);border:1px dashed var(--line);border-radius:8px;cursor:pointer}.empty b{display:block;color:var(--tx);font-weight:500;margin-bottom:8px}
 .warnbox{margin-top:8px;padding:8px;border:1px solid #7a5a22;background:#2a2113;border-radius:6px;font-size:11px;color:var(--wa);display:none}
@@ -769,7 +769,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:none}
 <section data-panel="photo">
 <h2><button type="button" class="sec-btn" data-i18n="h_photo"><i>1</i>Slika</button></h2>
 <input type="file" id="file" accept="image/*" aria-label="Naloži fotografijo ograje">
-<div class="photo" id="photoBox"><img id="img" alt="foto" role="button" tabindex="0" aria-label="Povečaj fotografijo"><svg id="ov" xmlns="http://www.w3.org/2000/svg"></svg></div>
+<div class="photo" id="photoBox"><img id="img" alt="foto" role="button" tabindex="0" aria-label="Povečaj fotografijo"><svg id="ov" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"></svg></div>
 <p class="hint">Prilepite z <span class="kbd">Ctrl+V</span>, povlecite ali izberite datoteko. Za merjenje naj bo v kadru merilo ali znan predmet.</p>
 <button class="btn" id="applySuggestedProf" data-s="s30" title="Uporabi predlagani profil"></button>
 <button class="btn" id="proposalBtn" data-i18n="b_proposal" title="Lokalni predlog nove ograje čez fotografijo (brez omrežja)">Predlog ograje na sliki</button>
@@ -1556,12 +1556,12 @@ function dt(t,k){var e=$("detStatus");e.textContent=t;e.className="status"+(k?" 
 var DW_STATUS={measured:"✓ izmerjeno",calculated:"∑ izračunano",estimated:"≈ ocenjeno",unknown:"?? neznano"};
 function statusMark(k){return DW_STATUS[k]||DW_STATUS.unknown}
 
-var S={img:null,calMode:"linear",cal:null,calibrated:false,picking:false,tmp:[],lines:[],photoData:null,det:null,drag:null,showProposal:false};
+var S={img:null,calMode:"linear",cal:null,calibrated:false,picking:false,tmp:[],lines:[],photoData:null,det:null,drag:null,dragMoved:false,suppressPhotoClick:false,showProposal:false};
 
 /* ---------- image input ---------- */
 function loadPhoto(file){
   var r=new FileReader();
-  r.onload=function(){S.photoData=r.result;var im=new Image();im.onload=function(){S.img=im;S.cal=null;S.calibrated=false;S.tmp=[];S.raw=null;S.lines=[];S.rectCache=null;$("img").src=im.src;$("ov").setAttribute("viewBox","0 0 "+im.naturalWidth+" "+im.naturalHeight);$("photoBox").classList.add("on");drawOverlay();st("Slika naložena. Izberite umeritev.","");if(typeof window.openPanel==="function")window.openPanel("photo")};im.src=r.result};
+  r.onload=function(){S.photoData=r.result;var im=new Image();im.onload=function(){S.img=im;S.cal=null;S.calibrated=false;S.tmp=[];S.raw=null;S.lines=[];S.rectCache=null;S.picking=false;$("pickCal").classList.remove("on");$("photoBox").classList.remove("picking");$("img").src=im.src;$("ov").setAttribute("viewBox","0 0 "+im.naturalWidth+" "+im.naturalHeight);$("photoBox").classList.add("on");drawOverlay();st("Slika naložena. Izberite umeritev.","");if(typeof window.openPanel==="function")window.openPanel("photo")};im.src=r.result};
   r.readAsDataURL(file);
 }
 $("file").onchange=function(e){if(e.target.files[0])loadPhoto(e.target.files[0])};
@@ -1651,11 +1651,17 @@ function drawOverlay(){
   ov.innerHTML=s;
 }
 function ovPoint(e){var r=$("ov").getBoundingClientRect();return{x:(e.clientX-r.left)*S.img.naturalWidth/r.width,y:(e.clientY-r.top)*S.img.naturalHeight/r.height}}
-$("ov").addEventListener("click",function(e){if(!S.img||!S.picking)return;var need=S.calMode==="linear"?2:4;S.tmp.push(ovPoint(e));if(S.tmp.length>=need){S.raw=S.tmp.slice();S.tmp=[];S.picking=false;$("pickCal").classList.remove("on");st("Točke izbrane. Vpišite resnične mere in potrdite.","")}else st("Točk še "+(need-S.tmp.length)+".","warn");drawOverlay()});
+$("ov").addEventListener("click",function(e){
+  if(!S.img)return;
+  if(!S.picking){if(!S.suppressPhotoClick)openPhotoZoom();return}
+  var need=S.calMode==="linear"?2:4;S.tmp.push(ovPoint(e));
+  if(S.tmp.length>=need){S.raw=S.tmp.slice();S.tmp=[];S.picking=false;$("pickCal").classList.remove("on");$("photoBox").classList.remove("picking");st("Točke izbrane. Vpišite resnične mere in potrdite.","")}else st("Točk še "+(need-S.tmp.length)+".","warn");
+  drawOverlay();
+});
 $("mLinear").onclick=function(){S.calMode="linear";S.calibrated=false;S.tmp=[];$("mLinear").classList.add("on");$("mPlane").classList.remove("on");$("refBWrap").style.display="none";st("Način: 2 točki.","");drawOverlay()};
 $("mPlane").onclick=function(){S.calMode="plane";S.calibrated=false;S.tmp=[];$("mPlane").classList.add("on");$("mLinear").classList.remove("on");$("refBWrap").style.display="block";st("Način: 4 točke.","");drawOverlay()};
-$("pickCal").onclick=function(){if(!S.img){st("Najprej naložite sliko.","bad");return}S.picking=true;S.tmp=[];$("pickCal").classList.add("on");st("Kliknite referenčne točke na sliki.","warn")};
-$("clearCal").onclick=function(){S.cal=null;S.calibrated=false;S.tmp=[];S.raw=null;S.lines=[];st("Umeritev počiscena.","");drawOverlay()};
+$("pickCal").onclick=function(){if(!S.img){st("Najprej naložite sliko.","bad");return}S.picking=true;S.tmp=[];$("pickCal").classList.add("on");$("photoBox").classList.add("picking");st("Kliknite referenčne točke na sliki.","warn")};
+$("clearCal").onclick=function(){S.cal=null;S.calibrated=false;S.tmp=[];S.raw=null;S.lines=[];S.picking=false;$("pickCal").classList.remove("on");$("photoBox").classList.remove("picking");st("Umeritev počiscena.","");drawOverlay()};
 $("applyCal").onclick=function(){
   var a=numParse(V("refA"));if(!(a>0)){st("Vpišite resnično dolžino.","bad");return}
   if(!S.raw){st("Najprej izberite točke.","bad");return}
@@ -2023,17 +2029,18 @@ ovEl.addEventListener("pointerdown",function(e){
   var r=ovEl.getBoundingClientRect(),p={x:(e.clientX-r.left)*S.img.naturalWidth/r.width,y:(e.clientY-r.top)*S.img.naturalHeight/r.height};
   var tg=Math.tan((S.det.ang||0)*Math.PI/180),best=-1,bd=1e9;
   S.det.lines.forEach(function(L,i){var d=Math.abs(p.y-(L.y0+tg*(p.x-S.det.cx)));if(d<bd){bd=d;best=i}});
-  if(bd<14){S.drag={i:best};try{ovEl.setPointerCapture(e.pointerId)}catch(err){}e.preventDefault()}
+  if(bd<14){S.drag={i:best};S.dragMoved=false;try{ovEl.setPointerCapture(e.pointerId)}catch(err){}e.preventDefault()}
 });
 ovEl.addEventListener("pointermove",function(e){
   if(!S.drag||!S.img)return;
+  S.dragMoved=true;
   var r=ovEl.getBoundingClientRect(),x=(e.clientX-r.left)*S.img.naturalWidth/r.width,y=(e.clientY-r.top)*S.img.naturalHeight/r.height;
   var tg=Math.tan((S.det.ang||0)*Math.PI/180);
   /* Faza 1 (Issue #2 §5 P3): omeji vlečenje črt na kadro — prepreči absurdne mere (54 milijonov mm) */
   S.det.lines[S.drag.i].y0=Math.max(0,Math.min(S.img.naturalHeight,y-tg*(x-S.det.cx)));
   S.lines=S.det.lines.map(function(q){return q.y0});drawOverlay();
 });
-window.addEventListener("pointerup",function(){if(S.drag){S.drag=null;applyDetection();dt("Zaznane črte prilagojene ročno.","")}});
+window.addEventListener("pointerup",function(){if(S.drag){var moved=S.dragMoved;S.drag=null;S.dragMoved=false;applyDetection();if(moved){S.suppressPhotoClick=true;setTimeout(function(){S.suppressPhotoClick=false},0)}dt("Zaznane črte prilagojene ročno.","")}});
 
 /* ---------- validation ---------- */
 /* P3.2: zaznavanje prekrivanj/trkov (clash detection) */
@@ -3067,7 +3074,7 @@ function restoreProjectString(txt){
   /* #37: obnovi avtoritativno foto stanje S.photoData (save→load→save round-trip);
      brez fotografije počisti morebitno zastarelo stanje. */
   S.photoData=d.photo||null;
-  if(d.photo){var im=new Image();im.onload=function(){S.img=im;$("img").src=im.src;$("photoBox").classList.add("on");drawOverlay()};im.src=d.photo}
+  if(d.photo){var im=new Image();im.onload=function(){S.img=im;S.picking=false;$("pickCal").classList.remove("on");$("photoBox").classList.remove("picking");$("img").src=im.src;$("photoBox").classList.add("on");drawOverlay()};im.src=d.photo}
   else{S.img=null;$("photoBox").classList.remove("on");}
   invalidateProduction();drawOverlay();checks();generate();
   /* Pregled 2026-11-23: odstranjen mrtev `unknown` (nikoli ni ni povečan) —
@@ -5994,7 +6001,8 @@ window.showResult=showResult;window.closeResult=closeResult;
 /* Foto: klik na sliko → povečan pogled */
 function openPhotoZoom(){
   var im=$("img");
-  if(!im||!im.src)return;
+  if(!im||!im.src||S.picking)return;
+  try{im.focus({preventScroll:true})}catch(err){im.focus()}
   $("photoZoomImg").src=im.src;
   $("photoZoomOverlay").classList.add("on");
 }
