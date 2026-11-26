@@ -2,6 +2,15 @@
 
 Vse pomembnejše spremembe projekta **Draftwright — Tehnična risba PRO** so dokumentirane v tej datoteki. Oblika sledi [Keep a Changelog](https://keepachangelog.com/sl/1.1.0/); datumski sufiksi v oznakah (npr. `[2026.11.15]`) so zaporedne podrazličice mesečne različice `APP_VERSION` (trenutno `2026.11`).
 
+## [2026.11.33] — 2026-11-26
+
+### Popravljeno
+- **Rezultat in povečana fotografija** — zadnja dva dialoga sta imela vsebino zunaj landmarkov (axe `region`); zdaj imata `role="dialog"`, `aria-modal` in ime iz naslova, fokus ob odprtju in zaprtju pa ureja skupni sistem.
+- **Oznaki materiala in formata lista** — `#matSel` in `#expPaper` sta dobila povezano oznako; test dostopnosti zdaj pri `<select>` ne šteje besedila možnosti kot imena (prej lažno zelen).
+
+### Preizkušeno
+- `tests/a11y.test.js` (**41 preverjanj**) preverja vseh 13 dialogov, ime rezultata in povečave ter fokus; axe na obeh ne najde kršitev.
+
 ## [2026.11.32] — 2026-11-26
 
 ### Popravljeno
