@@ -143,6 +143,33 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   await sleep(30);
   check("zaprtje dialoga vrne fokus na sprožilec", !prj.classList.contains("on") && d.activeElement === trigger, "activeElement=" + (d.activeElement && (d.activeElement.id || d.activeElement.tagName)));
 
+  /* 5b) Dialog, odprt iz menija: fokus se vrne na gumb menija, ne na skrito postavko.
+     Pre-fiks: lastDlgFocus je bila menijska postavka, ki ob zaprtju menija izgine,
+     zato je fokus ob zaprtju dialoga padel na <body> (WCAG 2.4.3). */
+  const helpMenu = Array.from(d.querySelectorAll("[data-menu]")).find((m) => {
+    const b = m.querySelector(":scope > button");
+    return b && b.textContent.trim() === "Pomoč";
+  });
+  const helpTrigger = helpMenu && helpMenu.querySelector(":scope > button");
+  const aiItem = helpMenu && helpMenu.querySelector('[data-call="openAiSettings"]');
+  const ai = d.getElementById("aiOverlay");
+  if (helpTrigger && aiItem && ai) {
+    helpTrigger.click();
+    aiItem.focus();
+    const itemHadFocus = d.activeElement === aiItem;
+    aiItem.click();
+    await sleep(30);
+    check("dialog iz menija: fokus se premakne v AI dialog",
+      ai.classList.contains("on") && ai.contains(d.activeElement),
+      "activeElement=" + (d.activeElement && (d.activeElement.id || d.activeElement.tagName)));
+    d.dispatchEvent(new w.KeyboardEvent("keydown", { key: "Escape", bubbles: true, cancelable: true }));
+    await sleep(30);
+    check("dialog iz menija: Escape vrne fokus na gumb Pomoč (ne na skrito postavko)",
+      !ai.classList.contains("on") && d.activeElement === helpTrigger,
+      "itemHadFocus=" + itemHadFocus + " activeElement=" + (d.activeElement && (d.activeElement.id || d.activeElement.tagName)));
+  } else {
+    check("najdem meni Pomoč in postavko za AI dialog", false);
+  }
 
   /* ---------- 6) preskoči na vsebino (WCAG 2.4.1) ---------- */
   const skip = d.querySelector(".skiplink");

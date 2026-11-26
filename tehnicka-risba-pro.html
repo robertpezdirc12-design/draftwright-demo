@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- CSP: strict script allowlist by hash. No unsafe-inline / unsafe-eval. frame-ancestors is set in vercel.json (unsupported in meta). -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-lOElI2z5z/oWAUVgP9bUNOxxUH6fMLzQlw7H8JUOXmY=' 'sha256-pQ571wbVKAOnylmrdXpsU8frnKXWJLIXEun5UKEHc3k=' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-BWFXVPw/SdQeu3EgKSj4YBBO3DCcfLMw+8hY4uvAfHI='; style-src 'self' 'sha256-UAmxzAJlTrP92DeOwaBmKE+jTmy/iQ2ni64MG8BxJMQ='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-lOElI2z5z/oWAUVgP9bUNOxxUH6fMLzQlw7H8JUOXmY=' 'sha256-pQ571wbVKAOnylmrdXpsU8frnKXWJLIXEun5UKEHc3k=' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-ia3iPYBEw8sAyj2hzWtvCq8h3qZVq/o9xHfy9DvTYVA='; style-src 'self' 'sha256-UAmxzAJlTrP92DeOwaBmKE+jTmy/iQ2ni64MG8BxJMQ='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Tehnična risba PRO – fotografija do končnega lista</title>
 <!-- >>> GENERATED: seo-jsonld — uredi scripts/generate-seo.js, ne to kopijo -->
 <script type="application/ld+json">[
@@ -6290,13 +6290,21 @@ if(typeof updateModeTicks==="function") updateModeTicks();
      dvojna obnova ni problem, ker je cilj isti element; tu pokrijemo ostalih 11. */
   var lastDlgFocus=null,openDlg=null;
   function overlayOf(d){var ov=d.closest&&d.closest('[class*="overlay"]');return ov||d.parentElement;}
+  /* Menijska postavka izgine, ko se meni zapre; fokus po zaprtju dialoga zato
+     vrnemo na gumb, ki je meni odprl (WCAG 2.4.3), ne na skrito postavko. */
+  function dlgReturnTarget(el){
+    if(!el)return null;
+    var m=el.closest&&el.closest('[data-menu]');
+    if(m){var b=m.querySelector(':scope > button');if(b)return b;}
+    return el;
+  }
   function syncDialogFocus(){
     var dlgs=Array.prototype.slice.call(document.querySelectorAll('[role="dialog"][aria-modal="true"]'));
     var now=null;
     dlgs.forEach(function(d){var ov=overlayOf(d);if(ov&&ov.classList&&ov.classList.contains('on'))now=d;});
     if(now&&now!==openDlg){
       var ae=document.activeElement;
-      lastDlgFocus=(ae&&ae!==document.body&&!now.contains(ae))?ae:null;
+      lastDlgFocus=dlgReturnTarget((ae&&ae!==document.body&&!now.contains(ae))?ae:null);
       openDlg=now;
       var items=collectFocusable(now);
       if(!items.length&&!now.hasAttribute('tabindex'))now.setAttribute('tabindex','-1');
