@@ -6,12 +6,15 @@ Vse pomembnejše spremembe projekta **Draftwright — Tehnična risba PRO** so d
 
 ### Dodano
 - **Preskoči na vsebino** — pred menijem je bilo 40 tab-postajališč, preden je fokus prišel do lista. Prvi Tab zdaj pokaže povezavo, ki fokus prestavi na predogled (WCAG 2.4.1).
-- **Sklopi stranske plošče so tipkovnični** — naslovi sklopov so `role="button"`, fokusabilni, z `aria-expanded`; Enter in preslednica odpirata/zapirata enako kot klik. Stanje vzdržuje observer, ker sklope preklapljajo tudi ukazi v meniju Plošča.
+- **Sklopi stranske plošče so tipkovnični** — naslovi sklopov imajo prave gumbe znotraj `h2` (brez nedovoljene `role="button"` na naslovu), fokusabilne, z `aria-expanded`; Enter in preslednica odpirata/zapirata enako kot klik. Stanje vzdržuje observer, ker sklope preklapljajo tudi ukazi v meniju Plošča.
 - **Meniji javljajo stanje** — `aria-haspopup="true"` in `aria-expanded` na vseh šestih gumbih; `↓` odpre meni in premakne fokus na prvo postavko, `Esc` ga zapre in vrne fokus na gumb.
 - **Fokus v dialogih** — odprtje premakne fokus v dialog, zaprtje ga vrne na sprožilec; prej je to počel samo izvozni dialog, zdaj še preostalih deset. Stranska plošča ima vodilno oznako, `main` pa `id`/`tabindex="-1"` za ciljanje.
 
+### Popravljeno
+- **Dostopnost po axe pregledu** — stran ima zdaj `h1` in `header` landmark; gumb »Prikaži primer risbe« dosega kontrast 5,0:1 (prej 4,41:1).
+
 ### Preizkušeno
-- Nova suita `tests/a11y.test.js` (**28 preverjanj**): imena dialogov, gumbov in polj, tipkovnica po sklopih (klik/Enter/preslednica + `aria-expanded`), stanje menijev (klik, `Esc`, `↓`), premik in vrnitev fokusa, preskočna povezava kot prva postaja v DOM-u.
+- Nova suita `tests/a11y.test.js` (**36 preverjanj**): imena dialogov, gumbov in polj, tipkovnica po sklopih (klik/Enter/preslednica + `aria-expanded`), stanje menijev (klik, `Esc`, `↓`), premik in vrnitev fokusa, preskočna povezava kot prva postaja v DOM-u.
 ## [2026.11.30] — 2026-11-26
 
 ### Popravljeno
