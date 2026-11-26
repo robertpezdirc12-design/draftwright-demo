@@ -70,7 +70,10 @@ const wallCount = () => [...$("tlorisSvg").querySelectorAll("line")].filter((l) 
   $("tlorisRedo").click();
   check("C redo: segment obnovljen", wallCount() === 2);
 
-  // D) tipkovnica: Ctrl+Z / Ctrl+Y
+  /* Prvi zagon odpre modal »Nove izdaje«; odprt modal namenoma blokira
+     globalne bližnjice, zato ga zapremo, preden preverjamo tipkovnico. */
+  document.querySelectorAll('[class*="overlay"].on').forEach((o) => o.classList.remove("on"));
+    // D) tipkovnica: Ctrl+Z / Ctrl+Y
   document.dispatchEvent(new window.KeyboardEvent("keydown", { key: "z", ctrlKey: true, bubbles: true, cancelable: true }));
   check("Ctrl+Z undo", wallCount() === 1);
   document.dispatchEvent(new window.KeyboardEvent("keydown", { key: "y", ctrlKey: true, bubbles: true, cancelable: true }));

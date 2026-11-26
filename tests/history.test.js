@@ -50,6 +50,9 @@ check("P1.1: undo vrne 4000", $("L").value === "4000");
 window.histRedo();
 check("P1.1: redo vrne 5000", $("L").value === "5000");
 
+/* Prvi zagon odpre modal »Nove izdaje«; odprt modal namenoma blokira
+   globalne bližnjice, zato ga zapremo, preden preverjamo tipkovnico. */
+document.querySelectorAll('[class*="overlay"].on').forEach((o) => o.classList.remove("on"));
 /* Ctrl+Z (izven vnosnih polj) */
 document.dispatchEvent(new window.KeyboardEvent("keydown", { key: "z", ctrlKey: true, bubbles: true }));
 check("P1.1: Ctrl+Z naredi undo", $("L").value === "4000");

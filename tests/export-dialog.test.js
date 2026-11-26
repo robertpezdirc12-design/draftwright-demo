@@ -87,7 +87,10 @@ async function runExportAndWait() {
   document.dispatchEvent(new window.KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
   check("Esc zapre dialog", !overlayOn());
 
-  // 3) Ctrl+E odpre
+  /* Prvi zagon odpre modal »Nove izdaje«; odprt modal namenoma blokira
+     globalne bližnjice, zato ga zapremo, preden preverjamo tipkovnico. */
+  document.querySelectorAll('[class*="overlay"].on').forEach((o) => o.classList.remove("on"));
+    // 3) Ctrl+E odpre
   document.dispatchEvent(new window.KeyboardEvent("keydown", { key: "e", ctrlKey: true, bubbles: true, cancelable: true }));
   check("Ctrl+E odpre dialog", overlayOn());
 
