@@ -73,8 +73,11 @@ check("napušč → podkonstrukcija 800 mm",
   same(L(WC.polna100, "napusc", 1200), 800, "razmak podkonstrukcije (macesen 4×7 cm)"));
 check("pregrada KUBO → razpon 2600 mm z alu cevjo",
   same(L(WC.kubo80, "pregrada", 2500), 2600, "razpon (z alu cevjo 20×60×2)"));
-check("pregrada brez KUBO → razmak stebrov 2000 mm",
-  same(L(WC.romb67, "pregrada", 2500), 2000, "razmak stebrov (pokončno)"));
+check("pregrada brez KUBO → razmak stebrov po uradni strani (150/180 cm)",
+  same(L(WC.romb67, "pregrada", 2500), 1450, "razmak stebrov (pokončno)") &&
+  same(L(WC.polna57, "pregrada", 2500), 1500, "razmak stebrov (pokončno)") &&
+  same(L(WC.polna100, "pregrada", 1400), 1800, "razmak stebrov (pokončno)") &&
+  same(L(WC.polna128, "pregrada", 2500), 1500, "razmak stebrov (pokončno)"));
 check("fasada z facade.studMax → 800 mm",
   same(L(WC.romb67, "fasada", 1200), 800, "razmak podkonstrukcije"));
 check("fasada brez facade.studMax → padec na max*10",
@@ -88,8 +91,18 @@ check("pokončna do 1500 mm → zgornja meja 1800 mm",
   same(L(tall, "pokoncna", 1200), 1800, "razmak med stebri"));
 check("pokončna nad 1500 mm → osnovna meja 1500 mm",
   same(L(tall, "pokoncna", 2000), 1500, "razmak med stebri"));
-check("pokončna omejena z profilom (min)",
-  same(L(WC.romb67, "pokoncna", 1200), 1500, "razmak med stebri"));
+check("pokončna omejena z profilom (min) — romb67 z L-kotniki 1450 mm po katalogu",
+  same(L(WC.romb67, "pokoncna", 1200), 1450, "razmak med stebri"));
+check("pokončna polna100 do 1500 mm višine → 1800 mm (katalog)",
+  same(L(WC.polna100, "pokoncna", 1200), 1800, "razmak med stebri"));
+check("pokončna polna100 nad 1500 mm višine → 1500 mm (katalog)",
+  same(L(WC.polna100, "pokoncna", 2000), 1500, "razmak med stebri"));
+check("pokončna polna128 → 1800 mm do 1500 mm višine (katalog)",
+  same(L(WC.polna128, "pokoncna", 1200), 1800, "razmak med stebri"));
+check("pokončna polna57 → 1500 mm ne glede na višino (katalog)",
+  same(L(WC.polna57, "pokoncna", 2000), 1500, "razmak med stebri"));
+check("nosilci polna57 → 1000 mm (katalog)",
+  window.roksalRailLimit && window.roksalRailLimit(WC.polna57) === 1000);
 check("neznana uporaba → privzeti razmak nosilcev",
   same(L(WC.romb67, "neznano", 1200), 1500, "razmak nosilcev"));
 

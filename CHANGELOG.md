@@ -2,6 +2,166 @@
 
 Vse pomembnejše spremembe projekta **Draftwright — Tehnična risba PRO** so dokumentirane v tej datoteki. Oblika sledi [Keep a Changelog](https://keepachangelog.com/sl/1.1.0/); datumski sufiksi v oznakah (npr. `[2026.11.15]`) so zaporedne podrazličice mesečne različice `APP_VERSION` (trenutno `2026.11`).
 
+## [2026.11.29] — 2026-11-26
+
+### Popravljeno
+- **Odvečni znaki `>` v obrazcih** — iz 75 vnosnih polj in spustnih seznamov odstranjeno podvojeno zaključno oglato oklepaj; pod vsakim poljem se je izpisal tuj `>`, v `<select>` pa je nastalo neveljavno tekstovno vozlišče.
+- **Podvojeni ID-ji** — iz skritega bloka `hooks` odstranjena podvojena skupina gumbov (10 ID-jev: `themeBtn`, `langBtn`, `helpBtn`, `zoomIn`, `zoomOut`, `zoomFit`, `panBtn`, `fsBtn`, `isoBtn`, `showExample`). Stran ima zdaj 287 enoličnih ID-jev in nobenega podvojenega.
+- **Manjkajoči spremenljivki** `--p3` in `--dim` sta bili uporabljeni, a nikoli definirani — pravila z njima (slike katalogа, `[data-s="s10"]`) so bila mrtva.
+
+### Spremenjeno
+- **Profesionalna lupina** — poenoteni naslovi sklopov z oštevilčenimi značkami, tipografija obrazcev, fokusni obroči, čipi korakov, spustni seznami z lastno puščico, risalna mreža na platnu, čip števca vidnih polj.
+- **Svetla tema je zdaj celovita** — prej so ostale temne površine (`main`, `.sysbox`, `.exp-sec`, `.exp-row`, `.exp-sl`, `.warnbox`, `.kbd`, aktivni čipi, poudarki).
+- **Prazno stanje** je list A3 s pravim razmerjem 420 : 297, s sredinskim klicem k dejanju in berljivim kontrastom.
+- **Mobilna vrstica** — ukrep »Generiraj risbo« je v prvi vrstici ob imenu, meniji se prelomijo pod njim; prej je bila vrstica visoka tri vrstice z gumbom samim v tretji.
+- `theme-color` usklajen z barvo menijske vrstice (`#141c24` → `#181816`).
+
+### Preizkušeno
+- Vse surov zelene (0 FAIL) in samoprevera **126/126**; `pwa` surov zdaj preverja `theme-color` proti spremenljivki `--bar`, ne proti zapisani vrednosti.
+## [2026.11.28] — 2026-11-25
+
+### Dodano
+- **Dokumentacijski list (HTML)** — meni *Datoteka → Izvozi dokumentacijski list (HTML)* sestavi samostojen tehnični dokument naročila po vzoru referenčnega lista »Ograja s koriti za rože 5000×1200« (ročno sestavljen dokument iz drugega klepeta): **glava z žigom** (naslov, sistem/profil, ključne mere, RISBA ŠT., DATUM, LIST 1/1), **vgrajena A3 risba** (vsi pogledi, prerezi, detajli), **vhodni podatki z izračuni** (št. lamel, pokrivna višina, omejitev nosilcev, tovariške dolžine, korita), **tehnične opombe** (istovirne listu, vključno s koritno konstrukcijsko opombo), **BOM** (surove deske z odpadom + razčlenjena korita), **naslovna polja** (naročnik/izdelal/preveril/list) in **noga** (vir Roksal).
+- Varnost dokumenta: brez skript, zunanjih povezav in e-poštnih povezav; vnešeni podatki so escape-ani; izpis je determinističen.
+
+### Spremenjeno
+- BOM in opombe lista imajo zdaj **enega vira** (`bomRows()`, `composeNotes()`), ki ga uporabljata tako SVG list kot dokumentacijski list; `parseSegs()` izvzeti segmentni parser.
+
+### Preizkušeno
+- Nova suita `doc-sheet` (23): vsebina dokumenta, izračuni, BOM, varnost (brez href/src/mailto, escape), determinizem. **Skupaj 73 testnih surov** (prej 72), 0 FAIL.
+
+## [2026.11.27] — 2026-11-25
+
+### Spremenjeno
+- **Tehnična risba: pariteta z referenčnim dokumentom** (ročno sestavljen list »Ograja s koriti za rože 5000×1200«) — sprednji pogled dobi **verigo kotov položaja korit** (odmiki od levega roba), rob korita + skrito gladino zemlje ter **oznako prereza A–A** skozi steber; napis pod pogledom je profilno označen (odstranjen trdo kodiran »U-profil«) + **pokrivna višina** (N×67+razmaki).
+- **Prerez A–A**: korito dobi šrafuro zemlje, PE vložek in drenažne reže v dnu (kot detajl D2 na referenčnem listu).
+- **Detajl pritrjevanja**: oznake po referenčnem listu — L-kotnik + vijak **iz zadnje strani (skrito)**, predvrtanje po registru (`p.drill`, npr. Ø3,2 → WPC Ø4,2–4,5), min. 30 / maks. 150 mm od roba reza.
+- **Opombe na listu**: zmogljivost 8 → 11 vrstic; samodejno se dodata opombi **Rezanje/spoji** (kosi iz tovariških dolžin, spoji vedno na stebru, folije po montaži) in **Sidranje** (odvisno od podlage, ni predmet risbe); korita dobijo **konstrukcijsko opombo** (okvir ALU 30×30×2, obloga profila, PE vložek 2 mm + drenaža, dno z razmakom 3 mm, statiko preveri projektant).
+- **BOM na listu**: nova vrstica **»2a Surova deska (razrez)«** iz optimizacije tovariških dolžin (isti vir kot rezalni načrt — kos iz 5800 mm + odpad) ter razčlenjene vrstice korit (okvir in obloga, dno z drenažo, konzole L 60×60×5 + vijaki M6×16).
+- **Noga lista**: vir sistema (Roksal d.o.o., Kranj — roksal.com), oznaka risbe, LIST 1/1, opomba o preverjanju mer na objektu.
+
+### Preizkušeno
+- Zlati posnetki osveženi (`precna-osnovna`, `dvonadstropna-lpovratek`, `terasa-deska150`); `stopniscna`, `pokoncna-referencna` in `kosovnica-osnovna` nespremenjeni. **Skupaj 72 testnih surov**, 0 FAIL.
+
+## [2026.11.26] — 2026-11-25
+
+### Dodano
+- **Pogosta vprašanja v aplikaciji** — nova sekcija kataloga z 8 vprašanji v `<details>` (profilne mere, nekonstrukcijska raba, razmaki stebrov, ROMB alu cev, vijačenje, vzdrževanje/WEPOS, lokalna zasebnost, ponudba/garancija). Besedila so iz `scripts/lib/seo-content.js` — **en vir** z `llms.txt` in schema.org `FAQPage`; EN pariteta v `LANG_EN` (18 novih ključev).
+- **Vgrajeni CHANGELOG snapshot** (vzor `fetch-github` iz soma-website, brez runtime omrežja) — `var DW_RELEASE` v generiranem seo bloku nosi verzijo, datum in zapiski zadnje izdaje; »Kaj je novega« prikaže »Najnovejša izdaja« z zapiski (očiščenimi markdown okraskov) nad povzetki različic.
+
+### Preizkušeno
+- Surova `seo` razširjen na 28 preverjanj (FAQ na strani ↔ seo-content, EN pariteta, DW_RELEASE drift in prikaz). **Skupaj 72 testnih surov** (0 FAIL).
+
+## [2026.11.25] — 2026-11-25
+
+### Spremenjeno
+- **WebP katalogske slike** (vzor `scripts/images.mjs` iz soma-website): vseh 25 slik galerije `slike/pokoncna/` je preklopljenih z `.jpg` na `.webp` (kakovost 82) v aplikaciji, SW predpomnilniku in testih; skupaj 1,57 → 1,16 MB (**≈26 % manjši offline cache** — slike so bile že prej optimizirane kot JPEG q85). Izvorne `.jpg` ostanejo v repozitoriju kot vir za regeneracijo (`npm run images:webp` / `node scripts/images.mjs`, lokalno orodje s sharp — CI ga ne potrebuje, saj testi in `--check` avdit samo berejo disk).
+- `reference-gallery` surov: pravila za krajevne slike sedaj zahtevajo `.webp`.
+
+### Preizkušeno
+- Nova suita `images` (12): RIFF/WEBP magic, `.webp` manjši od izvora, HTML↔SW↔disk ujemanje, avdit brez sharp. **Skupaj 72 testnih surov** (prej 71), 0 FAIL.
+
+## [2026.11.24] — 2026-11-25
+
+### Dodano
+- **Strojno berljiva predstavitev aplikacije** — `llms.txt` / `llms.en.txt` po vzoru [llmstxt.org](https://llmstxt.org): profili WoodCore (mere, omejitve, vrtanje, pritrjevanje, uporabe, palete), dilatacijska tabela iz `js/dilatation.js` (13 temperatur), FAQ (8 vprašanj), pravne opombe in viri (uradna Roksal dokumentacija). Generator `scripts/generate-llms.js` bere **enega vira resnice** — register `WC` (prek `scripts/lib/catalog.js`), `scripts/lib/seo-content.js` in `CHANGELOG.md`.
+- **schema.org JSON-LD** v `<head>` (označen blok `seo-jsonld`, generator `scripts/generate-seo.js`): `SoftwareApplication` (kategorija, platforma, `softwareVersion`/`datePublished` iz CHANGELOG snapshota, MIT licenca, zastonj, izvozi PDF/DXF/CSV/STEP), `HowTo` (5 korakov: fotografija → umeritev → parametri → risba → izvoz) in `FAQPage` (iz istega vira kot llms.txt).
+- **Vsebinski gate** `scripts/check-content.js` (vzor `check-legal`/`check-community` iz soma-website): `validateRegistry()`, obstoj vseh slik in SW_ASSETS na disku, i18n pariteta `data-i18n`↔`LANG_EN`, neprazna kontaktna/EULA/opozorila brez TODO, števci surov `package.json`↔README ter svežina generiranih llms/seo artefaktov (drift gate).
+
+### Spremenjeno
+- `scripts/lib/catalog.js` — nalagalnik registra WoodCore v `vm` sandbox brez DOM (en vir podatkov za generatorje, brez odvisnosti od jsdom).
+- `scripts/lib/changelog.js` — parser CHANGELOG snapshota (verzija + datum), osnova za `softwareVersion` in »Kaj je novega«.
+- **APP_VERSION / »Kaj je novega«** sta po vzoru soma snapshota vezana na CHANGELOG — test `seo` preverja usklajenost, ne več ročno štetje.
+- README: števci surov usklajeni z resničnim stanjem (dejansko je bilo v verigi **68** surov, README je zaostajal pri 67) in dokumentacija novih artefaktov.
+
+### Preizkušeno
+- 3 nove suite: `llms` (23), `seo` (21), `content-gate` (10; vključno z negativnimi dokazi okvar). **Skupaj 71 testnih surov** (prej 68), 0 FAIL.
+
+## [2026.11.23] — 2026-11-25
+
+### Dodano (reference — pokončna ograja z WoodCore deskami)
+
+**Galerija referenc pokončne ograje (4 profili, foto eksponati)**
+- V galeriji primerov je nova sekcija **Reference — pokončna ograja z WoodCore deskami** s štirimi karticami eksponatov: **POLNA DESKA 57/32** (eksponat ograje iz polnih desk širine 5,7 ali 3,2 cm, dolžine 5,8 m), **POLNA DESKA 100** (ograja iz polnih desk širine 10 cm, dolžine 5,8 m), **POLNA DESKA 128** (ograja iz polnih desk širine 12,8 cm, dolžine 2,2 m) in **ROMB DESKA 67** (ograja iz desk profila ROMB širine 6,7 cm, dolžine 2,8 m).
+- Kartica nosi fotografijo eksponata (`slike/pokoncna/*.jpg`, 4 krajevne slike brez zunanjih virov) in katalogski zapis. Klik kartice nastavi uporabo **pokončna ograja** in ustrezen profil iz registra `WC` (applySystem izračuna širino/debelino/nosilce iz Roksal limitov), izračuna število navpičnih desk čez L in generira risbo.
+- Fotografije so vključene v `SW_ASSETS` (`sw.js`) — galerija deluje tudi brez signala. Seznam cache `risba-pro-v3` ostaja (dodatne datoteke se v obstoječi cache naložijo ob namestitvi posodobljenega SW).
+- EN pariteta: naslov sekcije, uvod in opisi eksponatov (`ref_h`, `ref_intro`, `ref_c1..4`) prevedeni; imena profilov ostanejo katalogska; dinamični toast »Referenca naložena: …« gre prek `UI_MSG` vzorca.
+- Nov `tests/reference-gallery.test.js` (**69 preverjanj**) — struktura galerije, katalogske mere, registarska povezava ključev kartic z `WC`, nalaganje profila prek klika (uporaba/profil/širina/debelina/generacija), EN pariteta z povratkom v SL, dostopna imena kartic, prisotnost slik na disku in v SW predpomnilniku ter odsotnost JS napak. Na neposredni predhodni kodi pade z **24 FAIL**, preverjeno v začasni delovni kopiji. Skupaj **67 testnih surov** (prej 66). CSP hash-i regenerirani.
+
+### Dodano (katalog WoodCore WPC elementov in značilnosti pritrjevanja)
+
+**Značilnosti pritrjevanja desk na konstrukcijo**
+- Nova sekcija galerije z obveznimi pravili: min odmik vijaka od roba reza **3 cm**, pri konstrukciji na ploščo (balkon, dvoriščna ograja) max **15 cm**, pri bočni montaži na ploščo pa **10 cm**.
+- **POLNA DESKA 57/32**: montaža na širino 5,7 ali 3,2 cm; vijak ≈ 2/3 globine profila; RF vijaki skozi cev iz zadnje strani (nevidno); v WPC luknja **manjša** od vijaka, v konstrukcijo **večja** (raztezanje); stebrički max **150 cm** ne glede na višino, nosilci max **100 cm**.
+- **POLNA DESKA 100 in 128**: reza in obdelava kakor les; priporočen razmak med deskami **0,5–3 cm** ali prekrivanje (montaža iz obeh strani); stebrički **180 cm** do višine 150 cm, nad **150 cm**; vijačenje iz lica je obvezno; v kovinsko cev predvrtanje večje od vijaka (temperatura), v WPC +1 mm.
+- **ROMB DESKA 67**: rostfraj vijaki skozi stebriček v aluminijasto cev v sredini romba iz zadnje strani (nevidno); L-kotniki max **145 cm**; vedno večja luknja v WPC (primer: vijak 3,9 → Ø3.2 v romb in alu, nato romb na 4,2–4,5). **OPOZORILO: montaža brez alu cevi ni mogoča** — alu cev je obvezna in vključena v ceno romb deske.
+
+**Katalog elementov WoodCore WPC (deske, čepi, ročaji)**
+- Kartice elementov z dimenzijami: POLNA DESKA 57/32 (57 × 32 × 5800 mm), POLNA DESKA 100 (100 × 12 × 5800 mm, **samo pokončna ograja**), POLNA DESKA 128 (128 × 16 × 2200 mm), ROMB DESKA 67 (67 × 26 × 5800 mm, **z alu cevjo**), WPC čep za profil romb (levo/desno, za prečno ograjo tudi letev), Ročaj 95 × 45 × 5800 mm (samo WHITE odtenek) in Ročaj – poln profil 92 × 45 × 5800 mm (notranja dimenzija 55 × 30 mm; **samostojna prodaja ročajev ni možna**).
+
+**Barvne palete, skladiščenje in povpraševanje**
+- Fotografije barvnih palet posameznih profilov (57/32: 4 barve, 100: 8 barv, 128: 6 barv, ROMB: 7 barv) s krajevnimi slikami v `SW_ASSETS`.
+- Pravila skladiščenja (suh in zračen prostor, ravna in čista podlaga po celotni dolžini/širini; ob neustreznem skladiščenju se reklamacija ne upošteva) in besedilo povpraševanja (info@roksal.com kot besedilo — brez zunanjih povezav, skladno z egress politiko).
+
+**Register, risarske opombe in zlati posnetki**
+- Register `WC`: `polna100`/`polna128` stebri pokončno 1800 (H ≤ 1500) oziroma 1500 (višje), `romb67` stebri z L-kotniki 1450; `polna128` debelina 16 mm po katalogu (128 × 16 × 2200); `drill`/`fix` besedila usklajena (2/3 globine pri 57/32, obvezna alu cev pri ROMB, predvrtanje v kovinsko cev pri 100/128). Opombe risbe (`roksalUseNotes()`, `applySystem`) sledijo profilnim pravilom.
+- Zlati posnetek `pokoncna-referencna` regeneriran (romb67 stebri 1500 → 1450 mm); ostali zlati posnetki nespremenjeni. `tests/reference-gallery.test.js` razširjen s **32 novimi preverjanji** kataloga (skupaj 69), `tests/roksal-module.test.js` dopolnjen z novimi katalogskimi mejami. Vseh 16 slik je v `sw.js` predpomnilniku. Skupaj **67 testnih surov**. CSP hash-i regenerirani.
+
+### Dodano (uradni PDF »Navodila za montažo WPC terasnih desk« — uskladitev in dopolnila)
+
+**Prebran celoten uradni Roksal PDF (9 strani, tekstovno in vizualno)**
+- Potrjeno, da so ključni podatki iz PDF-ja že vgrajeni: dilatacijska matrika `DIL` (`js/dilatation.js` citira PDF in dokumentira tipkarsko napako −25 °C/1 m: 2,27 → 2,75), terasna veja `roksalUseNotes()`, kontrolni list in montažni načrt (razmiki letvi 30–35 cm, točkovno podlaganje alu do 60 cm, turbo vijaki 6,7×80 mm, reža 5–6 mm + dilatacija, odmik od sten 6 mm, odvodne luknje Ø4,2 mm, rez 30°, orodja).
+- **Novo — opozorila iz PDF-ja**, prej manjkajoča: WoodCore deske **niso konstrukcijski element** (nosilci, tramovi, podporni stebri — neupoštevanje lahko izniči garancijo; dodano v kontrolni list za vse uporabe), predvrtanje WPC podložnih letev (luknja manjša od vijaka + grezilo — visoka gostota, brez tega letev poči), opozorilo o zmrznjeni vodi v deski (poči), previdnost pri distančnikih in stiskanju desk, L letev v enem kosu ob enosmernem polaganju brez dolžinskih spojev.
+- **Nova sekcija galerije »Terasne deske — navodila za montažo (WoodCore)«** s 4 karticami (priprava podlage, podložne letve, montaža desk in reže, zaključki in odvodnjavanje) in strukturnim opozorilom; EN pariteta (`ter_h`, `ter_w`, `ter_c1..4`).
+- `tests/reference-gallery.test.js` dopolnjen s **8 preverjanji** terasnega kataloga (skupaj 77), `tests/roksal-p1.test.js` s 3 preverjanji novih opozoril v kontrolnem listu. Zlati posnetki nespremenjeni (kontrolni list ni vrisan vanje). Skupaj **67 testnih surov**. CSP hash-i regenerirani.
+
+### Spremenjeno (uskladitev s spletno stranjo »WPC pokončne deske za pregradne stene«)
+
+**Prebrana uradna produktne stran roksal.com (tekstovno in vizualno — katalog profilov, alu cevi, palete)**
+- **Popravek: razmak stebrov pri pregradah (pokončno) — prej 2000 mm, uradno 150–180 cm po profilu** (57/32 in romb 150 cm; polna 100/128 180 cm do višine pregrade 150 cm, višje 150 cm). `roksalLimit()` veja `pregrada` zdaj upošteva profilno mejo `post.pokoncna` + pravilo višine, kot velja za ograje; kontrolni list in `roksalUseNotes()` usklajena. Zlati posnetki nespremenjeni (noben ne uporablja pregrade).
+- **KUBO-80/42 dopolnjen**: alu cevi v notranjosti **20×60×2 / 25×25×2 / 20×20×2 mm** (izbira vpliva na ceno in razpon konstrukcije), montaža na **vidno širino 80 ali 42 mm**, razmak kubo letvic **poljuben**, dolžina **5800 ali 5000 mm** (5000 samo Amazon Wood in Rustic Walnut), suva ali eloksirana cev (na prostem obvezno eloksirana).
+- **ROMB pokončne pregrade**: stebri ≤ 150 cm, **vertikalni nosilci ≤ 100 cm — samo s kotnikom ali ploščatim aluminijem na vsakem nosilcu**; vodoravne cevi ≤ 110 cm s kotnikom.
+- **POLNA-57/32 pregrade**: stebri 150 cm ne glede na višino, nosilci 100 cm, RF knipping skozi cev, vijak ≈ 2/3 globine, luknja v WPC manjša/v konstrukciji večja — potrjeno tudi za pregrade.
+- **POLNA-100/128**: obdelujeta se kakor les (zaokrožitev, poljubne oblike); izbira vijaka glede na tip konstrukcije.
+- **Opozorili barvnih palet**: \* odtenki med dobavami malenkost varirajo (naravni material); \*\* Rustic Oak/Walnut (večbarvni videz) — odtenek in razpored lis se med deskami in serijami opazneje razlikujeta.
+- Nova sekcija galerije **»Pregradne stene s pokončnimi deskami (WoodCore)«** (4 kartice) + opomba palet, z EN pariteto. Testi: `reference-gallery` **88 PASS** (+6), `roksal-module` 32 OK, `roksal-p1` 47 OK (+1). Celotna veriga zelena (67 surovov, 0 FAIL). CSP hash-i regenerirani.
+
+### Dodano (katalog vrtnega pohištva — roksal.com, tekst + fotografije)
+
+**Nova sekcija galerije »Vrtno pohištvo (WoodCore WPC)«** — 6 produktov s fotografijami eksponatov:
+- **Miza Kubo** (220 × 80 × 75 cm) in **Klop Kubo** (200 × 45 × 45 cm) — alu konstrukcija prašno barvana črno **RAL 9005**, deske KUBO 80×42 mm.
+- **Miza Linea** (220 × 81 × 45 cm) in **Klop Linea** (200 × 41 × 45 cm) — alu RAL 9005, polni profil 57×32; klop z naslonom ali brez.
+- **Klop in miza X** (jeklo, noge v obliki X, polne deske 128): miza 216 × 91,2 × 76,1 cm, klop z naslonom 216 × 39,2 × 44,8 cm — posamično ali kot komplet.
+- **Klop in miza R** (jeklo, ravne noge, deske 128): enake mere — posamično ali kot komplet.
+- **Izdelava po meri** — pas 3 fotografij (komplet dveh klopi in mize, klop iz deske 150 Rustic Walnut, klop in miza romb Burma Teak).
+- Barvo desk pri vseh izdelkih izbere naročnik; material bambus + HDPE, 15-letna garancija, brez lakiranja.
+
+**Nova sekcija »Dodatna zaščita WPC vrtnega pohištva«**: redno čiščenje z vodo; pod nadstreški (kjer dež ne spirira) je čiščenje zahtevnejše — **WEPOS WPC impregnacija** (vodoodbojna zaščita, zmanjša prodiranje tekočin in umazanije) na **dobro očiščeni in popolnoma suhi** površini, predvsem za mizne plošče, sedeže klopi in bolj obremenjene dele.
+
+**9 novih fotografij** (`slike/pokoncna/pohistvo-*.jpg`, JPG q85 ≤ 1000 px) dodanih v `sw.js` `SW_ASSETS` (offline); skupaj 26 katalogskih slik. EN pariteta (furn_*/prot_*). Testi: `reference-gallery` **93 PASS** (+5), celotna veriga zelena (0 FAIL). CSP hash-i regenerirani.
+
+**Prebrana uradna produktne stran roksal.com (tekstovno in vizualno, vključno s paletami in prerezi)**
+- **Popravek mere: POLNA DESKA-128 je 128 × 16,5 × 2200 mm** (uradna stran + prvotni register) — prej začasno 16 mm po katalogskem zapisu. Register `WC`, kartica elementov in testi posodobljeni.
+- **ROMB DESKA-67 pri pregradah**: maksimalni razmak 145 cm velja **samo**, kadar je L-kotnik na vsakem stebru **levo in desno**; vijačenje skrito (rf vijaki skozi kotnik v alu cev iz zadnje strani). Pri razmaku > 145 cm je potrebna **vmesna povezava — ni privijačena v tla, ampak iz zgornje cevi** — možna do < 180 cm; pri ≥ 180 cm dodaten stebriček. Zaključek s čepi ali letvico.
+- **Prečno vijačenje POLNA-128 / DESKA-150**: vijak na sredini deske (DESKA-150 v sredino rebra), predvrtanje luknja +1 mm od vijaka, vijaki vidni iz lica; stebri 110 cm (128) oziroma 130 cm (150).
+- **DESKA-150**: 150 × 25 × 4000 mm (tudi 2200), 7 barv in **3 površine** (rebra na eni strani bolj na gosto, na drugi na široko; Rustic enostransko gladke), zaključek z **zaključnim pokrovčkom**.
+- Nova sekcija galerije **»Pregradne stene s prečnimi deskami (WoodCore)«** (3 kartice) z EN pariteto; kontrolni list veje `pregrada` dopolnjen (vmesna povezava, obojestranski kotniki, sredina deske). `tests/reference-gallery.test.js`: **82 PASS** (+5). Zlati posnetki nespremenjeni. CSP hash-i regenerirani.
+
+## [2026.11.22] — 2026-11-24
+
+### Dodano (lokalne izboljšave brez omrežja)
+
+**Popravek mere `L` pri fotografijah, širših od 900 px**
+- `applyDetection()` je `L` računala iz bboxa v naravnih pikslih z `mmPerPx` (mm/sivi px). Ker se slika pred detekcijo pomanjša na največ 900 px (`sc < 1`), je bila vrednost `1/sc` prevelika. Zdaj se v linearnem načinu uporabi `S.cal.scale` (mm/naravni px), v ravninskem pa razmerje `1/S.det.rectK`. `H`, `sw` in `gap` ostanejo v sivih pikslih — zato se njihova vrednost ni spremenila.
+
+**Vektorski predlog nove ograje čez fotografijo**
+- Nov gumb *Predlog ograje na sliki* v foto plošči preklopi lokalno SVG prekrivko (`#dw-proposal`): lamele se izrišejo iz `n`/`sw`/`gap` znotraj zaznanega okvira, stebri pa iz `roksalLimit()` glede na `L`. Barva je orientacijska iz WoodCore palete (`sysColor`), ne vir mer. Prekrivka je na voljo v 2-točkovni umeritvi; pri 4-točkovni (homografija) gumb pojasni, da podprta ni.
+- Ni klica v oblak, nobenega novega `fetch`, nobene spremembe izvozov. Status izrecno pove: »mere iz risbe, ne iz slike«.
+
+**Enotne statusne oznake in EN prevodi**
+- `DW_STATUS` / `statusMark()` poenotita oznake ✓ izmerjeno · ∑ izračunano · ≈ ocenjeno · ?? neznano; legenda je dodana v foto ploščo. Novi gumb, legenda in dinamični statusi imajo EN prevode (preklop prek gumba, kot v preostalem UI-ju).
+- Nov `tests/local-upgrade.test.js` (**21 preverjanj**) pokriva popravek enote, vsebino prekrivke, vire mer, prevode in offline jamstvo. Na neposredni predhodni kodi (`92a05a2`) pade z **14 FAIL**, preverjeno v začasni delovni kopiji. Skupaj **66 testnih surov** (prej 65). CSP hash-i regenerirani.
+
 ## [2026.11.21] — 2026-11-24
 
 ### Dodano (postopna modularizacija — korak 7)

@@ -92,6 +92,12 @@ const setField = (id, v) => { $(id).value = String(v); fire($(id), "input"); };
   check("checklist: višina terase 4,5 cm", cl.includes("min. 4,5 cm"));
   check("checklist: rez 30° (uradni PDF)", cl.includes("kotom 30°"));
   check("checklist: kombinacija 4,0+2,2 ni dovoljena", cl.includes("kombinacija 4,0+2,2 m NI dovoljena"));
+  check("checklist: strukturno opozorilo WoodCore (uradni PDF)",
+    cl.includes("niso konstrukcijski element") && cl.includes("izniči garancijo"));
+  check("checklist: predvrtanje WPC letvi — luknja manjša od vijaka (uradni PDF)",
+    cl.includes("predvrtati luknjo manjšo od vijaka") && cl.includes("brez tega letev poči"));
+  check("checklist: zmrznjena voda poči desko (uradni PDF)",
+    cl.includes("zmrzne v deski") && cl.includes("Distančnikov ne zategovati"));
   check("checklist: odmik od vseh sten ≥ 6 mm", cl.includes("odmik od vseh sten ≥ 6 mm"));
   check("popravljena tipkarska napaka VSKAK", !cl.includes("VSKAK"));
 
@@ -132,8 +138,9 @@ const setField = (id, v) => { $(id).value = String(v); fire($(id), "input"); };
   check("polna57 dovoljena za pregrado", !$("checks").textContent.includes("ni predviden"));
   $("buildChecklist").click();
   const cl2 = $("checklistOut").textContent;
-  check("checklist pregrada: stebri ≤ 200 cm", cl2.includes("pokončno ≤ 200 cm"));
+  check("checklist pregrada: stebri pokončno 150–180 cm po profilu", cl2.includes("pokončno 150–180 cm") && cl2.includes("180 do višine 150 cm"));
   check("checklist pregrada: KUBO razpon 120/260", cl2.includes("≤ 120 cm brez cevi") && cl2.includes("≤ 260 cm"));
+  check("checklist pregrada: KUBO cevi 20×60×2/25×25×2/20×20×2 + širina 80/42", cl2.includes("25×25×2") && cl2.includes("20×20×2") && cl2.includes("vidno širino 80 ali 42 mm") && cl2.includes("letvic je poljuben"));
   check("checklist pregrada: eloksirana na prostem", cl2.includes("eloksirana"));
 
   // 10) napušč (samo polna-100 je predvidena)
