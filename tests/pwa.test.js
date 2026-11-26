@@ -36,7 +36,8 @@ function pngSize(file) {
   try { mf = JSON.parse(fs.readFileSync(mfPath, "utf8")); } catch (e) { /* zlom spodaj */ }
   check("manifest: veljaven JSON z ključi", !!mf && !!mf.name && !!mf.short_name && mf.display === "standalone" && !!mf.start_url && mf.lang === "sl");
   check("manifest: ikone 192 + 512", !!mf && mf.icons.some((i) => i.sizes === "192x192") && mf.icons.some((i) => i.sizes === "512x512") && mf.icons.some((i) => i.purpose === "maskable"));
-  check("manifest: tema ujema aplikaciji (#141c24)", !!mf && mf.theme_color === "#141c24" && mf.background_color === "#141c24");
+  const barHex = ((html.match(/--bar:(#[0-9a-f]{3,6})/i) || [])[1] || "").toLowerCase();
+  check("manifest: tema ujema aplikaciji (--bar)", !!mf && !!barHex && mf.theme_color === barHex && mf.background_color === barHex, barHex);
 
   /* 2) sw.js: sintaksa + vsebina */
   const swPath = path.join(root, "sw.js");

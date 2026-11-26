@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- CSP: strict script allowlist by hash. No unsafe-inline / unsafe-eval. frame-ancestors is set in vercel.json (unsupported in meta). -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-p7cgGoZvsTfZpz5JDDi5E8a9t7W1WwpCHYwxDfm5NqM=' 'sha256-6J6DTGfjfS9TzsmC/mavrq5Of84CejQrwL+z8h2S/CA=' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-Ljr+9b8HJmymNJ6CzE0+lzO+f7gejTBK6lMVtLFQs0A='; style-src 'self' 'sha256-4FSnEol/oCYUGkNhmiENp3nb8LJQHWJPhmXveTDka34='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-7cbv7qRDRMQ2wsgIEsrGssQR0eQpkYj4E0829BchsA0=' 'sha256-8CLnmCncH9n5K+pm7zwcCLBycyOYCz6PYW+kgDUoFs8=' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-Ljr+9b8HJmymNJ6CzE0+lzO+f7gejTBK6lMVtLFQs0A='; style-src 'self' 'sha256-bNZr2w6GkE7VRnkzIsqv35pTAUP2HCfAweYQV3l/8G4='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Tehnična risba PRO – fotografija do končnega lista</title>
 <!-- >>> GENERATED: seo-jsonld — uredi scripts/generate-seo.js, ne to kopijo -->
 <script type="application/ld+json">[
@@ -20,7 +20,7 @@
     "applicationSubCategory": "Technical drawing / CAD",
     "operatingSystem": "Web (PWA) — Windows, macOS, Linux, Android, iOS",
     "applicationSuite": "WoodCore WPC (Roksal)",
-    "softwareVersion": "2026.11.29",
+    "softwareVersion": "2026.11.30",
     "datePublished": "2026-11-26",
     "offers": {
       "@type": "Offer",
@@ -149,18 +149,14 @@
   }
 ]</script>
 <script>var DW_RELEASE={
-  "version": "2026.11.29",
+  "version": "2026.11.30",
   "date": "2026-11-26",
   "notes": [
-    "Odvečni znaki > v obrazcih — iz 75 vnosnih polj in spustnih seznamov odstranjeno podvojeno zaključno oglato oklepaj; pod vsakim poljem se je izpisal tuj >, v \u003cselect> pa je nastalo neveljavno tekstovno vozlišče.",
-    "Podvojeni ID-ji — iz skritega bloka hooks odstranjena podvojena skupina gumbov (10 ID-jev: themeBtn, langBtn, helpBtn, zoomIn, zoomOut, zoomFit, panBtn, fsBtn, isoBtn, showExample). Stran ima zdaj 287 enoličnih ID-jev in nobenega podvojenega.",
-    "Manjkajoči spremenljivki --p3 in --dim sta bili uporabljeni, a nikoli definirani — pravila z njima (slike katalogа, [data-s=\"s10\"]) so bila mrtva.",
-    "Profesionalna lupina — poenoteni naslovi sklopov z oštevilčenimi značkami, tipografija obrazcev, fokusni obroči, čipi korakov, spustni seznami z lastno puščico, risalna mreža na platnu, čip števca vidnih polj.",
-    "Svetla tema je zdaj celovita — prej so ostale temne površine (main, .sysbox, .exp-sec, .exp-row, .exp-sl, .warnbox, .kbd, aktivni čipi, poudarki).",
-    "Prazno stanje je list A3 s pravim razmerjem 420 : 297, s sredinskim klicem k dejanju in berljivim kontrastom.",
-    "Mobilna vrstica — ukrep »Generiraj risbo« je v prvi vrstici ob imenu, meniji se prelomijo pod njim; prej je bila vrstica visoka tri vrstice z gumbom samim v tretji.",
-    "theme-color usklajen z barvo menijske vrstice (#141c24 → #181816).",
-    "Vse surov zelene (0 FAIL) in samoprevera 126/126; pwa surov zdaj preverja theme-color proti spremenljivki --bar, ne proti zapisani vrednosti."
+    "Svetla tema je zdaj res svetla — spustni meniji, .kbd, izbrani segmenti in čipi so v svetli temi dobili svoje različice; zavesa dialogov je mehkejša (0,35 namesto 0,73 črnine), zato ozadje za oknom ni več videti kot temna tema.",
+    "Kontrast besedila — svetla tema je imela presvetle sekundarne odtenke (--mut 4,3 : 1, --dim 3,8 : 1 na belem) in temen napis na terakoti (4,2 : 1); primarne tipke imajo zdaj bel napis, vsi pari besedilo/ozadje pa so ≥ 4,5 : 1.",
+    "manifest.webmanifest je imel #141c24, aplikacija pa #181816 — nameščena aplikacija je ob zagonu utripnila v drugo barvo. Zdaj se ujemata, test vrednost bere iz --bar.",
+    "Dvanajst dialogov (izvoz, projekti, primeri risb, 3D pogled, pomoč, potrditev, povečava fotografije, rezultat, konfiguracije, zgodovina posnetkov, zapiski izdaj, vadnice) pregledanih v obeh temah; izmerjeni kontrasti, ne le videz.",
+    "Nova suita tests/theme-contrast.test.js (51 preverjanj): kontrast barvnih žetonov v obeh temah, napis na primarnih tipkah, svetle različice trdo kodiranih površin in razlika med zavesama."
   ]
 };</script>
 <!-- <<< END GENERATED: seo-jsonld -->
@@ -172,7 +168,7 @@
 <style>
 :root{--bg:#141413;--panel:#1d1d1b;--p2:#262622;--line:#3b3b36;--tx:#e9e7dd;--mut:#a6a396;--ac:#d97757;--ok:#8aa86a;--wa:#e0a44c;--bad:#d06b5b;--bar:#181816}
 /* Faza 0.5: light tema — sistemsko (prefers-color-scheme) ali ročno prek gumba */
-[data-theme="light"]{--bg:#f4f3ef;--panel:#ffffff;--p2:#ecebe6;--line:#d6d4cc;--tx:#1c1b18;--mut:#6f6d66;--ac:#c05a36;--ok:#55793f;--wa:#9a6f16;--bad:#ae4636;--bar:#e9e7e1}
+[data-theme="light"]{--bg:#f4f3ef;--panel:#ffffff;--p2:#ecebe6;--line:#d6d4cc;--tx:#1c1b18;--mut:#615f58;--ac:#a8481f;--ok:#4d6f38;--wa:#8a6412;--bad:#a13f30;--bar:#e9e7e1}
 [data-theme="light"] .menu .drop{background:#ffffff}
 [data-theme="light"] .drop .mi.active{background:#f4e6de;color:var(--ac)}
 [data-theme="light"] .sheet{box-shadow:0 12px 40px #0002a}
@@ -506,8 +502,8 @@ body.viewmode .viewbar{display:flex}
    ============================================================ */
 /* 1 — manjkajoče sistemske spremenljivke (--p3 in --dim sta bila
    uporabljena, a nikoli definirana: pravila z njima so bila mrtva) */
-:root{--p3:#2a2a25;--dim:#8d8a80;--ring:0 0 0 3px #d9775747;--grid:rgba(255,255,255,.05);--sheetc:0 18px 48px #000000a6}
-[data-theme="light"]{--p3:#f7f6f1;--dim:#85827a;--ring:0 0 0 3px #c05a3638;--grid:rgba(28,27,24,.06);--sheetc:0 2px 4px #0000000f,0 18px 44px #00000029}
+:root{--p3:#2a2a25;--dim:#96938a;--ring:0 0 0 3px #d9775747;--grid:rgba(255,255,255,.05);--sheetc:0 18px 48px #000000a6}
+[data-theme="light"]{--p3:#f7f6f1;--dim:#636057;--ring:0 0 0 3px #a8481f38;--grid:rgba(28,27,24,.06);--sheetc:0 2px 4px #0000000f,0 18px 44px #00000029}
 
 /* 2 — ogrodje: menijska vrstica, gumbi, spustni seznami */
 .menubar{gap:2px;padding:0 12px;background:var(--bar);border-bottom:1px solid var(--line);box-shadow:0 1px 0 #00000059}
@@ -570,9 +566,15 @@ main .sheet:has(>#prev.empty){width:min(100%,860px);min-width:0;aspect-ratio:420
 [data-theme="light"] .exp-sec-h:hover{background:#efeee8}
 [data-theme="light"] .exp-row{border-top-color:#e6e4dc}
 [data-theme="light"] .exp-sl{background:#cfcdc4}
-[data-theme="light"] .exp-chip.active{background:#f6e4da}
 [data-theme="light"] .photo{background:#eceae4}
 [data-theme="light"] #asideScrim{background:#00000026}
+[data-theme="light"] .exp-overlay{background:#1c1b1859}
+/* površine, ki so ostale temne: spustni meniji, tipke, izbrani segmenti */
+[data-theme="light"] .exp-row .mi.active,[data-theme="light"] .exp-row .btn.active{background:#f6e4da}
+[data-theme="light"] .kbd{background:#ecebe6;color:#4a4740}
+[data-theme="light"] .primarybar,[data-theme="light"] .exp-go,[data-theme="light"] .btn.go{color:#fff}
+[data-theme="light"] .exp-seg.active{background:var(--ac);border-color:var(--ac);color:#fff}
+[data-theme="light"] .exp-chip.active{background:var(--ac);border-color:var(--ac);color:#fff}
 
 /* 6b — števec vidnih polj kot čip (prej golo besedilo) */
 #fieldCount{font-variant-numeric:tabular-nums;padding:2px 8px;border:1px solid var(--line);border-radius:999px;color:var(--dim)!important;line-height:1.6}

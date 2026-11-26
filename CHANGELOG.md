@@ -2,12 +2,24 @@
 
 Vse pomembnejše spremembe projekta **Draftwright — Tehnična risba PRO** so dokumentirane v tej datoteki. Oblika sledi [Keep a Changelog](https://keepachangelog.com/sl/1.1.0/); datumski sufiksi v oznakah (npr. `[2026.11.15]`) so zaporedne podrazličice mesečne različice `APP_VERSION` (trenutno `2026.11`).
 
+## [2026.11.30] — 2026-11-26
+
+### Popravljeno
+- **Svetla tema je zdaj res svetla** — spustni meniji, `.kbd`, izbrani segmenti in čipi so v svetli temi dobili svoje različice; zavesa dialogov je mehkejša (0,35 namesto 0,73 črnine), zato ozadje za oknom ni več videti kot temna tema.
+- **Kontrast besedila** — svetla tema je imela presvetle sekundarne odtenke (`--mut` 4,3 : 1, `--dim` 3,8 : 1 na belem) in temen napis na terakoti (4,2 : 1); primarne tipke imajo zdaj bel napis, vsi pari besedilo/ozadje pa so ≥ 4,5 : 1.
+- **`manifest.webmanifest`** je imel `#141c24`, aplikacija pa `#181816` — nameščena aplikacija je ob zagonu utripnila v drugo barvo. Zdaj se ujemata, test vrednost bere iz `--bar`.
+
+### Spremenjeno
+- **Dvanajst dialogov** (izvoz, projekti, primeri risb, 3D pogled, pomoč, potrditev, povečava fotografije, rezultat, konfiguracije, zgodovina posnetkov, zapiski izdaj, vadnice) pregledanih v obeh temah; izmerjeni kontrasti, ne le videz.
+
+### Preizkušeno
+- Nova suita `tests/theme-contrast.test.js` (**51 preverjanj**): kontrast barvnih žetonov v obeh temah, napis na primarnih tipkah, svetle različice trdo kodiranih površin in razlika med zavesama.
 ## [2026.11.29] — 2026-11-26
 
 ### Popravljeno
 - **Odvečni znaki `>` v obrazcih** — iz 75 vnosnih polj in spustnih seznamov odstranjeno podvojeno zaključno oglato oklepaj; pod vsakim poljem se je izpisal tuj `>`, v `<select>` pa je nastalo neveljavno tekstovno vozlišče.
 - **Podvojeni ID-ji** — iz skritega bloka `hooks` odstranjena podvojena skupina gumbov (10 ID-jev: `themeBtn`, `langBtn`, `helpBtn`, `zoomIn`, `zoomOut`, `zoomFit`, `panBtn`, `fsBtn`, `isoBtn`, `showExample`). Stran ima zdaj 287 enoličnih ID-jev in nobenega podvojenega.
-- **Manjkajoči spremenljivki** `--p3` in `--dim` sta bili uporabljeni, a nikoli definirani — pravila z njima (slike katalogа, `[data-s="s10"]`) so bila mrtva.
+- **Manjkajoči spremenljivki** `--p3` in `--dim` sta bili uporabljeni, a nikoli definirani — pravila z njima (slike kataloga, `[data-s="s10"]`) so bila mrtva.
 
 ### Spremenjeno
 - **Profesionalna lupina** — poenoteni naslovi sklopov z oštevilčenimi značkami, tipografija obrazcev, fokusni obroči, čipi korakov, spustni seznami z lastno puščico, risalna mreža na platnu, čip števca vidnih polj.
