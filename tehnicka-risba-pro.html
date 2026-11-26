@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- CSP: strict script allowlist by hash. No unsafe-inline / unsafe-eval. frame-ancestors is set in vercel.json (unsupported in meta). -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-kL9d8qsZfRxxfgpXl1dyXL+n4uBZpDmZbh5yTKrmnHg=' 'sha256-CxIgqhp02uPYgW2MaUeKiKsILpj+pnZHb/XEL+n3SVA=' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-IzVUwgZiq18c57LXuNPVa/gMg/nweQ0l64R97GIMP9Y='; style-src 'self' 'sha256-FoagumGQjeRIiyVr4TPgDTtnMCHTTg5+mclC/wzcYXw='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-RVpokZZSQffD3I42R4QEsvuWjMg6+PgusjlwwORJWL4=' 'sha256-nEgSWGBsJiqEE5kRzvZhv/YzUdGregJiZtv/ZpP9auE=' 'sha256-YB4QchGN7EOywohzGx0AlLW0naicrjQUBoAwrqitIV4=' 'sha256-zH+WdZ9iZ46Gh7V/ab7Gl5ko4Jj4aHbva2wG0lwThf4='; style-src 'self' 'sha256-FoagumGQjeRIiyVr4TPgDTtnMCHTTg5+mclC/wzcYXw='; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; manifest-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Tehnična risba PRO – fotografija do končnega lista</title>
 <!-- >>> GENERATED: seo-jsonld — uredi scripts/generate-seo.js, ne to kopijo -->
 <script type="application/ld+json">[
@@ -20,7 +20,7 @@
     "applicationSubCategory": "Technical drawing / CAD",
     "operatingSystem": "Web (PWA) — Windows, macOS, Linux, Android, iOS",
     "applicationSuite": "WoodCore WPC (Roksal)",
-    "softwareVersion": "2026.11.32",
+    "softwareVersion": "2026.11.33",
     "datePublished": "2026-11-26",
     "offers": {
       "@type": "Offer",
@@ -149,12 +149,12 @@
   }
 ]</script>
 <script>var DW_RELEASE={
-  "version": "2026.11.32",
+  "version": "2026.11.33",
   "date": "2026-11-26",
   "notes": [
-    "Izvoz dostopen bralnikom zaslona — skupina formatov je role=\"group\" z aria-pressed (prej napačen tablist brez zavihkov), vseh 12 vsebin pa ima dostopno ime.",
-    "Vadnice: pravi zavihki — role=\"tablist\" je imel navadne gumbe; zdaj so role=\"tab\" z aria-selected, povezavo na ploščo in puščicama levo/desno. Ponovno odprtje vedno pokaže Vadnice, tudi če je bil nazadnje izbran kviz.",
-    "tests/export-dialog.test.js (55 preverjanj) in tests/learning.test.js (14 preverjanj) pokrivata stanje in imena; axe na izvoznem in vadniškem dialogu ne najde kršitev."
+    "Rezultat in povečana fotografija — zadnja dva dialoga sta imela vsebino zunaj landmarkov (axe region); zdaj imata role=\"dialog\", aria-modal in ime iz naslova, fokus ob odprtju in zaprtju pa ureja skupni sistem.",
+    "Oznaki materiala in formata lista — #matSel in #expPaper sta dobila povezano oznako; test dostopnosti zdaj pri \u003cselect> ne šteje besedila možnosti kot imena (prej lažno zelen).",
+    "tests/a11y.test.js (41 preverjanj) preverja vseh 13 dialogov, ime rezultata in povečave ter fokus; axe na obeh ne najde kršitev."
   ]
 };</script>
 <!-- <<< END GENERATED: seo-jsonld -->
@@ -853,7 +853,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:none}
 <div><label for="stH">Višina ograje nad stopnico (mm)</label><input type="number" id="stH" value="1000"></div>
 </div>
 </div>
-<label id="matDensityLabel" data-s="s46">Material in gostota</label>
+<label id="matDensityLabel" data-s="s46" for="matSel">Material in gostota</label>
 <div class="row">
 <div><select id="matSel"><option value="2700">Aluminij (2700 kg/m³)</option><option value="7850">Jeklo (7850 kg/m³)</option><option value="1300" selected>WoodCore WPC (1300 kg/m³)</option><option value="0">Po lastni izbiri</option></select></div>
 <div><input type="number" id="rho" value="1300" step="10" aria-label="Gostota materiala (kg/m³)"></div>
@@ -1055,7 +1055,7 @@ Konstrukcija odporna na vremenske vplive.</textarea>
         <div class="exp-sec-b">
           <div class="exp-row" data-s="s6">
             <div class="exp-it"><span>Format lista</span><span class="i" title="Velja za risbo (PDF/SVG) in se uskladi s poljem »Format« na stranskem plošču.">i</span></div>
-            <select id="expPaper" data-s="s74"><option value="A3">A3 420×297</option><option value="A4">A4 297×210</option><option value="A2">A2 594×420</option></select>
+            <select id="expPaper" data-s="s74" aria-label="Format lista"><option value="A3">A3 420×297</option><option value="A4">A4 297×210</option><option value="A2">A2 594×420</option></select>
           </div>
           <p class="hint" data-s="s45">Merilo, revizija in naslovni blok se vzamejo iz sklopa »List in opombe«.</p>
         </div>
@@ -1367,16 +1367,16 @@ Konstrukcija odporna na vremenske vplive.</textarea>
   </div>
 </div>
 <div class="exp-overlay" id="photoZoomOverlay">
-  <div class="exp-dialog" data-s="s51">
+  <div class="exp-dialog" data-s="s51" role="dialog" aria-modal="true" aria-labelledby="photoZoomTitle">
     <div class="exp-head" data-s="s2">
-      <div><h1 data-s="s7">Povečana fotografija</h1></div>
+      <div><h1 id="photoZoomTitle" data-s="s7">Povečana fotografija</h1></div>
       <button class="exp-x" id="photoZoomClose" type="button" aria-label="Zapri" title="Zapri (Esc)">×</button>
     </div>
     <div data-s="s55"><img id="photoZoomImg" alt="foto (povečana)" data-s="s67"></div>
   </div>
 </div>
 <div class="exp-overlay" id="resultOverlay">
-  <div class="exp-dialog" data-s="s53">
+  <div class="exp-dialog" data-s="s53" role="dialog" aria-modal="true" aria-labelledby="resultTitle">
     <div class="exp-head">
       <div><h1 id="resultTitle">Rezultat</h1></div>
       <button class="exp-x" id="resultClose" type="button" aria-label="Zapri" title="Zapri (Esc)">×</button>
@@ -6333,7 +6333,7 @@ if(typeof updateModeTicks==="function") updateModeTicks();
   /* ---------- Fokus ob odprtju/zaprtju modala (WCAG 2.4.3 Focus Order) ----------
      Odprtje premakne fokus v dialog (prvi fokusabilni element), zaprtje ga vrne
      na element, ki ga je odprl. Izvozni dialog (expOverlay) ima to že svoje —
-     dvojna obnova ni problem, ker je cilj isti element; tu pokrijemo ostalih 11. */
+     dvojna obnova ni problem, ker je cilj isti element; tu pokrijemo ostalih 12. */
   var lastDlgFocus=null,openDlg=null;
   function overlayOf(d){var ov=d.closest&&d.closest('[class*="overlay"]');return ov||d.parentElement;}
   /* Menijska postavka izgine, ko se meni zapre; fokus po zaprtju dialoga zato

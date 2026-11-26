@@ -56,15 +56,42 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     if (el.id) { const l = d.querySelector('label[for="' + el.id + '"]'); if (l && l.textContent.trim()) return l.textContent.trim(); }
     const wrap = el.closest && el.closest("label");
     if (wrap && wrap.textContent.trim()) return wrap.textContent.trim();
-    const txt = (el.textContent || "").replace(/\s+/g, " ").trim();
-    if (txt) return txt;
+    /* Pri poljih besedilo ni ime: <select> bi sicer "pobral" besedilo možnosti. */
+    if (!/^(INPUT|SELECT|TEXTAREA)$/.test(el.tagName)) {
+      const txt = (el.textContent || "").replace(/\s+/g, " ").trim();
+      if (txt) return txt;
+    }
     const t = el.getAttribute("title");
     return t && t.trim() ? t.trim() : "";
   }
 
   /* ---------- 1) dialogi imajo dosegljivo ime ---------- */
   const dialogs = Array.from(d.querySelectorAll('[role="dialog"]'));
-  check("vsi dialogi imajo dosegljivo ime (aria-label/labelledby)", dialogs.length >= 11 && dialogs.every((el) => accName(el)), "dialogov=" + dialogs.length + " brez imena: " + dialogs.filter((el) => !accName(el)).length);
+  check("vsi dialogi imajo dosegljivo ime (aria-label/labelledby)", dialogs.length >= 13 && dialogs.every((el) => accName(el)), "dialogov=" + dialogs.length + " brez imena: " + dialogs.filter((el) => !accName(el)).length);
+  const overlays = Array.from(d.querySelectorAll(".exp-overlay"));
+  check("vsak overlay ima natanko en modalni dialog z imenom", overlays.length === 13 && overlays.every((o) => {
+    const ds = o.querySelectorAll('[role="dialog"][aria-modal="true"]');
+    return ds.length === 1 && accName(ds[0]);
+  }), "overlayev=" + overlays.length + ", dialogov=" + dialogs.length);
+
+  /* 1b) rezultat in povečava fotografije sta prav tako modalna dialoga. */
+  const resultOv = d.getElementById("resultOverlay");
+  const tmpRes = d.createElement("div"); tmpRes.id = "auditResultSrc"; tmpRes.textContent = "x"; d.body.appendChild(tmpRes);
+  w.showResult("auditResultSrc", "Preverjanje rezultata");
+  await sleep(35);
+  const resultDlg = resultOv.querySelector('[role="dialog"]');
+  check("rezultat: modalni dialog z imenom iz naslova", !!resultDlg && resultDlg.getAttribute("aria-modal") === "true" && resultDlg.getAttribute("aria-labelledby") === "resultTitle" && accName(resultDlg) === "Preverjanje rezultata" && resultOv.contains(d.activeElement));
+  tmpRes.remove(); w.closeResult(); await sleep(30);
+
+  const photo = d.getElementById("img");
+  photo.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E";
+  photo.click();
+  await sleep(35);
+  const zoomOv = d.getElementById("photoZoomOverlay"), zoomDlg = zoomOv.querySelector('[role="dialog"]');
+  check("povečava: modalni dialog z imenom in fokusom", !!zoomDlg && zoomDlg.getAttribute("aria-modal") === "true" && accName(zoomDlg) === "Povečana fotografija" && zoomOv.contains(d.activeElement));
+  d.dispatchEvent(new w.KeyboardEvent("keydown", { key: "Escape", bubbles: true, cancelable: true }));
+  await sleep(30);
+  check("povečava: Escape zapre dialog", !zoomOv.classList.contains("on"));
 
   /* ---------- 2) gumbi in polja imajo ime ----------
      Gumbi v <div class="hooks" aria-hidden="true"> so namerno skriti programski
