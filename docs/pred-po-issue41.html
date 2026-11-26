@@ -1,0 +1,61 @@
+<!doctype html><html lang="sl"><head><meta charset="utf-8"><title>Pred / po</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:var(--font-sans,system-ui,sans-serif);color:var(--foreground,#e8e6dc)}
+h1{font-size:19px;font-weight:650;letter-spacing:-.2px;margin:0 0 6px}
+.sub{font-size:12.5px;color:var(--muted-foreground,#a6a396);margin:0 0 22px;line-height:1.5}
+.sub b{color:var(--foreground,#e8e6dc);font-weight:600}
+section{margin:0 0 26px}
+h2{font-size:11px;letter-spacing:.9px;text-transform:uppercase;color:var(--muted-foreground,#a6a396);font-weight:600;margin:0 0 10px;display:flex;align-items:center;gap:8px}
+h2::after{content:"";flex:1;height:1px;background:var(--border,#3b3b36)}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.col{min-width:0}
+.cap{font-size:10px;letter-spacing:.7px;text-transform:uppercase;margin:0 0 6px;font-variant-numeric:tabular-nums}
+.before .cap{color:var(--destructive,#d06b5b)}
+.after .cap{color:var(--success,#8aa86a)}
+.neutral .cap{color:var(--muted-foreground,#a6a396)}
+.frame{border:1px solid var(--border,#3b3b36);border-radius:var(--radius,8px);overflow:hidden;background:var(--card,#1d1d1b)}
+.frame img{display:block;width:100%;height:auto}
+.note{font-size:11.5px;color:var(--muted-foreground,#a6a396);margin:7px 0 0;line-height:1.5}
+ul.fix{list-style:none;padding:0;margin:0;display:grid;gap:7px;font-size:12.5px;line-height:1.5}
+ul.fix li{position:relative;padding-left:16px}
+ul.fix li::before{content:"";position:absolute;left:0;top:7px;width:6px;height:6px;border-radius:50%;background:var(--accent,#d97757)}
+code{font-family:var(--font-mono,ui-monospace,monospace);font-size:11.5px;background:var(--code-background,#262622);padding:1px 5px;border-radius:4px}
+@media(max-width:640px){.pair{grid-template-columns:1fr}}
+</style></head><body>
+<h1>TehniÄŤna risba PRO â€” pred / po</h1>
+<p class="sub">Izdaja <b>2026.11.29</b> Â· razvojna veja <b>issue41-local-visual-upgrade</b> Â· vsi suiti zeleni, samoprevera 126/126.<br>Posnetki so iz resniÄŤne aplikacije, ne iz makete.</p>
+
+<section><h2>Svetla tema â€” izvozno okno</h2><div class="pair">
+<div class="col before"><p class="cap">pred</p><div class="frame"><img src="assets/cmp-dialog-light-before.png" alt="Pred: izvozno okno v svetli temi"></div><p class="note">Temna ploskev na belem oknu; imena postavk so bila neberljiva, ker je besedilo temno na temnem.</p></div>
+<div class="col after"><p class="cap">po</p><div class="frame"><img src="assets/cmp-dialog-light-after.png" alt="Po: izvozno okno v svetli temi"></div><p class="note">Celovita svetla tema: sekcije, vrstice, stikala in Ĺľetoni sledijo paleti.</p></div>
+</div></section>
+
+<section><h2>Zagonski zaslon (temna tema)</h2><div class="pair">
+<div class="col before"><p class="cap">pred</p><div class="frame"><img src="assets/cmp-empty-before.png" alt="Pred: prazno stanje"></div><p class="note">Prazen bel list ÄŤez celo platno, brez razmerja strani, z nizkim kontrastom.</p></div>
+<div class="col after"><p class="cap">po</p><div class="frame"><img src="assets/cmp-empty-after.png" alt="Po: prazno stanje"></div><p class="note">List A3 s pravim razmerjem 420 : 297, sredinski klic k dejanju in risalna mreĹľa.</p></div>
+</div></section>
+
+<section><h2>Vrstica z meniji â€” levi del, merilo 1 : 1</h2>
+<div class="col before"><p class="cap">pred</p><div class="frame"><img src="assets/cmp-bar3-before.png" alt="Pred: menijska vrstica"></div></div>
+<div class="col after" style="margin-top:12px"><p class="cap">po</p><div class="frame"><img src="assets/cmp-bar3-after.png" alt="Po: menijska vrstica"></div><p class="note">Znamka z ikono lista, enotna 13 px tipografija, tiĹˇji podnaslov, ÄŤip Ĺˇtevca vidnih polj ob glavnem ukrepu.</p></div>
+</section>
+<section><h2>Mobilna vrstica (390 px)</h2><div class="pair">
+<div class="col before"><p class="cap">pred</p><div class="frame"><img src="assets/cmp-mobile-before.png" alt="Pred: mobilna vrstica"></div><p class="note">Tri vrstice; glavni ukrep sam v tretji.</p></div>
+<div class="col after"><p class="cap">po</p><div class="frame"><img src="assets/cmp-mobile-after.png" alt="Po: mobilna vrstica"></div><p class="note">Ukrep je v prvi vrstici ob imenu, meniji se prelomijo pod njim.</p></div>
+</div></section>
+
+<section><h2>Celotna aplikacija â€” temna in svetla tema</h2><div class="pair">
+<div class="col neutral"><p class="cap">temna</p><div class="frame"><img src="assets/live2-dark.png" alt="Celotna aplikacija v temni temi"></div></div>
+<div class="col neutral"><p class="cap">svetla</p><div class="frame"><img src="assets/live2-light.png" alt="Celotna aplikacija v svetli temi"></div></div>
+</div><p class="note">Enak izvoz in ista struktura v obeh temah; barve sledijo skupnim spremenljivkam.</p></section>
+
+<section><h2>Kaj je bilo popravljeno</h2><ul class="fix">
+<li><b>75 odveÄŤnih <code>&gt;</code></b> za vnosnimi polji in v spustnih seznamih â€” pod vsakim poljem se je izpisal tuj znak.</li>
+<li><b>10 podvojenih ID-jev</b> v skritem bloku <code>hooks</code> (npr. <code>themeBtn</code>, <code>zoomFit</code>, <code>isoBtn</code>); zdaj 287 enoliÄŤnih.</li>
+<li><b>ManjkajoÄŤi spremenljivki</b> <code>--p3</code> in <code>--dim</code> â€” pravila z njima so bila mrtva.</li>
+<li><b>Svetla tema</b> je zdaj celovita (platno, sistemska kartica, izvozno okno, opozorila, aktivni ÄŤipi).</li>
+<li><b>Tipografija in stanja</b>: oĹˇtevilÄŤeni sklopi, 11 px oznake, fokusni obroÄŤi, lastna puĹˇÄŤica selectov, ÄŤip Ĺˇtevca polj.</li>
+<li><b><code>theme-color</code></b> usklajen z barvo vrstice (<code>#181816</code>); test to zdaj preverja proti spremenljivki <code>--bar</code>.</li>
+</ul></section>
+</body></html>
