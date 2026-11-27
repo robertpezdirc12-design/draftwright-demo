@@ -4,6 +4,8 @@
 
 🔗 Živa demo: [draftwright-demo.vercel.app](https://draftwright-demo.vercel.app)
 
+🖼️ Pred / po prenova (issue #41): [pred-po-issue41.html](https://draftwright-demo.vercel.app/docs/pred-po-issue41.html)
+
 ## Varnost
 - strogi CSP brez `unsafe-inline` in `unsafe-eval` (HTML meta + Vercel glava s `frame-ancestors 'none'`); po vsaki spremembi inline koda poganjaj `node scripts/generate-csp.js`, po zamenjavi katerekoli `vendor/*.js` datoteke pa `npm run sri:generate` (SHA-384 iz **served/LF bajtov**)
 - podatki iz deljenih povezav in uvoženih projektov se validirajo na meji zaupanja; regresije pokrivajo `security-sketch`, `security-boundaries` in `csp` surovi

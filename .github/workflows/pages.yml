@@ -40,6 +40,10 @@ jobs:
             --exclude=samples \
             --exclude=_site \
             ./ _site/
+          # docs/ je izključen (interne beležke), objavi se le primerjava pred / po
+          mkdir -p _site/docs/assets/pred-po
+          cp docs/pred-po-issue41.html _site/docs/
+          rsync -av docs/assets/pred-po/ _site/docs/assets/pred-po/
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site
