@@ -1,0 +1,48 @@
+[
+ {
+  "file": "assets/pred-po/drafting-table.jpg",
+  "media": "image",
+  "ref": "openverse:1335e02b-ef87-4caa-a2b3-5f82ed130b7f",
+  "title": "Drafting table",
+  "creator": "User:Gaf.arq",
+  "creatorUrl": "https://commons.wikimedia.org/wiki/User:Gaf.arq",
+  "date": null,
+  "license": "CC BY-SA 2.0",
+  "licenseCode": "by-sa",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+  "creditRequired": true,
+  "page": "https://commons.wikimedia.org/w/index.php?curid=63048",
+  "via": "Wikimedia Commons",
+  "image": "https://upload.wikimedia.org/wikipedia/commons/2/2a/Drafting_table.jpg",
+  "width": 1600,
+  "height": 1200,
+  "bytes": 226077,
+  "credit": "\"Drafting table\" by User:Gaf.arq, CC BY-SA 2.0, via Wikimedia Commons",
+  "notes": [
+   "Share-alike: an altered version (recoloured, combined with other pictures) must be shared under the same licence."
+  ],
+  "saved": "2026-11-27T00:30:14.033Z"
+ },
+ {
+  "file": "assets/pred-po/architectural-drawing-1802-1804-sir-robert.webp",
+  "media": "image",
+  "ref": "openverse:1db12084-526c-42f3-a81a-82aa33ce2806",
+  "title": "Architectural Drawing (1802-1804) Sir Robert",
+  "creator": null,
+  "creatorUrl": null,
+  "date": null,
+  "license": "CC0",
+  "licenseCode": "cc0",
+  "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "creditRequired": false,
+  "page": "https://www.rawpixel.com/image/10103595/image-paper-art-watercolors",
+  "via": "rawpixel",
+  "image": "https://images.rawpixel.com/editor_1024/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIzLTA2L3BkbWlzYzEyLXljYmF0bXMyNjc5MC1pbWFnZS5qcGc.jpg",
+  "width": 1024,
+  "height": 819,
+  "bytes": 311144,
+  "credit": "\"Architectural Drawing (1802-1804) Sir Robert\", CC0, via rawpixel",
+  "notes": [],
+  "saved": "2026-11-27T00:30:17.510Z"
+ }
+]
